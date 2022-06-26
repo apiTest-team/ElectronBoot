@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "dev": "pnpm --filter=example run dev",
     "build": "pnpm run build:clean && pnpm run build:cjs && pnpm run build:es2015 && pnpm run build:esm5 && pnpm run build:types && pnpm run build:umd && node tools/mv.js",
     "build:clean": "rimraf dist",
     "build:es2015": "pnpm --filter ./packages/** run build:es2015",
