@@ -2,6 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "CommonJS",
-    "outDir": "../../dist/@electron-boot/common/cjs"
+    "outDir": "../../dist/@electron-boot/decorator/cjs"
   },
 }

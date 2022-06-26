@@ -1,5 +1,5 @@
 {
-  "name": "@elector-boot/core",
+  "name": "@electron-boot/core",
   "version": "1.0.0",
   "description": "",
   "sideEffects": false,

@@ -1,1 +1,2 @@
-console.log("我是输出")
+import "reflect-metadata"
+

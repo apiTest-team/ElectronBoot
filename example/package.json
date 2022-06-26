@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite"
   },
+  "dependencies": {
+    "@electron-boot/core": "workspace:^1.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"

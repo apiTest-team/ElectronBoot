@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "ES2015",
-    "outDir": "../../dist/@electron-boot/common/esm2015",
+    "target": "ES5",
+    "outDir": "../../dist/@electron-boot/decorator/esm5",
   },
 }
