@@ -2,6 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "ES2015",
-    "outDir": "/dist/@electron-boot/core/esm2015",
+    "outDir": "../../dist/@electron-boot/core/esm2015",
   },
 }

@@ -3,6 +3,6 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "../../dist/@electron-boot/core/types",
+    "outDir": "../../dist/@electron-boot/common/types",
   },
 }

@@ -6,7 +6,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build": "pnpm run build:clean && pnpm run build:cjs && pnpm run build:es2015 && pnpm run build:esm5 && pnpm run build:types && pnpm run build:umd && node tools/mv.js",
+    "build": "pnpm run build:clean && pnpm run build:cjs && pnpm run build:es2015 && pnpm run build:esm5 && pnpm run build:types && pnpm run build:umd && gulp",
     "build:clean": "rimraf dist",
     "build:es2015": "pnpm --filter ./packages/** run build:es2015",
     "build:esm5": "pnpm --filter ./packages/** run build:esm5",
@@ -17,6 +17,9 @@
   "dependencies": {
   },
   "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-clean": "0.4.0",
+    "delete-empty": "^3.0.0",
     "@rollup/plugin-commonjs": "^22.0.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-typescript": "^8.3.3",
