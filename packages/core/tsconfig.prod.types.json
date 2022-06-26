@@ -1,8 +1,8 @@
 {
-  "extends": "./tsconfig.prod.default.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,
-    "outDir": "dist/types",
+    "outDir": "/dist/@electron-boot/core/types",
   },
 }
