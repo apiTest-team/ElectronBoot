@@ -20,7 +20,7 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
     }
   }
 
-  saveModule(key: string | symbol) {
+  saveModule(key: string | symbol,module:any) {
     if (this.containr){
       return this.containr.saveModule(key,module)
     }
@@ -32,5 +32,10 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
 
   resetModule(key: string | symbol) {
 
+  }
+
+  bindContainer(container:ModuleStoreInterface){
+    this.containr = container
+    this.containr.transformModule(this)
   }
 }
