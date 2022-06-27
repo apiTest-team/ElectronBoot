@@ -8,8 +8,15 @@ export interface ModuleStoreInterface {
   /**
    * 保存模块
    * @param key
+   * @param module 模块内容
    */
-  saveModule(key:string|symbol)
+  saveModule(key:string|symbol,module:any)
+
+  /**
+   * 重置模块内容
+   * @param key
+   */
+  resetModule(key:string|symbol)
 
   /**
    *
