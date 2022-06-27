@@ -5,7 +5,8 @@ import { ModuleStoreInterface } from "../interface/module.interface";
  */
 export class DecoratorManager extends Map implements ModuleStoreInterface{
 
-  public
+  // 默认的管理器
+  public static defaultManager:DecoratorManager = new  DecoratorManager()
 
   listModule(key: string | symbol) {
   }
