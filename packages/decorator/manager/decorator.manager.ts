@@ -9,18 +9,13 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
   // 默认的管理器
   public static defaultManager:DecoratorManager = new  DecoratorManager()
 
-  bindContainer(container:ModuleStoreInterface){
-    this.containr = container
-    this.containr.transformModule(this)
-  }
-
   listModule(key: string | symbol) {
     if (this.containr){
 
     }
   }
 
-  saveModule(key: string | symbol) {
+  saveModule(key: string | symbol,module:any) {
     if (this.containr){
       return this.containr.saveModule(key,module)
     }
@@ -34,6 +29,8 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
 
   }
 
-
-
+  bindContainer(container:ModuleStoreInterface){
+    this.containr = container
+    this.containr.transformModule(this)
+  }
 }
