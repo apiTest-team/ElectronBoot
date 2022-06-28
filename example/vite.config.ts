@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import typeScript from "@rollup/plugin-typescript";
 import swc from "rollup-plugin-swc"
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [swc({

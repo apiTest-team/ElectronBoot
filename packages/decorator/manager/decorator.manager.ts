@@ -1,5 +1,6 @@
-import { ModuleStoreInterface } from "../interface/module.interface";
+import { ModuleStoreInterface } from "../interface";
 import { INJECT_CLASS_KEY_PREFIX, INJECT_CLASS_METHOD_KEY_PREFIX, INJECT_METHOD_KEY_PREFIX } from "../constant";
+import { ObjectIdentifier } from "../interface";
 
 /**
  * 装饰管理器
@@ -12,7 +13,7 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
   // 方法的元数据存储key
   injectMethodKeyPrefix = INJECT_METHOD_KEY_PREFIX
   // 存储容器
-  containr:ModuleStoreInterface
+  container:ModuleStoreInterface
   // 默认的管理器
   public static defaultManager:DecoratorManager = new  DecoratorManager()
 
@@ -21,7 +22,7 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
    * @param key
    */
   listModule(key: string | symbol) {
-    if (this.containr){
+    if (this.container){
 
     }
   }
@@ -32,8 +33,8 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
    * @param module
    */
   saveModule(key: string | symbol,module:any) {
-    if (this.containr){
-      return this.containr.saveModule(key,module)
+    if (this.container){
+      return this.container.saveModule(key,module)
     }
     if (this.has(key)){
       this.set(key,new Set())
@@ -54,7 +55,113 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
    * @param container
    */
   bindContainer(container:ModuleStoreInterface){
-    this.containr = container
-    this.containr.transformModule(this)
+    this.container = container
+    this.container.transformModule(this)
+  }
+
+  /**
+   * 获取元数据
+   * @param decoratorNameKey
+   * @param target
+   * @param propertyName
+   */
+  getMetadata<T>(decoratorNameKey:ObjectIdentifier,target:T,propertyName?:ObjectIdentifier){
+    if (propertyName){
+      const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
+      return DecoratorManager.getMetadata(this.injectMethodKeyPrefix,target,dataKey)
+    }else{
+      const dataKey = `${DecoratorManager.getDecoratorClassKey(
+        decoratorNameKey
+      )}`
+      return DecoratorManager.getMetadata(this.injectClassKeyPrefix,target,dataKey)
+    }
+  }
+
+  /**
+   * 保存元数据
+   * @param decoratorNameKey 修饰key
+   * @param data 数据信息
+   * @param target 目标类
+   * @param propertyName 属性名称
+   */
+  saveMetadata<T>(decoratorNameKey:ObjectIdentifier,data:any,target:T,propertyName?:ObjectIdentifier){
+    if (propertyName){
+      const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
+      DecoratorManager.saveMetadata(this.injectMethodKeyPrefix,target,dataKey,data)
+    }else{
+      const dataKey = DecoratorManager.getDecoratorClassKey(decoratorNameKey)
+      DecoratorManager.saveMetadata(this.injectClassKeyPrefix,target,dataKey,data)
+    }
+  }
+  // =============================== 静态方法================================
+  /**
+   * 保存元数据到target
+   */
+  static saveMetadata(metaKey:string,target:any,dataKey:string,data:any){
+    // 过滤掉object.create(null)
+    if (typeof target==="object" && target.constructor){
+      target = target.constructor
+    }
+    let m:Map<string,any>
+    // 如果在target上存在了metaKey的元数据
+    if (Reflect.hasOwnMetadata(metaKey,target as Object)){
+      m = Reflect.getMetadata(metaKey,target as Object)
+    }else{
+      m = new Map<string,any>
+    }
+    // 元数据
+    m.set(dataKey,data)
+    // 在target上定义元数据
+    Reflect.defineMetadata(metaKey,m,target as Object)
+  }
+
+  /**
+   * 从指定target取出指定元数据key和数据key的元数据信息
+   * @param metaKey 元数据key
+   * @param target 元数据存储类
+   * @param dataKey 数据key
+   */
+  static getMetadata<T>(metaKey:string,target:T,dataKey:string){
+    // 过滤掉工厂方法
+    if (typeof target==="object" && target.constructor){
+      target = target.constructor as any
+    }
+    let m:Map<string,any>
+    if (Reflect.hasOwnMetadata(metaKey,target)){
+      m = Reflect.getMetadata(metaKey,target)
+    }else{
+      m = new Map<string,any>()
+    }
+    if (!dataKey){
+      return m
+    }
+    return m.get(dataKey)
+  }
+
+  /**
+   * 获取类修饰存储key
+   * @param decoratorNameKey 修饰名
+   */
+  static getDecoratorClassKey(decoratorNameKey:ObjectIdentifier):string{
+    return decoratorNameKey.toString() + "_CLASS"
+  }
+  /**
+   * 获取定义方法名
+   * @param decoratorNameKey
+   * @param methodKey
+   */
+  static getDecoratorMethod(decoratorNameKey:ObjectIdentifier,methodKey:ObjectIdentifier):string{
+    return DecoratorManager.getDecoratorMethodKey(decoratorNameKey)+
+      "-"+
+      (methodKey as string)
+  }
+
+
+  /**
+   * 组合key
+   * @param decoratorNameKey
+   */
+  static getDecoratorMethodKey(decoratorNameKey:ObjectIdentifier):string{
+    return decoratorNameKey.toString() + '_METHOD'
   }
 }

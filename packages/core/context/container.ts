@@ -1,5 +1,5 @@
 
 
-class ElectronBootContainer {
+export class ElectronBootContainer {
 
 }

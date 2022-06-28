@@ -1,1 +1,3 @@
-export * from "./provide.interface"
+export * from "./module.interface"
+
+export * from "./class.interface"
