@@ -16,6 +16,5 @@
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["build",
-    "rollup.config.js","node_modules", "**/*.spec.ts", "test/**"]
+  "exclude": ["rollup.config.js","node_modules", "**/*.spec.ts", "test/**"]
 }

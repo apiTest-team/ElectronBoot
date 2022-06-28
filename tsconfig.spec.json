@@ -1,7 +1,7 @@
 {
-  "extends": "./tsconfig.prod.default.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDirs": ["./src", "./test"],
+    "rootDirs": ["./example/src"],
     "strict": false,
     "strictPropertyInitialization": false,
     "sourceMap": false,
