@@ -1,6 +1,9 @@
-import { ProvideMetadata, ProvideOption } from "../../interface/provide.interface";
-import { Constructable } from "../../types/constructable.type";
-
+import { ProvideMetadata, ProvideOption } from "../../interface";
+import { Constructable } from "../../types";
+/**
+ * 服务提供者
+ * @constructor
+ */
 export function Provide():Function
 export function Provide<T = unknown>(options:ProvideOption<T>):Function
 export function Provide<T>(options:any = {}):ClassDecorator{

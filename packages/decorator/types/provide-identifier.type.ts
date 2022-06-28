@@ -1,5 +1,5 @@
 import { AbstractConstructable, Constructable } from "./constructable.type";
-import { Token } from "../class/token.class";
+import { Token } from "../class";
 
 export type ProvideIdentifier<T = unknown> =
   | Constructable<T>
