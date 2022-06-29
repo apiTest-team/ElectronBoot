@@ -102,7 +102,7 @@ export const getPropertyType = (target:Object,methodName:string|symbol) => {
  * @param target
  * @param useCache
  */
-export const getPropertyAutowired = (target:Object,useCache?:boolean):ClassPropsMetadata => {
+export const getPropertyAutowired = (target:any,useCache?:boolean):ClassPropsMetadata => {
   return getClassExtendedMetadata(AUTOWIRED_TAG, target, undefined, useCache)
 }
 /**

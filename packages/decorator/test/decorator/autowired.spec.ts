@@ -1,5 +1,6 @@
 import {Component} from "../../decorator";
 import {Autowired} from "../../decorator/common/autowired.decorator";
+import {getPropertyAutowired} from "../../manager";
 
 @Component()
 class MainWindow {
@@ -14,6 +15,6 @@ class MainApp {
 
 describe('Autowired decorator', function () {
     it('should inject show be ok', function () {
-        let meta = getPropertyInject(Test);
+        let meta = getPropertyAutowired(Test);
     });
 });
