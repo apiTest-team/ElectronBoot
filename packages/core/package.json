@@ -17,7 +17,10 @@
     "build:types": "tsc --project tsconfig.prod.types.json"
   },
   "devDependencies": {
-
+    "@electron-boot/decorator": "workspace:^1.0.0"
+  },
+  "peerDependencies": {
+    "@electron-boot/decorator": "workspace:^1.0.0"
   },
   "keywords": [],
   "author": "",

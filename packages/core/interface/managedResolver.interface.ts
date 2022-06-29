@@ -1,0 +1,19 @@
+
+import { ManagedInstanceInterface } from "@electron-boot/decorator";
+import { ObjectDefinitionInterface } from "./objectDefinition.interface";
+
+export interface ManagedResolverFactoryCreateOptionsInterface {
+  definition: ObjectDefinitionInterface;
+  args?: any;
+  namespace?: string;
+}
+
+/**
+ * 解析内部管理的属性、json、ref等实例的解析器
+ * 同时创建这些对象的实际使用的对象
+ */
+export interface ManagedResolverInterface {
+  type: string;
+  resolve(managed: ManagedInstanceInterface): any;
+  resolveAsync(managed: ManagedInstanceInterface): Promise<any>;
+}

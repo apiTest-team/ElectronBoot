@@ -1,9 +1,11 @@
+import "reflect-metadata"
 import {
   AutowiredModeEnum,
   AutowiredOptions,
-  ClassMetadata, ClassPropsMetadata,
+  ComponentMetadata,
+  ClassPropsMetadata,
   GroupModeType,
-  ObjectIdentifier, TargetPropsMetadata,
+  ObjectIdentifier,
   TSDesignType
 } from "../interface";
 import {DecoratorManager} from "./decorator.manager";
@@ -23,7 +25,7 @@ export const saveComponentId = <T>(identifier:ObjectIdentifier,target:any):T => 
       saveClassMetadata(TARGETED_CLASS,meta,target)
     }
   }else{
-    const data:ClassMetadata = {
+    const data:ComponentMetadata = {
       id:identifier,
       uuid:randomUUID(),
       originName:target.name,
@@ -48,11 +50,11 @@ export const getComponentId = (module:any):ObjectIdentifier=>{
  * 保存属性property属性到元数据
  * @param opts
  */
-export const savePropertyInject = (opts?:AutowiredOptions) => {
+export const savePropertyAutowired = (opts?:AutowiredOptions) => {
   let identifier = opts.identifier
   let autowiredMod = AutowiredModeEnum.Identifier
   if (!identifier){
-    const type = getPropertyType(opts.target,opts.targetKey)
+    const type = getPropertyType(opts.target as Object,opts.targetKey as string|symbol)
     if (!type.isBaseType&&IsComponent(type.originDesign)&&IsClass(type.originDesign)){
       identifier = getComponentId(type.originDesign)
       autowiredMod = AutowiredModeEnum.Class
@@ -70,8 +72,8 @@ export const savePropertyInject = (opts?:AutowiredOptions) => {
         args: opts.args, // 注入的其他参数
         autowiredMod,
       },
-      opts.target,
-      opts.targetKey
+      opts.target as Object,
+      opts.targetKey as string|symbol
   )
 }
 
@@ -80,7 +82,7 @@ export const savePropertyInject = (opts?:AutowiredOptions) => {
  * @param component
  */
 export const getComponentUUID = (component):string => {
-  const metadata = getClassMetadata(TARGETED_CLASS,component) as ClassMetadata
+  const metadata = getClassMetadata(TARGETED_CLASS,component) as ComponentMetadata
   if (metadata&&metadata.id){
     return metadata.uuid
   }
@@ -112,7 +114,11 @@ export const getPropertyAutowired = (target:any,useCache?:boolean):ClassPropsMet
  * @param propertyName
  * @param useCache
  */
-export const getClassExtendedMetadata = (decoratorNameKey: ObjectIdentifier, target, propertyName?: string, useCache?: boolean) => {
+export const getClassExtendedMetadata = (
+  decoratorNameKey: ObjectIdentifier,
+  target, propertyName?: string,
+  useCache?: boolean
+) => {
   if (useCache === undefined) {
     useCache = true;
   }
@@ -123,10 +129,18 @@ export const getClassExtendedMetadata = (decoratorNameKey: ObjectIdentifier, tar
   }
   const parent = Reflect.getPrototypeOf(target as Object)
   if (parent && parent.constructor !== Object){
-    metadata = merge(getClassExtendedMetadata(decoratorNameKey,parent,propertyName,useCache),
-        DecoratorManager.defaultManager.getMetadata(decoratorNameKey,target,propertyName))
+    metadata = merge(
+      getClassExtendedMetadata(
+        decoratorNameKey,
+        parent,
+        propertyName,
+        useCache
+      ),
+      DecoratorManager.defaultManager.getMetadata(decoratorNameKey,target,propertyName)
+    )
   }
   DecoratorManager.defaultManager.saveMetadata(extKey,metadata||null,target,propertyName)
+  return metadata
 }
 
 /**

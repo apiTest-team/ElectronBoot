@@ -58,21 +58,30 @@ importers:
 
   example:
     specifiers:
-      '@elector-boot/decorator': workspace:^1.0.0
       '@electron-boot/core': workspace:^1.0.0
+      '@electron-boot/decorator': workspace:^1.0.0
       reflect-metadata: ^0.1.13
     dependencies:
-      '@elector-boot/decorator': link:../packages/decorator
       '@electron-boot/core': link:../packages/core
+      '@electron-boot/decorator': link:../packages/decorator
       reflect-metadata: 0.1.13
+
+  packages/base:
+    specifiers: {}
 
   packages/bootstrap:
     specifiers: {}
 
   packages/core:
-    specifiers: {}
+    specifiers:
+      '@electron-boot/decorator': workspace:^1.0.0
+    devDependencies:
+      '@electron-boot/decorator': link:../decorator
 
   packages/decorator:
+    specifiers: {}
+
+  packages/logger:
     specifiers: {}
 
 packages:

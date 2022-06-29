@@ -1,5 +1,5 @@
 export * from "./module.interface"
 
-export * from "./class.interface"
+export * from "./component.interface"
 
 export * from "./autowired.interface"

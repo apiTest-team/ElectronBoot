@@ -1,6 +1,9 @@
 export type ObjectIdentifier = string|symbol
 
-export interface ClassMetadata {
+/**
+ * 定义组件的元数据结构
+ */
+export interface ComponentMetadata {
   /**
    * 类的唯一标志
    */

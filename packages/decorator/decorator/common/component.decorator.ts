@@ -1,5 +1,5 @@
 import { ObjectIdentifier } from "../../interface";
-import { saveComponentId } from "../../manager";
+import { saveComponentId } from "../../manager/default.manager";
 /**
  * 服务提供者
  * @constructor

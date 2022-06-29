@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { getComponentId, IsComponent } from "../../manager";
+import { getComponentId, IsComponent } from "../../manager/default.manager";
 import { Component } from "../../decorator/common/component.decorator";
 
 @Component("dataList")

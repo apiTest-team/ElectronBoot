@@ -1,5 +1,5 @@
 import {ObjectIdentifier} from "../../interface";
-import {savePropertyInject} from "../../manager";
+import { savePropertyAutowired } from "../../manager/default.manager";
 
 /**
  * 自动注入属性
@@ -8,7 +8,7 @@ import {savePropertyInject} from "../../manager";
  */
 export const Autowired = (identifier?:ObjectIdentifier):PropertyDecorator => {
   return (target, targetKey) => {
-    savePropertyInject({
+    savePropertyAutowired({
         identifier,
         target,
         targetKey

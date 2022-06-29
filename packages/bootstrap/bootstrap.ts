@@ -1,7 +1,7 @@
 /**
  * 应用启动类
  */
-class ElectronApplication {
+export class ElectronApplication {
   // 运行该项目的路径
   protected appDir:string
   // 其他文件所在的路径
@@ -21,13 +21,6 @@ class ElectronApplication {
    * @param args
    */
   public run(target,...args:Array<string>){
-
-  }
-
-  /**
-   * 初始化方法
-   */
-  public init(){
 
   }
 }

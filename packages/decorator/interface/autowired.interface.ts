@@ -1,4 +1,5 @@
-import {ObjectIdentifier} from "./class.interface";
+import { ObjectIdentifier } from "./component.interface";
+
 export type GroupModeType = 'one' | 'multi';
 /**
  * 自动注入的类型枚举
@@ -7,6 +8,24 @@ export enum AutowiredModeEnum {
     Identifier = 'Identifier',
     Class = 'Class',
     PropertyName = 'PropertyName',
+}
+
+/**
+ * 对象初始化时的时机
+ */
+export enum ScopeEnum {
+    Singleton = 'Singleton',
+    Request = 'Request',
+    Prototype = 'Prototype',
+}
+
+/**
+ * 内部管理的属性、json、ref等解析实例存储
+ */
+export interface ManagedInstanceInterface {
+    type: string;
+    value?: any;
+    args?: any;
 }
 
 /**

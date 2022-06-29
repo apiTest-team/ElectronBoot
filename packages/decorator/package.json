@@ -1,5 +1,5 @@
 {
-  "name": "@elector-boot/decorator",
+  "name": "@electron-boot/decorator",
   "version": "1.0.0",
   "description": "",
   "sideEffects": false,
