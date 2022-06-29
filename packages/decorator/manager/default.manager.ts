@@ -8,8 +8,8 @@ import { randomUUID,camelCase } from "../utils";
  * @param identifier
  * @param target
  */
-export const saveProviderId = <T>(identifier:ObjectIdentifier,target:any):T => {
-  if (IsProvide(target)){
+export const saveComponentId = <T>(identifier:ObjectIdentifier,target:any):T => {
+  if (IsComponent(target)){
     const meta = getClassMetadata(TARGETED_CLASS,target)
     if (meta.id !== identifier){
       meta.id = identifier
@@ -30,18 +30,18 @@ export const saveProviderId = <T>(identifier:ObjectIdentifier,target:any):T => {
  * 从所有的provide中获取指定provide的id
  * @param module
  */
-export const getProviderId = (module:any):ObjectIdentifier=>{
+export const getComponentId = (module:any):ObjectIdentifier=>{
   const metaData = getClassMetadata(TARGETED_CLASS,module)
   if (metaData && metaData.id){
     return metaData.id
   }
 }
 /**
- * 判断当前类是否已经存储过meta信息
+ * 判断是否已经是注解注入类
  * @param target
  * @constructor
  */
-export const IsProvide = <T>(target:T) => {
+export const IsComponent = <T>(target:T) => {
   return !!getClassMetadata(TARGETED_CLASS,target)
 }
 

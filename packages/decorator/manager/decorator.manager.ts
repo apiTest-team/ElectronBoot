@@ -1,7 +1,6 @@
 import { ModuleStoreInterface } from "../interface";
 import { INJECT_CLASS_KEY_PREFIX, INJECT_CLASS_METHOD_KEY_PREFIX, INJECT_METHOD_KEY_PREFIX } from "../constant";
 import { ObjectIdentifier } from "../interface";
-
 /**
  * 装饰管理器
  */

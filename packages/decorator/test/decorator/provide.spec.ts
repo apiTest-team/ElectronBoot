@@ -1,15 +1,16 @@
-import { Provide } from "../../decorator";
-import { getProviderId, IsProvide } from "../../manager";
+import "reflect-metadata"
+import { getComponentId, IsComponent } from "../../manager";
+import { Component } from "../../decorator/common/component.decorator";
 
-@Provide("dataList")
+@Component("dataList")
 class DataList {
 
 }
 
 describe("Provide Decorator", function() {
   it("should register class in the manager", function() {
-    const id = getProviderId(DataList)
+    const id = getComponentId(DataList)
     expect(id).toEqual("dataList")
-    expect(IsProvide(DataList)).toBeTruthy()
+    expect(IsComponent(DataList)).toBeTruthy()
   });
 });
