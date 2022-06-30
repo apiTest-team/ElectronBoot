@@ -2,6 +2,14 @@ import { ObjectCreatorInterface } from "./objectCreator.interface";
 import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "@electron-boot/decorator";
 
 /**
+ * 路径
+ */
+export interface Path {
+  [key:string|symbol|number]:string
+}
+
+export type Value= Path
+/**
  * 属性配置抽象
  */
 export interface PropertiesInterface extends Map<ObjectIdentifier, any> {
@@ -10,6 +18,9 @@ export interface PropertiesInterface extends Map<ObjectIdentifier, any> {
   propertyKeys(): ObjectIdentifier[];
 }
 
+/**
+ * 对象定义接口
+ */
 export interface ObjectDefinitionInterface {
   namespace?: string;
   creator: ObjectCreatorInterface;
@@ -19,7 +30,7 @@ export interface ObjectDefinitionInterface {
   destroyMethod: string;
   constructMethod: string;
   srcPath: string;
-  path: any;
+  path: Path;
   export: string;
   dependsOn: ObjectIdentifier[];
   constructorArgs: ManagedInstanceInterface[];

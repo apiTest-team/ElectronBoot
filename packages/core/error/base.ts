@@ -33,7 +33,7 @@ export function registerErrorCode<T extends Convertable, G extends string>(
     errorCodeMapping: T
 ): ConvertString<T, G> {
     if (codeGroup.has(errorGroup)) {
-        throw new ElectronBootError(
+        throw new BaseError(
             `Error group ${errorGroup} is duplicated, please check before adding.`
         );
     } else {
@@ -53,7 +53,7 @@ export function registerErrorCode<T extends Convertable, G extends string>(
 /**
  * 基本错误信息
  */
-export class ElectronBootError extends Error{
+export class BaseError extends Error{
     code:string|number
     module:string
     cause:Error

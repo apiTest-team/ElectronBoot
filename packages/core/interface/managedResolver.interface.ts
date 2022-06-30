@@ -14,6 +14,6 @@ export interface ManagedResolverFactoryCreateOptionsInterface {
  */
 export interface ManagedResolverInterface {
   type: string;
-  resolve(managed: ManagedInstanceInterface): any;
-  resolveAsync(managed: ManagedInstanceInterface): Promise<any>;
+  resolve(managed: ManagedInstanceInterface,originName: string): any;
+  resolveAsync(managed: ManagedInstanceInterface,originName: string): Promise<any>;
 }

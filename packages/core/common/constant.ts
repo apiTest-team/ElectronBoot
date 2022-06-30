@@ -1,3 +1,4 @@
+export const FUNCTION_INJECT_KEY = 'core:function_inject_key';
 /**
  * 静态参数
  *

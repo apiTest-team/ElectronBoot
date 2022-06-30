@@ -1,15 +1,17 @@
 import EventEmitter from "events";
 import {AutowiredModeEnum, ManagedInstanceInterface, ObjectIdentifier} from "@electron-boot/decorator";
-import { ContainerInterface, ObjectLifeCycleEvent } from "../interface";
+import { ContainerInterface, ObjectDefinitionInterface, ObjectLifeCycleEvent, Value } from "../interface";
 import {
   ManagedResolverFactoryCreateOptionsInterface,
   ManagedResolverInterface
 } from "../interface/managedResolver.interface";
 import {KEYS} from "../common/constant";
 import {
+  FrameworkCommonError,
+  FrameworkDefinitionNotFoundError,
   FrameworkInconsistentVersionError,
   FrameworkMissingImportComponentError,
-  FrameworkResolverMissingError
+  FrameworkResolverMissingError, FrameworkSingletonInjectRequestError
 } from "../error/framework";
 
 export const REQUEST_CTX_KEY = 'ctx';
@@ -25,11 +27,13 @@ export class ManagedReference implements ManagedInstanceInterface {
 /**
  * 解析器存储
  */
-export type Resolvers = Record<string | number | symbol, ManagedResolverInterface|any>
+export interface Resolvers {
+  [key:string|number|symbol]:ManagedResolverInterface
+}
 /**
  * 解析ref
  */
-class RefResolver {
+class RefResolver implements ManagedInstanceInterface{
   constructor(readonly factory: ManagedResolverFactory) {}
   get type(): string {
     return KEYS.REF_ELEMENT;
@@ -87,13 +91,16 @@ export class ManagedResolverFactory {
 
   constructor(context: ContainerInterface) {
     this.context = context;
-
     // 初始化解析器
     this.resolvers = {
       ref: new RefResolver(this),
     };
   }
 
+  /**
+   * 注册解析器
+   * @param resolver
+   */
   registerResolver(resolver: ManagedResolverInterface) {
     this.resolvers[resolver.type] = resolver;
   }
@@ -106,6 +113,11 @@ export class ManagedResolverFactory {
     return resolver.resolve(managed, originPropertyName);
   }
 
+  /**
+   * 异步解析
+   * @param managed 解析器
+   * @param originPropertyName 原始属性名
+   */
   async resolveManagedAsync(
     managed: ManagedInstanceInterface,
     originPropertyName: string
@@ -179,9 +191,9 @@ export class ManagedResolverFactory {
       for (const key of keys) {
         this.checkSingletonInvokeRequest(definition, key);
         try {
-          inst[key] = this.resolveManaged((definition as any).properties.get(key), key);
+          inst[key] = this.resolveManaged(definition.properties.get(key) as ManagedResolverInterface, key);
         } catch (error) {
-          if (MidwayDefinitionNotFoundError.isClosePrototypeOf(error)) {
+          if (FrameworkDefinitionNotFoundError.isClosePrototypeOf(error)) {
             const className = definition.path.name;
             error.updateErrorMsg(className);
           }
@@ -248,7 +260,7 @@ export class ManagedResolverFactory {
     if (definition.hasDependsOn()) {
       for (const dep of definition.dependsOn) {
         debug('id = %s init depend %s.', definition.id, dep);
-        await this.context.getAsync(dep, args);
+        await this.context.getAsync(dep, args as any[]);
       }
     }
 
@@ -276,7 +288,7 @@ export class ManagedResolverFactory {
     );
     if (!inst) {
       this.removeCreateStatus(definition, false);
-      throw new MidwayCommonError(
+      throw new FrameworkCommonError(
         `${definition.id} construct return undefined`
       );
     }
@@ -300,11 +312,11 @@ export class ManagedResolverFactory {
         this.checkSingletonInvokeRequest(definition, key);
         try {
           inst[key] = await this.resolveManagedAsync(
-            definition.properties.get(key),
+            definition.properties.get(key) as ManagedResolverInterface,
             key
           );
         } catch (error) {
-          if (MidwayDefinitionNotFoundError.isClosePrototypeOf(error)) {
+          if (FrameworkDefinitionNotFoundError.isClosePrototypeOf(error)) {
             const className = definition.path.name;
             error.updateErrorMsg(className);
           }
@@ -371,7 +383,7 @@ export class ManagedResolverFactory {
    * @param success 成功 or 失败
    */
   private removeCreateStatus(
-    definition: IObjectDefinition,
+    definition: ObjectDefinitionInterface,
     success: boolean
   ): boolean {
     // 如果map中存在表示需要设置状态
@@ -381,11 +393,11 @@ export class ManagedResolverFactory {
     return true;
   }
 
-  public isCreating(definition: IObjectDefinition) {
+  public isCreating(definition: ObjectDefinitionInterface) {
     return this.creating.has(definition.id) && this.creating.get(definition.id);
   }
 
-  private compareAndSetCreateStatus(definition: IObjectDefinition) {
+  private compareAndSetCreateStatus(definition: ObjectDefinitionInterface) {
     if (
       !this.creating.has(definition.id) ||
       !this.creating.get(definition.id)
@@ -397,7 +409,7 @@ export class ManagedResolverFactory {
    * 创建对象定义的代理访问逻辑
    * @param definition 对象定义
    */
-  private createProxyReference(definition: IObjectDefinition): any {
+  private createProxyReference(definition: ObjectDefinitionInterface): any {
     if (this.isCreating(definition)) {
       debug('create proxy for %s.', definition.id);
       // 非循环依赖的允许重新创建对象
@@ -441,7 +453,7 @@ export class ManagedResolverFactory {
    */
   public depthFirstSearch(
     identifier: string,
-    definition: IObjectDefinition,
+    definition: ObjectDefinitionInterface,
     depth?: string[]
   ): boolean {
     if (definition) {
@@ -510,9 +522,9 @@ export class ManagedResolverFactory {
     return this.context.objectCreateEventTarget;
   }
 
-  private checkSingletonInvokeRequest(definition, key) {
+  private checkSingletonInvokeRequest(definition:ObjectDefinitionInterface, key:string) {
     if (definition.isSingletonScope()) {
-      const managedRef = definition.properties.get(key);
+      const managedRef = definition.properties.get(key) as Value;
       if (this.context.hasDefinition(managedRef?.name)) {
         const propertyDefinition = this.context.registry.getDefinition(
           managedRef.name
@@ -521,7 +533,7 @@ export class ManagedResolverFactory {
           propertyDefinition.isRequestScope() &&
           !propertyDefinition.allowDowngrade
         ) {
-          throw new MidwaySingletonInjectRequestError(
+          throw new FrameworkSingletonInjectRequestError(
             definition.path.name,
             propertyDefinition.path.name
           );

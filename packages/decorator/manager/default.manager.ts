@@ -10,7 +10,7 @@ import {
 } from "../interface";
 import {DecoratorManager} from "./decorator.manager";
 import {AUTOWIRED_TAG, TARGETED_CLASS} from "../constant";
-import {camelCase, IsClass, isNullOrUndefined, merge, randomUUID} from "../utils";
+import {camelCase, isClass, isNullOrUndefined, merge, randomUUID} from "../utils";
 
 /**
  * 保存id到target
@@ -47,6 +47,28 @@ export const getComponentId = (module:any):ObjectIdentifier=>{
 }
 
 /**
+ * 获取组件名称
+ * @param module
+ */
+export const getComponentName = (module:any):string =>{
+  const metaData = getClassMetadata(TARGETED_CLASS, module)
+  if (metaData && metaData.name) {
+    return metaData.name;
+  }
+}
+
+/**
+ * 获取组件的uuid
+ * @param component
+ */
+export const getComponentUUID = (component):string => {
+  const metadata = getClassMetadata(TARGETED_CLASS,component) as ComponentMetadata
+  if (metadata&&metadata.id){
+    return metadata.uuid
+  }
+}
+
+/**
  * 保存属性property属性到元数据
  * @param opts
  */
@@ -54,8 +76,8 @@ export const savePropertyAutowired = (opts?:AutowiredOptions) => {
   let identifier = opts.identifier
   let autowiredMod = AutowiredModeEnum.Identifier
   if (!identifier){
-    const type = getPropertyType(opts.target as Object,opts.targetKey as string|symbol)
-    if (!type.isBaseType&&IsComponent(type.originDesign)&&IsClass(type.originDesign)){
+    const type = getPropertyType(opts?.target,opts?.targetKey)
+    if (!type.isBaseType&&IsComponent(type.originDesign)&&isClass(type.originDesign)){
       identifier = getComponentId(type.originDesign)
       autowiredMod = AutowiredModeEnum.Class
     }
@@ -72,20 +94,9 @@ export const savePropertyAutowired = (opts?:AutowiredOptions) => {
         args: opts.args, // 注入的其他参数
         autowiredMod,
       },
-      opts.target as Object,
-      opts.targetKey as string|symbol
+      opts.target,
+      opts.targetKey
   )
-}
-
-/**
- * 获取组件的uuid
- * @param component
- */
-export const getComponentUUID = (component):string => {
-  const metadata = getClassMetadata(TARGETED_CLASS,component) as ComponentMetadata
-  if (metadata&&metadata.id){
-    return metadata.uuid
-  }
 }
 
 /**

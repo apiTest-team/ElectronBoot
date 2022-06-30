@@ -1,3 +1,5 @@
+import { randomUUID } from "./uuid";
+
 export * from "./camelCase"
 export * from "./uuid"
 
@@ -20,7 +22,7 @@ function fnBody(fn) {
  * @param fn 指定对象
  * @constructor
  */
-export const IsClass = (fn: any) => {
+export const isClass = (fn: any) => {
     if (typeof fn !== 'function') {
         return false;
     }
@@ -35,6 +37,14 @@ export const IsClass = (fn: any) => {
         /classCallCheck\(/.test(body) ||
         /TypeError\("Cannot call a class as a function"\)/.test(body)
     );
+}
+
+/**
+ * 判断指定对象是否时
+ * @param value
+ */
+export const isFunction = (value:any) =>{
+    return typeof value === 'function';
 }
 
 /**
@@ -81,4 +91,13 @@ export function merge(target: any, src: any) {
         return Object.assign({}, target, src);
     }
     throw new Error('can not merge meta that type of ' + typeof target);
+}
+
+export const Types = {
+    isClass,
+    isFunction
+}
+
+export const Utils = {
+    randomUUID,
 }
