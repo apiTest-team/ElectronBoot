@@ -1,11 +1,31 @@
 import EventEmitter from "events";
-import { ManagedInstanceInterface, ObjectIdentifier } from "@electron-boot/decorator";
+import {AutowiredModeEnum, ManagedInstanceInterface, ObjectIdentifier} from "@electron-boot/decorator";
 import { ContainerInterface, ObjectLifeCycleEvent } from "../interface";
 import {
   ManagedResolverFactoryCreateOptionsInterface,
   ManagedResolverInterface
 } from "../interface/managedResolver.interface";
+import {KEYS} from "../common/constant";
+import {
+  FrameworkInconsistentVersionError,
+  FrameworkMissingImportComponentError,
+  FrameworkResolverMissingError
+} from "../error/framework";
 
+export const REQUEST_CTX_KEY = 'ctx';
+export const REQUEST_OBJ_CTX_KEY = '_req_ctx';
+
+export class ManagedReference implements ManagedInstanceInterface {
+  type = KEYS.REF_ELEMENT;
+  name: string;
+  autowiredMode: AutowiredModeEnum;
+  args?: any;
+}
+
+/**
+ * 解析器存储
+ */
+export type Resolvers = Record<string | number | symbol, ManagedResolverInterface|any>
 /**
  * 解析ref
  */
@@ -15,43 +35,43 @@ class RefResolver {
     return KEYS.REF_ELEMENT;
   }
 
-  resolve(managed: IManagedInstance, originName: string): any {
+  resolve(managed: ManagedInstanceInterface, originName: string): any {
     const mr = managed as ManagedReference;
     if (
-      mr.injectMode === InjectModeEnum.Class &&
+      mr.autowiredMode === AutowiredModeEnum.Class &&
       !(this.factory.context.parent ?? this.factory.context).hasDefinition(
         mr.name
       )
     ) {
       if (originName === 'loggerService') {
-        throw new MidwayInconsistentVersionError();
+        throw new FrameworkInconsistentVersionError();
       } else {
-        throw new MidwayMissingImportComponentError(originName);
+        throw new FrameworkMissingImportComponentError(originName);
       }
     }
-    return this.factory.context.get(mr.name, mr.args, {
+    return this.factory.context.get(mr.name, mr.args as any[], {
       originName,
     });
   }
 
   async resolveAsync(
-    managed: IManagedInstance,
+    managed: ManagedInstanceInterface,
     originName: string
   ): Promise<any> {
     const mr = managed as ManagedReference;
     if (
-      mr.injectMode === InjectModeEnum.Class &&
+      mr.autowiredMode === AutowiredModeEnum.Class &&
       !(this.factory.context.parent ?? this.factory.context).hasDefinition(
         mr.name
       )
     ) {
       if (originName === 'loggerService') {
-        throw new MidwayInconsistentVersionError();
+        throw new FrameworkInconsistentVersionError();
       } else {
-        throw new MidwayMissingImportComponentError(originName);
+        throw new FrameworkMissingImportComponentError(originName);
       }
     }
-    return this.factory.context.getAsync(mr.name, mr.args, {
+    return this.factory.context.getAsync(mr.name, mr.args as any[], {
       originName,
     });
   }
@@ -60,7 +80,7 @@ class RefResolver {
  * 解析工厂
  */
 export class ManagedResolverFactory {
-  private resolvers = {};
+  private resolvers:Resolvers = {};
   private creating = new Map<string, boolean>();
   singletonCache = new Map<ObjectIdentifier, any>();
   context: ContainerInterface;
@@ -81,7 +101,7 @@ export class ManagedResolverFactory {
   resolveManaged(managed: ManagedInstanceInterface, originPropertyName: string): any {
     const resolver = this.resolvers[managed.type];
     if (!resolver || resolver.type !== managed.type) {
-      throw new MidwayResolverMissingError(managed.type);
+      throw new FrameworkResolverMissingError(managed.type);
     }
     return resolver.resolve(managed, originPropertyName);
   }
@@ -92,7 +112,7 @@ export class ManagedResolverFactory {
   ): Promise<any> {
     const resolver = this.resolvers[managed.type];
     if (!resolver || resolver.type !== managed.type) {
-      throw new MidwayResolverMissingError(managed.type);
+      throw new FrameworkResolverMissingError(managed.type);
     }
     return resolver.resolveAsync(managed, originPropertyName);
   }
@@ -119,7 +139,7 @@ export class ManagedResolverFactory {
     // 预先初始化依赖
     if (definition.hasDependsOn()) {
       for (const dep of definition.dependsOn) {
-        this.context.get(dep, args);
+        this.context.get(dep, args as any[]);
       }
     }
 
@@ -159,7 +179,7 @@ export class ManagedResolverFactory {
       for (const key of keys) {
         this.checkSingletonInvokeRequest(definition, key);
         try {
-          inst[key] = this.resolveManaged(definition.properties.get(key), key);
+          inst[key] = this.resolveManaged((definition as any).properties.get(key), key);
         } catch (error) {
           if (MidwayDefinitionNotFoundError.isClosePrototypeOf(error)) {
             const className = definition.path.name;
@@ -204,7 +224,7 @@ export class ManagedResolverFactory {
    * 异步创建对象
    * @param opt
    */
-  async createAsync(opt: IManagedResolverFactoryCreateOptions): Promise<any> {
+  async createAsync(opt: ManagedResolverFactoryCreateOptionsInterface): Promise<any> {
     const { definition, args } = opt;
     if (
       definition.isSingletonScope() &&
@@ -234,7 +254,7 @@ export class ManagedResolverFactory {
 
     debugLog(`[core]: Create id = "${definition.name}" ${definition.id}.`);
 
-    const Clzz = definition.creator.load();
+    const Clazz = definition.creator.load();
     let constructorArgs = [];
     if (args && Array.isArray(args) && args.length > 0) {
       constructorArgs = args;
@@ -242,7 +262,7 @@ export class ManagedResolverFactory {
 
     this.getObjectEventTarget().emit(
       ObjectLifeCycleEvent.BEFORE_CREATED,
-      Clzz,
+      Clazz,
       {
         constructorArgs,
         context: this.context,
@@ -250,7 +270,7 @@ export class ManagedResolverFactory {
     );
 
     inst = await definition.creator.doConstructAsync(
-      Clzz,
+      Clazz,
       constructorArgs,
       this.context
     );

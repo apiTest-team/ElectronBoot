@@ -28,6 +28,8 @@ export interface ManagedInstanceInterface {
     args?: any;
 }
 
+
+
 /**
  * 属性类型
  */
