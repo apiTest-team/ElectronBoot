@@ -10,7 +10,7 @@ import {
 } from "../interface";
 import { ModuleStoreInterface, ObjectIdentifier, ScopeEnum } from "@electron-boot/decorator";
 import EventEmitter from "events";
-import { ManagedResolverFactory, REQUEST_CTX_KEY } from "./managedResolverFactory";
+import { ManagedResolverFactory, REQUEST_CTX_KEY } from "./managedResolver";
 import {FileDetectorInterface} from "../interface/fileDetector.interface";
 import { ObjectDefinitionRegistry } from "./definitionRegistry";
 import { Types,Utils } from "@electron-boot/decorator/utils";
