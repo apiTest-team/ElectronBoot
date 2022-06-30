@@ -14,7 +14,8 @@
     "declaration": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "strictPropertyInitialization":false
   },
   "exclude": ["rollup.config.js","node_modules", "**/*.spec.ts", "test/**"]
 }

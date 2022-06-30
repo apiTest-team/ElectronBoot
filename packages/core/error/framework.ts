@@ -79,7 +79,7 @@ export class FrameworkDefinitionNotFoundError extends BaseError {
         const identifier = this.message.split(
           ' is not valid in current context'
         )[0];
-        this.message = `${identifier} in class ${className} is not valid in current context`;
+        this.message = `${identifier as string} in class ${className} is not valid in current context`;
     }
 }
 

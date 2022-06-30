@@ -9,7 +9,7 @@ import {
   TSDesignType
 } from "../interface";
 import {DecoratorManager} from "./decorator.manager";
-import {AUTOWIRED_TAG, TARGETED_CLASS} from "../constant";
+import { AUTOWIRED_TAG, OBJECT_DEF_CLS, TARGETED_CLASS } from "../constant";
 import {camelCase, isClass, isNullOrUndefined, merge, randomUUID} from "../utils";
 
 /**
@@ -99,6 +99,15 @@ export const savePropertyAutowired = (opts?:AutowiredOptions) => {
   )
 }
 
+/**
+ * save class object definition
+ * @param target class
+ * @param props property data
+ */
+export function saveObjectDefinition(target: any, props = {}) {
+  saveClassMetadata(OBJECT_DEF_CLS, props, target, true);
+  return target;
+}
 /**
  * 获取属性类型
  * @param target 目标类

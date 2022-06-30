@@ -1,26 +1,22 @@
+import {ObjectIdentifier} from "./component.interface";
+
 export interface ModuleStoreInterface {
   /**
    * 获取模块
    * @param key
    */
-  listModule(key:string|symbol)
+  listModule(key:ObjectIdentifier)
 
   /**
    * 保存模块
    * @param key
    * @param module 模块内容
    */
-  saveModule(key:string|symbol,module:any)
-
-  /**
-   * 重置模块内容
-   * @param key
-   */
-  resetModule(key:string|symbol)
+  saveModule(key:ObjectIdentifier,module:any)
 
   /**
    *
    * @param moduleMap
    */
-  transformModule?(moduleMap:Map<string|symbol,Set<any>>)
+  transformModule?(moduleMap:Map<ObjectIdentifier,Set<any>>)
 }

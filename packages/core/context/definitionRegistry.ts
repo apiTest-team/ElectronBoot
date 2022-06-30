@@ -24,10 +24,11 @@ class LegacyIdentifierRelation
         this.set(aliasId, componentId.toString());
       }
       // save className alias
-      this.set(getComponentName(module), componentId.toString());
+      this.set(getComponentName(module) as ObjectIdentifier, componentId.toString());
       // save namespace alias
       if (namespace) {
-        this.set(namespace + ":" + getComponentName(module), componentId.toString());
+        const name = getComponentName(module)
+        this.set(namespace + ":" + name, componentId.toString());
       }
     }
   }

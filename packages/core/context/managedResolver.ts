@@ -6,16 +6,23 @@ import {
   ManagedResolverInterface
 } from "../interface/managedResolver.interface";
 import {KEYS} from "../common/constant";
+import * as util from "util"
 import {
   FrameworkCommonError,
   FrameworkDefinitionNotFoundError,
   FrameworkInconsistentVersionError,
   FrameworkMissingImportComponentError,
-  FrameworkResolverMissingError, FrameworkSingletonInjectRequestError
+  FrameworkResolverMissingError,
+  FrameworkSingletonInjectRequestError
 } from "../error/framework";
+
+
 
 export const REQUEST_CTX_KEY = 'ctx';
 export const REQUEST_OBJ_CTX_KEY = '_req_ctx';
+
+const debug = util.debuglog("framework:managedResolver")
+const debugLog = util.debuglog("framework")
 
 export class ManagedReference implements ManagedInstanceInterface {
   type = KEYS.REF_ELEMENT;
@@ -525,17 +532,17 @@ export class ManagedResolverFactory {
   private checkSingletonInvokeRequest(definition:ObjectDefinitionInterface, key:string) {
     if (definition.isSingletonScope()) {
       const managedRef = definition.properties.get(key) as Value;
-      if (this.context.hasDefinition(managedRef?.name)) {
+      if (this.context.hasDefinition(managedRef?.name as ObjectIdentifier)) {
         const propertyDefinition = this.context.registry.getDefinition(
-          managedRef.name
+          managedRef.name as ObjectIdentifier
         );
         if (
           propertyDefinition.isRequestScope() &&
           !propertyDefinition.allowDowngrade
         ) {
           throw new FrameworkSingletonInjectRequestError(
-            definition.path.name,
-            propertyDefinition.path.name
+            definition.path.name as string,
+            propertyDefinition.path.name as string
           );
         }
       }

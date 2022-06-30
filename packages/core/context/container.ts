@@ -6,7 +6,7 @@ import {
   ObjectBeforeDestroyOptions,
   ObjectContext, ObjectCreatedOptions,
   ObjectDefinitionInterface,
-  ObjectDefinitionRegistryInterface, ObjectInitOptions
+  ObjectDefinitionRegistryInterface, ObjectInitOptions, ObjectLifeCycleEvent
 } from "../interface";
 import { ModuleStoreInterface, ObjectIdentifier, ScopeEnum } from "@electron-boot/decorator";
 import EventEmitter from "events";
@@ -25,7 +25,7 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
   private _resolverFactory: ManagedResolverFactory = null;
   private _registry: ObjectDefinitionRegistryInterface = null;
   private _identifierMapping = null;
-  private moduleMap = null;
+  private moduleMap:Map<any,Set<any>> = null;
   private _objectCreateEventTarget: EventEmitter;
   public parent: ContainerInterface = null;
   // 仅仅用于兼容requestContainer的ctx
@@ -150,42 +150,88 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
     return this.getManagedResolverFactory().createAsync({ definition, args });
   }
 
-  getAttr<T>(key: string): T {
-    return undefined;
+  /**
+   * 设置属性
+   * @param key 属性名
+   * @param value 属性值
+   */
+  public setAttr(key: string, value: any) {
+    this.attrMap.set(key, value);
   }
 
+  /**
+   * 获取属性
+   * @param key
+   */
+  public getAttr<T>(key: string): T {
+    return this.attrMap.get(key);
+  }
+
+  /**
+   * 判断是否已经定义
+   * @param identifier
+   */
   hasDefinition(identifier: ObjectIdentifier) {
+    return this.registry.hasDefinition(identifier);
   }
 
+  /**
+   * 判断是否有命名空间
+   * @param namespace
+   */
   hasNamespace(namespace: string): boolean {
-    return false;
+    return this.namespaceSet.has(namespace);
   }
 
+  /**
+   * 判断是否存在指定id的对象
+   * @param identifier
+   */
   hasObject(identifier: ObjectIdentifier) {
+    return this.registry.hasObject(identifier);
   }
 
-  listModule(key: string | symbol) {
+  /**
+   * 获取模块
+   * @param key
+   */
+  listModule(key: ObjectIdentifier) {
+    return Array.from(this.moduleMap.get(key)||[]);
   }
 
+  /**
+   * 加载模块
+   * @param module
+   */
   load(module?: any) {
+    if (module){
+
+    }
+    this.fileDetector?.run(this)
   }
 
   onBeforeBind(fn: (clazz: any, options: ObjectBeforeBindOptions) => void) {
+    this.objectCreateEventTarget.on(ObjectLifeCycleEvent.BEFORE_BIND, fn);
   }
 
   onBeforeObjectCreated(fn: (clazz: any, options: ObjectBeforeCreatedOptions) => void) {
+    this.objectCreateEventTarget.on(ObjectLifeCycleEvent.BEFORE_CREATED, fn);
   }
 
   onBeforeObjectDestroy<T>(fn: (ins: T, options: ObjectBeforeDestroyOptions) => void) {
+    this.objectCreateEventTarget.on(ObjectLifeCycleEvent.BEFORE_DESTROY, fn);
   }
 
   onObjectCreated<T>(fn: (ins: T, options: ObjectCreatedOptions<T>) => void) {
+    this.objectCreateEventTarget.on(ObjectLifeCycleEvent.AFTER_CREATED, fn);
   }
 
   onObjectInit<T>(fn: (ins: T, options: ObjectInitOptions) => void) {
+    this.objectCreateEventTarget.on(ObjectLifeCycleEvent.AFTER_INIT, fn);
   }
 
   ready() {
+    this.loadDefinitions();
   }
 
   /**
@@ -197,23 +243,52 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
     this.registry.registerObject(identifier, target);
   }
 
-  resetModule(key: string | symbol) {
-  }
-
+  /**
+   * 保存模块
+   * @param key
+   * @param module
+   */
   saveModule(key: string | symbol, module: any) {
+    if (!this.moduleMap.has(key)) {
+      this.moduleMap.set(key, new Set());
+    }
+    this.moduleMap.get(key).add(module);
   }
 
-  setAttr(key: string, value: any) {
-  }
-
+  /**
+   * 设置文件检测器
+   * @param fileDetector
+   */
   setFileDetector(fileDetector: FileDetectorInterface) {
+    this.fileDetector = fileDetector;
   }
 
-  stop(): Promise<void> {
-    return Promise.resolve(undefined);
+  /**
+   * 停止回调
+   */
+  async stop(): Promise<void> {
+    await this.getManagedResolverFactory().destroyCache();
+    this.registry.clearAll();
   }
 
-  transformModule(moduleMap: Map<string | symbol, Set<any>>) {
+  /**
+   * 转换模块
+   * @param moduleMap
+   */
+  transformModule(moduleMap: Map<ObjectIdentifier, Set<any>>) {
+    this.moduleMap = new Map(moduleMap);
+  }
+
+  /**
+   * 加载所有的对象定义
+   * @protected
+   */
+  protected loadDefinitions() {
+    if (!this.isLoad) {
+      this.load();
+    }
+    // load project file
+    this.fileDetector?.run(this);
   }
 
   /**
@@ -254,7 +329,7 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
         }
         const uuid = Utils.randomUUID();
         this.identifierMapping.saveFunctionRelation(info.id, uuid);
-        this.bind(uuid, module, {
+        this.bind(uuid as ObjectIdentifier, module, {
           scope: info.scope,
           namespace: options.namespace,
           srcPath: options.srcPath,
@@ -264,6 +339,15 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
     }
   }
 
+  /**
+   * 获取命令空间Set
+   */
+  get namespaceSet(): Set<string> {
+    if (!this._namespaceSet) {
+      this._namespaceSet = new Set();
+    }
+    return this._namespaceSet;
+  }
   /**
    * 获取组件唯一标识
    * @param target
