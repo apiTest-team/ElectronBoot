@@ -1,6 +1,6 @@
 import { Autowired, Component, Scope, ScopeEnum } from "../context/decorator";
 import { ConfigService } from "./config.service";
-import { AspectService } from "./aspectService";
+import { AspectService } from "./aspect.service";
 import { DecoratorService } from "./decorator.service";
 import { ContainerInterface } from "../interface";
 

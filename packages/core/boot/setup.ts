@@ -92,8 +92,8 @@ export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptionsIn
   configService.add([{
     default:defaultConfig
   }])
-  // 初始化主窗口
-  applicationContext.get(globalOptions.mainWind,[applicationContext])
+  // // 初始化主窗口
+  // applicationContext.get(globalOptions.mainWind,[applicationContext])
   // 加载配置文件
   if (!globalOptions.imports){
     globalOptions.imports = [

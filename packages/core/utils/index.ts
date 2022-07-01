@@ -64,7 +64,7 @@ export const isFunction = (value:any) =>{
  * 获取当前环境变量
  */
 export const getCurrentEnvironment = () => {
-    return app.isPackaged ? "prod": process.env.NODE_ENV || "prod"
+    return app?.isPackaged ? "prod": process.env.NODE_ENV || "prod"
 }
 
 /**

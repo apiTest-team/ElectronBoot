@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "@electron-boot/core": "workspace:^1.0.0",
-    "@electron-boot/decorator": "workspace:^1.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "keywords": [],

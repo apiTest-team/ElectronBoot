@@ -1,7 +1,6 @@
 import { app } from "electron"
 import { BootstrapOptionsInterface, Constructable } from "../context/decorator/interface/bootstrap.interface";
 import { ContainerInterface } from "../interface";
-import * as process from "process";
 import { join } from "path";
 import { initializeGlobalApplicationContext } from "./setup";
 
@@ -50,8 +49,8 @@ export class ElectronApplication {
    * 运行方法
    * @constructor
    */
-  public static run<T>(target:Constructable<T>,...args:string[]):void {
-    void (new ElectronApplication())
+  public static run<T>(target:Constructable<T>,...args:string[]) {
+    return new ElectronApplication()
       .run(target,...args)
       .then()
       .catch()
@@ -87,6 +86,20 @@ export class ElectronApplication {
 
 
     this.applicationContext = await this.init()
+    return this.start().then(()=>{
+      console.log("[midway:bootstrap] current app started");
+    }).catch((err)=>{
+      console.log(err);
+      process.exit(1);
+    })
+  }
+
+  /**
+   * 一直停止
+   * @private
+   */
+  private async start(){
+
   }
 
   /**
@@ -94,7 +107,6 @@ export class ElectronApplication {
    * @private
    */
   private async init() {
-    this.appDir = this.globalOptions.appDir || process.cwd()
     this.baseDir = this.getBaseDir()
 
     this.applicationContext = await initializeGlobalApplicationContext({

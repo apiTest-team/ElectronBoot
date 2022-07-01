@@ -4,7 +4,7 @@ import { getClassMetadata, listModule } from "../context/decorator/manager/defau
 import { ASPECT_KEY } from "../context/decorator/constant";
 import { MethodAspectInterface } from "../context/decorator/interface/aspect.interface";
 import { AspectMetadata, JoinPoint } from "../context/decorator/decorator/common/aspect.decorator";
-import * as pm from 'picomatch';
+import pm from "picomatch";
 import { Types } from "../utils";
 
 @Component()

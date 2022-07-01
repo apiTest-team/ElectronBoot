@@ -78,7 +78,7 @@ export const savePropertyAutowired = (opts?:AutowiredOptions) => {
   if (!identifier){
     const type = getPropertyType(opts?.target,opts?.targetKey)
     if (!type.isBaseType&&IsComponent(type.originDesign)&&isClass(type.originDesign)){
-      identifier = getComponentId(type.originDesign)
+      identifier = getComponentUUID(type.originDesign)
       autowiredMod = AutowiredModeEnum.Class
     }
     if (!identifier){

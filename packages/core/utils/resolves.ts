@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, statSync } from "fs";
 import { resolve } from "path";
-import * as pm from "picomatch";
+import pm from "picomatch";
 import { debuglog } from "util";
 
 const debug = debuglog("midway:glob");

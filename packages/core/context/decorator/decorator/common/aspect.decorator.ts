@@ -14,7 +14,7 @@ export interface JoinPoint {
 
 export interface AspectMetadata {
   aspectTarget: any;
-  match?: string | (() => boolean);
+  match?: string | string[];
   priority?: number;
 }
 
