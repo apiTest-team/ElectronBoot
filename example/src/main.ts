@@ -1,11 +1,12 @@
 import "reflect-metadata"
-import { getComponentId } from "@elector-boot/decorator/manager/default.manager";
-import { ElectronBootApplication } from "@elector-boot/decorator/decorator/bootstrap/bootstrap";
+import {
+  ElectronBootApplication
+} from "@electron-boot/core/context/decorator/decorator/common/electronBootApplication.decorator";
+import { ElectronApplication } from "@electron-boot/core/boot/electronApplication";
 
 @ElectronBootApplication()
-class DemoApplication {
-  public static main(...args:Array<string>):void {
+export class DemoApplication {
+  public static main(...args:string[]) {
     ElectronApplication.run(DemoApplication,...args)
   }
 }
-console.log(getComponentId(DemoApplication));

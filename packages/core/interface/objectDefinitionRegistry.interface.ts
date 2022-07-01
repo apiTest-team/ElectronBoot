@@ -1,9 +1,9 @@
 /**
  * 对象定义的存储器接口
  */
-import { ObjectIdentifier } from "@electron-boot/decorator";
 import { ObjectDefinitionInterface } from "./objectDefinition.interface";
 import { IdentifierRelationShipInterface } from "./identifierRelationShip.interface";
+import { ObjectIdentifier } from "../context/decorator";
 
 export interface ObjectDefinitionRegistryInterface {
   readonly identifiers: ObjectIdentifier[];

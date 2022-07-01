@@ -1,10 +1,10 @@
 import {
   IdentifierRelationShipInterface,
   ObjectDefinitionInterface,
-  ObjectDefinitionRegistryInterface
+  ObjectDefinitionRegistryInterface,
 } from "../interface";
-import { ObjectIdentifier } from "@electron-boot/decorator";
-import { getComponentId, getComponentName } from "@electron-boot/decorator/manager/default.manager";
+import { ObjectIdentifier } from "./decorator";
+import { getComponentId, getComponentName, getComponentUUID } from "./decorator/manager/default.manager";
 
 const PREFIX = '_id_default_';
 
@@ -13,7 +13,7 @@ class LegacyIdentifierRelation
   implements IdentifierRelationShipInterface
 {
   saveClassRelation(module: any, namespace?: string) {
-    const componentId = getComponentId(module);
+    const componentId = getComponentUUID(module);
     // save uuid
     this.set(componentId, componentId.toString());
     if (componentId) {
@@ -24,7 +24,7 @@ class LegacyIdentifierRelation
         this.set(aliasId, componentId.toString());
       }
       // save className alias
-      this.set(getComponentName(module) as ObjectIdentifier, componentId.toString());
+      this.set(getComponentName(module), componentId.toString());
       // save namespace alias
       if (namespace) {
         const name = getComponentName(module)

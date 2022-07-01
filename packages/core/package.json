@@ -16,11 +16,15 @@
     "build:umd": "rollup --config rollup.config.js",
     "build:types": "tsc --project tsconfig.prod.types.json"
   },
+  "dependencies": {
+    "picomatch": "^2.3.1"
+  },
   "devDependencies": {
-    "@electron-boot/decorator": "workspace:^1.0.0"
+    "electron": "^19.0.6",
+    "picomatch": "^2.3.1"
   },
   "peerDependencies": {
-    "@electron-boot/decorator": "workspace:^1.0.0"
+    "electron": "^19.0.6"
   },
   "keywords": [],
   "author": "",

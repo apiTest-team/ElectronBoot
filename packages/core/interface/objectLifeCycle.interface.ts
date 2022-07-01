@@ -42,6 +42,24 @@ export type ObjectInitOptions = ObjectLifeCycleOptions
 export type ObjectBeforeDestroyOptions = ObjectLifeCycleOptions
 
 /**
+ * Lifecycle Definition
+ * 生命周期定义
+ */
+export interface LifeCycleInterface extends Partial<ObjectLifeCycleInterface> {
+  onConfigLoad?(
+    container: ContainerInterface
+  ): Promise<any>;
+  onReady?(
+    container: ContainerInterface
+  ): Promise<void>;
+  onServerReady?(
+    container: ContainerInterface
+  ): Promise<void>;
+  onStop?(
+    container: ContainerInterface
+  ): Promise<void>;
+}
+/**
  * 定义对象的生命周期
  */
 export interface ObjectLifeCycleInterface {

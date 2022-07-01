@@ -8,16 +8,26 @@ import {
   ObjectDefinitionInterface,
   ObjectDefinitionRegistryInterface, ObjectInitOptions, ObjectLifeCycleEvent
 } from "../interface";
-import { ModuleStoreInterface, ObjectIdentifier, ScopeEnum } from "@electron-boot/decorator";
 import EventEmitter from "events";
-import { ManagedResolverFactory, REQUEST_CTX_KEY } from "./managedResolver";
+import { ManagedReference, ManagedResolverFactory, REQUEST_CTX_KEY } from "./managedResolver";
 import {FileDetectorInterface} from "../interface/fileDetector.interface";
 import { ObjectDefinitionRegistry } from "./definitionRegistry";
-import { Types,Utils } from "@electron-boot/decorator/utils";
-import { getComponentId } from "@electron-boot/decorator/manager/default.manager";
 import { FUNCTION_INJECT_KEY } from "../common/constant";
 import { FrameworkDefinitionNotFoundError } from "../error/framework";
-
+import { ModuleStoreInterface, ObjectIdentifier, ScopeEnum } from "./decorator";
+import { Types, Utils } from "../utils";
+import {
+  getClassExtendedMetadata,
+  getComponentName,
+  getComponentUUID, getObjectDefinition,
+  getPropertyAutowired
+} from "./decorator/manager/default.manager";
+import util from "util";
+import { ObjectDefinition } from "../definitions/objectDefinition";
+import { FunctionDefinition } from "../definitions/functionDefinition";
+import { INJECT_CUSTOM_PROPERTY } from "./decorator/constant";
+const debug = util.debuglog('electron-boot:debug');
+const debugBind = util.debuglog('electron-boot:bind');
 /**
  * 应用容器
  */
@@ -74,8 +84,106 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
     if (Types.isClass(identifier) || Types.isFunction(identifier)){
       return this.bindModule(identifier,target as Partial<ObjectDefinitionInterface>)
     }
-    if (this.registry.hasDefinition(identifier as ObjectIdentifier)){
+    if (this.registry.hasDefinition(identifier)){
       return
+    }
+    if (options?.bindHook) {
+      options.bindHook(target, options as ObjectDefinitionInterface);
+    }
+
+    let definition;
+    if (Types.isClass(target)) {
+      definition = new ObjectDefinition();
+      definition.name = getComponentName(target);
+    } else {
+      definition = new FunctionDefinition();
+      if (!Types.isAsyncFunction(target)) {
+        definition.asynchronous = false;
+      }
+      definition.name = definition.id;
+    }
+
+    definition.path = target;
+    definition.id = identifier;
+    definition.srcPath = options?.srcPath || null;
+    definition.namespace = options?.namespace || '';
+    definition.scope = options?.scope || ScopeEnum.Request;
+    definition.createFrom = options?.createFrom;
+
+    if (definition.srcPath) {
+      debug(
+        `[core]: bind id "${definition.name} (${definition.srcPath}) ${identifier as string}"`
+      );
+    } else {
+      debug(`[core]: bind id "${definition.name}" ${identifier as string}`);
+    }
+
+    // inject properties
+    const props = getPropertyAutowired(target);
+
+    for (const p in props) {
+      const propertyMeta = props[p];
+      debugBind(`  inject properties => [${JSON.stringify(propertyMeta)}]`);
+      const refManaged = new ManagedReference();
+      refManaged.args = propertyMeta.args;
+      refManaged.name = propertyMeta.value ;
+      refManaged.autowiredMode = propertyMeta['injectMode'];
+
+      definition.properties.set(propertyMeta['targetKey'], refManaged);
+    }
+
+    // inject custom properties
+    const customProps = getClassExtendedMetadata(
+      INJECT_CUSTOM_PROPERTY,
+      target
+    );
+
+    for (const p in customProps) {
+      const propertyMeta = customProps[p] as {
+        propertyName: string;
+        key: string;
+        metadata: any;
+      };
+      definition.handlerProps.push(propertyMeta);
+    }
+
+    // @async, @init, @destroy @scope
+    const objDefOptions = getObjectDefinition(target) ?? {};
+
+    if (objDefOptions.initMethod) {
+      debugBind(`  register initMethod = ${objDefOptions.initMethod}`);
+      definition.initMethod = objDefOptions.initMethod;
+    }
+
+    if (objDefOptions.destroyMethod) {
+      debugBind(`  register destroyMethod = ${objDefOptions.destroyMethod}`);
+      definition.destroyMethod = objDefOptions.destroyMethod;
+    }
+
+    if (objDefOptions.scope) {
+      debugBind(`  register scope = ${objDefOptions.scope}`);
+      definition.scope = objDefOptions.scope;
+    }
+
+    if (objDefOptions.allowDowngrade) {
+      debugBind(`  register allowDowngrade = ${objDefOptions.allowDowngrade}`);
+      definition.allowDowngrade = objDefOptions.allowDowngrade;
+    }
+
+    this.objectCreateEventTarget.emit(
+      ObjectLifeCycleEvent.BEFORE_BIND,
+      target,
+      {
+        context: this,
+        definition,
+        replaceCallback: newDefinition => {
+          definition = newDefinition;
+        },
+      }
+    );
+
+    if (definition) {
+      this.registry.registerDefinition(definition.id, definition);
     }
   }
 
@@ -113,14 +221,19 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
       objectContext.originName = identifier.name
       identifier = this.getIdentifier(identifier)
     }
-    if (this.registry.hasObject(identifier as ObjectIdentifier)){
-      return this.registry.getObject(identifier as ObjectIdentifier)
+    if (this.registry.hasObject(identifier)){
+      return this.registry.getObject(identifier)
     }
-    const definition = this.registry.getDefinition(identifier as ObjectIdentifier);
+    const definition = this.registry.getDefinition(identifier);
     if (!definition && this.parent) {
-      return this.parent.get(identifier as ObjectIdentifier, args);
+      return this.parent.get(identifier, args);
     }
-
+    if (!definition){
+      throw new FrameworkDefinitionNotFoundError(
+        objectContext?.originName ?? identifier
+      );
+    }
+    return this.getManagedResolverFactory().create({ definition, args });
   }
 
   getAsync<T>(identifier: { new(...args): T }, args?: any[], objectContext?: ObjectContext): Promise<T>;
@@ -310,7 +423,7 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
    */
   protected bindModule(module: any, options: Partial<ObjectDefinitionInterface>) {
     if (Types.isClass(module)) {
-      const componentId = getComponentId(module);
+      const componentId = getComponentUUID(module);
       if (componentId) {
         this.identifierMapping.saveClassRelation(module, options?.namespace);
         this.bind(componentId, module, options);
@@ -354,6 +467,6 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
    * @protected
    */
   protected getIdentifier(target: any) {
-    return getComponentId(target);
+    return getComponentUUID(target);
   }
 }

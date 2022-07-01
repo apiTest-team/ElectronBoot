@@ -1,5 +1,4 @@
 import EventEmitter from "events";
-import {AutowiredModeEnum, ManagedInstanceInterface, ObjectIdentifier} from "@electron-boot/decorator";
 import { ContainerInterface, ObjectDefinitionInterface, ObjectLifeCycleEvent, Value } from "../interface";
 import {
   ManagedResolverFactoryCreateOptionsInterface,
@@ -15,6 +14,7 @@ import {
   FrameworkResolverMissingError,
   FrameworkSingletonInjectRequestError
 } from "../error/framework";
+import { AutowiredModeEnum, ManagedInstanceInterface, ObjectIdentifier } from "./decorator";
 
 
 
@@ -198,7 +198,8 @@ export class ManagedResolverFactory {
       for (const key of keys) {
         this.checkSingletonInvokeRequest(definition, key);
         try {
-          inst[key] = this.resolveManaged(definition.properties.get(key) as ManagedResolverInterface, key);
+          const managed = definition.properties.get(key)
+          inst[key] = this.resolveManaged(managed, key);
         } catch (error) {
           if (FrameworkDefinitionNotFoundError.isClosePrototypeOf(error)) {
             const className = definition.path.name;
@@ -541,8 +542,8 @@ export class ManagedResolverFactory {
           !propertyDefinition.allowDowngrade
         ) {
           throw new FrameworkSingletonInjectRequestError(
-            definition.path.name as string,
-            propertyDefinition.path.name as string
+            definition.path.name,
+            propertyDefinition.path.name
           );
         }
       }

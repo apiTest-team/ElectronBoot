@@ -1,5 +1,6 @@
 import { ObjectCreatorInterface } from "./objectCreator.interface";
-import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "@electron-boot/decorator";
+import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "../context/decorator";
+
 
 /**
  * 路径

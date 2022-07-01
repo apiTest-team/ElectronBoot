@@ -1,4 +1,5 @@
-import { ObjectIdentifier } from "@electron-boot/decorator";
+import { ObjectIdentifier } from "../context/decorator";
+
 
 export interface IdentifierRelationShipInterface {
   saveClassRelation(module: any, namespace?: string);

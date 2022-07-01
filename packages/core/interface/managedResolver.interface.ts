@@ -1,6 +1,6 @@
 
-import { ManagedInstanceInterface } from "@electron-boot/decorator";
 import { ObjectDefinitionInterface } from "./objectDefinition.interface";
+import { ManagedInstanceInterface } from "../context/decorator";
 
 export interface ManagedResolverFactoryCreateOptionsInterface {
   definition: ObjectDefinitionInterface;

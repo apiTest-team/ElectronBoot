@@ -1,5 +1,6 @@
 import { ObjectDefinitionRegistryInterface } from "./objectDefinitionRegistry.interface";
-import { ObjectIdentifier } from "@electron-boot/decorator";
+import { ObjectIdentifier } from "../context/decorator";
+
 
 
 export type ObjectContext = {

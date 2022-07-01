@@ -2,9 +2,9 @@ import { ObjectFactoryInterface } from "./objectFactory.interface";
 import { ObjectLifeCycleInterface } from "./objectLifeCycle.interface";
 import EventEmitter from "events";
 import {IdentifierRelationShipInterface} from "./identifierRelationShip.interface";
-import {ObjectIdentifier} from "@electron-boot/decorator";
 import {ObjectDefinitionInterface} from "./objectDefinition.interface";
 import {FileDetectorInterface} from "./fileDetector.interface";
+import { ObjectIdentifier } from "../context/decorator";
 
 /**
  * 对象生命周的事件名称
@@ -39,6 +39,8 @@ export interface ContainerInterface  extends ObjectFactoryInterface,ObjectLifeCy
   bindClass(exports, options?: Partial<ObjectDefinitionInterface>);
   setFileDetector(fileDetector: FileDetectorInterface);
   createChild(): ContainerInterface;
+  listModule(identifier:ObjectIdentifier):any[]
+  saveModule(identifier:ObjectIdentifier,module)
   /**
    * Set value to app attribute map
    * @param key
