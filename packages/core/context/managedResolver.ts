@@ -40,7 +40,7 @@ export interface Resolvers {
 /**
  * 解析ref
  */
-class RefResolver implements ManagedInstanceInterface{
+class RefResolver{
   constructor(readonly factory: ManagedResolverFactory) {}
   get type(): string {
     return KEYS.REF_ELEMENT;
