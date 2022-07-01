@@ -11,7 +11,7 @@ import { ConfigService } from "../service/config.service";
 import defaultConfig from "../config/default.config";
 import util from "util";
 import { LifeCycleService } from "../service/lifeCycleService";
-import { AspectService } from "../service/aspectService";
+import { AspectService } from "../service/aspect.service";
 import { DecoratorService } from "../service/decorator.service";
 const debug = util.debuglog('electron-boot:debug');
 /**

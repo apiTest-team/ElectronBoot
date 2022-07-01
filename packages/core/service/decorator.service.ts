@@ -3,7 +3,7 @@ import { Autowired, Component, Init, Scope, ScopeEnum } from "../context/decorat
 import { HandlerFunction } from "../interface/handler.interface";
 import { getClassMetadata, getMethodParamTypes } from "../context/decorator/manager/default.manager";
 import { ContainerInterface } from "../interface";
-import { AspectService } from "./aspectService";
+import { AspectService } from "./aspect.service";
 import { FrameworkCommonError } from "../error/framework";
 import { APPLICATION_CONTEXT_KEY, INJECT_CUSTOM_METHOD, INJECT_CUSTOM_PARAM } from "../context/decorator/constant";
 import { JoinPoint } from "../context/decorator/decorator/common/aspect.decorator";

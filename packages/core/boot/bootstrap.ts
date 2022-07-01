@@ -1,13 +1,13 @@
-import { app } from "electron"
-import { BootstrapOptionsInterface, Constructable } from "../context/decorator/interface/bootstrap.interface";
+import { BootstrapOptionsInterface } from "../context/decorator/interface/bootstrap.interface";
 import { ContainerInterface } from "../interface";
 import { join } from "path";
 import { initializeGlobalApplicationContext } from "./setup";
+import { getCurrentEnvironment } from "../utils";
 
 /**
  * 应用初始化入口
  */
-export class ElectronApplication {
+export class Bootstrap {
   /**
    * 是否已经配置
    * @private
@@ -42,18 +42,15 @@ export class ElectronApplication {
   /**
    * 构建器
    */
-  public static build():ElectronApplication{
-    return new ElectronApplication()
+  public static build():Bootstrap{
+    return new Bootstrap()
   }
   /**
    * 运行方法
    * @constructor
    */
-  public static run<T>(target:Constructable<T>,...args:string[]) {
-    return new ElectronApplication()
-      .run(target,...args)
-      .then()
-      .catch()
+  public static run() {
+    return new Bootstrap().run().then().catch()
   }
 
   /**
@@ -74,10 +71,8 @@ export class ElectronApplication {
 
   /**
    * 内部运行方法
-   * @param target
-   * @param args
    */
-  public async run<T>(target:Constructable<T>,...args:string[]){
+  public async run(){
     // 如果没有配置过
     if (!this.configured){
       this.configure()
@@ -111,7 +106,6 @@ export class ElectronApplication {
 
     this.applicationContext = await initializeGlobalApplicationContext({
       ...this.globalOptions,
-      appDir:this.appDir,
       baseDir:this.baseDir
     })
     return this.applicationContext
@@ -125,11 +119,13 @@ export class ElectronApplication {
     if (this.globalOptions.baseDir) {
       return this.globalOptions.baseDir;
     }
+    const env = getCurrentEnvironment()
+    this.baseDir = "./"
     // 判断是否打了包
-    if (app.isPackaged) {
-      return join(this.appDir, 'src');
+    if (env !== "prod") {
+      return join(this.baseDir, 'src');
     } else {
-      return join(this.appDir, 'dist');
+      return join(this.baseDir, 'dist');
     }
   }
 }
