@@ -10,7 +10,6 @@ export type ApplicationInterface<
   RuntimeApplication = unknown
   > = BaseApplicationInterface<T> & RuntimeApplication
 
-
 /**
  * 运行时基础应用接口
  */

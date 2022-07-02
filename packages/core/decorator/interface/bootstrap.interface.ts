@@ -26,8 +26,6 @@ export interface BootstrapOptions {
   configurationModule?: any | any[];
   // 静态导入的类
   imports?:any|any[]
-  // 主窗口
-  mainWind?:any
   // 全局配置信息
   globalConfig?:| Array<{ [environmentName: string]: Record<string, any> }>
     | Record<string, any>;

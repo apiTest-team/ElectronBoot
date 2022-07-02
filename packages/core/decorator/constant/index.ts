@@ -12,6 +12,7 @@ export const PIPELINE_IDENTIFIER = '__pipeline_identifier__';
 
 // runtime
 export const CONFIG_KEY="config"
+export const APPLICATION_KEY = "__air_runtime_app__"
 
 // framework
 export const APPLICATION_CONTEXT_KEY = '__framework_application_context__';

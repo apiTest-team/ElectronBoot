@@ -1,10 +1,9 @@
 import { BootstrapOptions } from "../decorator/interface/bootstrap.interface";
 import { AirContainerInterface } from "../interface";
 import { destroyGlobalApplicationContext, initializeGlobalApplicationContext } from "./setup";
-import * as path from "path";
+import { join } from "path";
 import { getClassMetadata } from "../decorator/manager/default.manager";
 import { AIR_BOOT_STARTER } from "../decorator/constant";
-import * as process from "process";
 
 /**
  * 当前环境是否时ts开发环境
@@ -17,73 +16,89 @@ export function isTypeScriptEnvironment() {
   return TS_MODE_PROCESS_FLAG === 'true' || !!require.extensions['.ts'];
 }
 
-export class BootstrapStarter {
+/**
+ * app启动器
+ */
+export class AirApplication {
+  private static starter:AirApplication
+  private static configured = false
+  private static applicationContext:AirContainerInterface
+  private applicationContext: AirContainerInterface;
   protected appDir:string=""
   protected baseDir:string=""
   protected globalOptions:Partial<BootstrapOptions> = {}
   protected globalConfig:any
-  protected applicationContext:AirContainerInterface={} as AirContainerInterface
-  public configure(opts:BootstrapOptions){
-    this.globalOptions = opts
-    return this
-  }
-  public async init(){
-    this.appDir = this.globalOptions.appDir || process.cwd()
-    this.baseDir = this.getBaseDir()
-    this.applicationContext = await initializeGlobalApplicationContext({
-      ...this.globalOptions,
-      appDir:this.appDir,
-      baseDir:this.baseDir
-    })
-    return this.applicationContext
-  }
-
-  public async run(){}
-
-  public async stop(){
-    await destroyGlobalApplicationContext(this.applicationContext)
-  }
-
-  protected getBaseDir():string{
-    if (this.globalOptions.baseDir){
-      return this.globalOptions.baseDir
-    }
-    if (isTypeScriptEnvironment()){
-      return path.join(this.appDir,"src")
-    }else{
-      return path.join(this.appDir,"dist")
-    }
-  }
-}
-
-export class Bootstrap {
-  private static starter:BootstrapStarter
-  private static configured = false
-  private static applicationContext:AirContainerInterface
-
-
-  static configure(configuration:BootstrapOptions={}){
-    this.configured = true
-    if (configuration.appDir && configuration.appDir!==process.cwd()){
-      process.chdir(configuration.appDir)
-    }
-    this.getStarter().configure(configuration)
-    return this
-  }
-
-  private static getStarter(){
+  public static build(){
     if (!this.starter){
-      this.starter = new BootstrapStarter()
+      this.starter = new AirApplication()
     }
     return this.starter
   }
 
+  // public static configure(opts:BootstrapOptions){
+  //
+  // }
+  //
+  // /**
+  //  * 运行器
+  //  * @param target
+  //  * @param args
+  //  */
+  // public static async run(target:any,args:string[]){
+  //
+  // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /**
+   * 配置信息
+   * @param configuration
+   */
+  private static configure(configuration:BootstrapOptions={}){
+    this.configured = true
+    if (configuration.appDir && configuration.appDir!==process.cwd()){
+      process.chdir(configuration.appDir)
+    }
+    configuration.globalConfig
+    this.getStarter().configure(configuration)
+    return this
+  }
+  /**
+   * 获取启动器
+   * @private
+   */
+  private static getStarter(){
+    if (!this.starter){
+      this.starter = new AirApplication()
+    }
+    return this.starter
+  }
   /**
    * 运行方法
    */
-  public static async run(){
+  public static async run(target:any,args:string[]){
+    // 获取配置信息
+    const options = getClassMetadata(AIR_BOOT_STARTER,target)
     if (!this.configured){
-      this.configure()
+      this.configure(options)
     }
     process.once('SIGINT', this.onSignal.bind(this, 'SIGINT'));
     // kill(3) Ctrl-\
@@ -111,46 +126,11 @@ export class Bootstrap {
       });
   }
 
-  static async stop() {
-    await this.getStarter().stop();
-    process.removeListener('uncaughtException', this.uncaughtExceptionHandler);
-    process.removeListener(
-      'unhandledRejection',
-      this.unhandledRejectionHandler
-    );
-    this.reset();
-  }
-
-  static reset() {
-    this.configured = false;
-    this.starter = {} as BootstrapStarter;
-  }
-
-  private static uncaughtExceptionHandler(err:any) {
-    if (!(err instanceof Error)) {
-      err = new Error(String(err));
-    }
-    if (err.name === 'Error') {
-      err.name = 'unhandledExceptionError';
-    }
-    console.log(err);
-  }
-
-  private static unhandledRejectionHandler(err:any) {
-    if (!(err instanceof Error)) {
-      const newError = new Error(String(err));
-      // err maybe an object, try to copy the name, message and stack to the new error instance
-      if (err) {
-        if (err.name) newError.name = err.name;
-        if (err.message) newError.message = err.message;
-        if (err.stack) newError.stack = err.stack;
-      }
-      err = newError;
-    }
-    if (err.name === 'Error') {
-      err.name = 'unhandledRejectionError';
-    }
-    console.log(err);
+  /**
+   * 获取应用上下文
+   */
+  public static getApplicationContext(): AirContainerInterface {
+    return this.applicationContext;
   }
 
   /**
@@ -173,35 +153,82 @@ export class Bootstrap {
    * on bootstrap process exit
    * @param code
    */
-  private static onExit(code:any) {
-    console.log("[air:bootstrap] exit with code:%s", code);
+  private static onExit(code) {
+    console.log('[midway:bootstrap] exit with code:%s', code);
   }
-}
 
-export class AirApplication {
-  private static starter:BootstrapStarter
-  private static configured = false
-  private applicationContext:AirContainerInterface
+  private static uncaughtExceptionHandler(err) {
+    if (!(err instanceof Error)) {
+      err = new Error(String(err));
+    }
+    if (err.name === 'Error') {
+      err.name = 'unhandledExceptionError';
+    }
+    console.log(err);
+  }
 
-  /**
-   * 配置信息
-   * @param configuration
-   */
-  static configure(configuration:BootstrapOptions={}){
-    this.configured = true
-    if (configuration.appDir && configuration.appDir!==process.cwd()){
-      process.chdir(configuration.appDir)
+  private static unhandledRejectionHandler(err) {
+    if (!(err instanceof Error)) {
+      const newError = new Error(String(err));
+      // err maybe an object, try to copy the name, message and stack to the new error instance
+      if (err) {
+        if (err.name) newError.name = err.name;
+        if (err.message) newError.message = err.message;
+        if (err.stack) newError.stack = err.stack;
+      }
+      err = newError;
+    }
+    if (err.name === 'Error') {
+      err.name = 'unhandledRejectionError';
+    }
+    console.log(err);
+  }
+
+  static async stop() {
+    await this.getStarter().stop();
+    process.removeListener('uncaughtException', this.uncaughtExceptionHandler);
+    process.removeListener(
+      'unhandledRejection',
+      this.unhandledRejectionHandler
+    );
+    this.reset();
+  }
+
+  static reset() {
+    this.configured = false;
+    this.starter = {} as AirApplication;
+  }
+
+  public async init(){
+    this.appDir = this.globalOptions.appDir || process.cwd()
+    this.baseDir = this.getBaseDir()
+    this.applicationContext = await initializeGlobalApplicationContext({
+      ...this.globalOptions,
+      appDir:this.appDir,
+      baseDir:this.baseDir
+    })
+    return this.applicationContext
+  }
+
+  public configure(opts:BootstrapOptions){
+    this.globalOptions = opts
+    return this
+  }
+
+  protected getBaseDir() {
+    if (this.globalOptions.baseDir) {
+      return this.globalOptions.baseDir;
+    }
+    if (isTypeScriptEnvironment()) {
+      return join(this.appDir, 'src');
+    } else {
+      return join(this.appDir, 'dist');
     }
   }
-  /**
-   * 运行方法
-   */
-  public static async run(target:any,args:string[]){
-    const options = getClassMetadata(AIR_BOOT_STARTER,target)
 
+  public async run() {}
 
-
-    console.log(options);
-    console.log(args);
+  public async stop() {
+    await destroyGlobalApplicationContext(this.applicationContext);
   }
 }
