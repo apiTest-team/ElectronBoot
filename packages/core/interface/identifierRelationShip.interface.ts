@@ -1,4 +1,4 @@
-import { ObjectIdentifier } from "../context/decorator";
+import { ObjectIdentifier } from "../decorator";
 
 
 export interface IdentifierRelationShipInterface {

@@ -1,9 +1,9 @@
 import { FileDetectorInterface } from "../interface/fileDetector.interface";
-import { ContainerInterface, ObjectDefinitionInterface } from "../interface";
+import { AirContainerInterface, ObjectDefinitionInterface } from "../interface";
 import { resolves } from "../utils/resolves";
 import { Types } from "../utils";
-import { getComponentName } from "../context/decorator/manager/default.manager";
-import { FrameworkDuplicateClassNameError } from "../error/framework";
+import { getComponentName } from "../decorator/manager/default.manager";
+import { CoreDuplicateClassNameError } from "../error/core";
 
 export interface ResolveFilter {
   pattern: string | RegExp;
@@ -19,7 +19,7 @@ export abstract class AbstractFileDetector<T> implements FileDetectorInterface {
     this.extraDetectorOptions = {} as T;
   }
 
-  abstract run(container: ContainerInterface);
+  abstract run(container: AirContainerInterface);
 
   setExtraDetectorOptions(detectorOptions: T) {
     this.extraDetectorOptions = detectorOptions;
@@ -75,7 +75,7 @@ export class DirectoryFileDetector extends AbstractFileDetector<{
           const name = getComponentName(module);
           if (name) {
             if (this.duplicateModuleCheckSet.has(name)) {
-              throw new FrameworkDuplicateClassNameError(
+              throw new CoreDuplicateClassNameError(
                 name,
                 options.srcPath,
                 this.duplicateModuleCheckSet.get(name)

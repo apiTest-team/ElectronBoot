@@ -1,13 +1,16 @@
 /**
  * 上下文接口
  */
-import { ContainerInterface } from "./container.interface";
+import { AirContainerInterface } from "./containerInterface";
 
+/**
+ * 上下文接口
+ */
 export interface ContextInterface {
   /**
    * ipc通信上下文
    */
-  ipcContext:ContainerInterface
+  ipcContext:AirContainerInterface
   /**
    * 开始时间
    */
@@ -27,4 +30,4 @@ export interface ContextInterface {
   getAttr<T>(key:string):T
 }
 
-export type AppContext<RuntimeContext = unknown> = ContextInterface & RuntimeContext
+export type AirContextInterface<RuntimeContext = unknown> = ContextInterface & RuntimeContext

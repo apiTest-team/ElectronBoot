@@ -3,7 +3,7 @@ import { resolve } from "path";
 import pm from "picomatch";
 import { debuglog } from "util";
 
-const debug = debuglog("midway:glob");
+const debug = debuglog("air:glob");
 
 export interface RunOptions {
   cwd: string;
@@ -43,6 +43,6 @@ export const resolves = (pattern: string[], options: RunOptions = { cwd: process
   }
 
   const result = globDirectory(entryDir, isMatch, ignoreMatch, options);
-  debug(`midway glob timing ${Date.now() - startTime}ms`);
+  debug(`air glob timing ${Date.now() - startTime}ms`);
   return result;
 };

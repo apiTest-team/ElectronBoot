@@ -1,6 +1,6 @@
 import { ObjectCreatorInterface, ObjectDefinitionInterface } from "../interface";
 import { Types } from "../utils";
-import { FrameworkUseWrongMethodError } from "../error/framework";
+import { CoreUseWrongMethodError } from "../error/core";
 
 export class ObjectCreator implements ObjectCreatorInterface {
   protected definition: ObjectDefinitionInterface;
@@ -92,7 +92,7 @@ export class ObjectCreator implements ObjectCreatorInterface {
         Types.isGeneratorFunction(inst[this.definition.initMethod]) ||
         Types.isAsyncFunction(inst[this.definition.initMethod])
       ) {
-        throw new FrameworkUseWrongMethodError(
+        throw new CoreUseWrongMethodError(
           'context.get',
           'context.getAsync',
           this.definition.id
@@ -100,7 +100,7 @@ export class ObjectCreator implements ObjectCreatorInterface {
       } else {
         const rt = inst[this.definition.initMethod].call(inst);
         if (Types.isPromise(rt)) {
-          throw new FrameworkUseWrongMethodError(
+          throw new CoreUseWrongMethodError(
             'context.get',
             'context.getAsync',
             this.definition.id

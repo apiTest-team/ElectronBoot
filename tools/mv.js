@@ -12,7 +12,7 @@ console.log("准备复制文件了")
 const packagesPath = getFolders("packages")
 packagesPath.forEach((filePath)=>{
   let file = createReadStream(join("packages",filePath,"package.json"))
-  let out = createWriteStream(join("dist/@electron-boot",filePath,"package.json"))
+  let out = createWriteStream(join("dist/@air",filePath,"package.json"))
   file.pipe(out)
 })
 console.log("文件复制完毕")

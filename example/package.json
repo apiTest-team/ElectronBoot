@@ -1,5 +1,5 @@
 {
-  "name": "@elector-boot/example",
+  "name": "@air/example",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@electron-boot/core": "workspace:^1.0.0",
+    "@air/core": "workspace:^1.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "keywords": [],

@@ -1,10 +1,9 @@
-import { ContainerInterface } from "../interface";
-import { BootstrapOptionsInterface, Constructable } from "../context/decorator/interface/bootstrap.interface";
-import { bindContainer, clearBindContainer, listPreloadModule } from "../context/decorator/manager/default.manager";
-import { ElectronBootContainer } from "../context/container";
+import { AirContainerInterface } from "../interface";
+import { BootstrapOptions, Constructable } from "../decorator/interface/bootstrap.interface";
+import { bindContainer, clearBindContainer, listPreloadModule } from "../decorator/manager/default.manager";
+import { AirContainer } from "../context/container";
 import { DirectoryFileDetector } from "../common/fileDetector";
 import { safeRequire } from "../utils";
-import {app} from "electron";
 import {join} from "path"
 import { EnvironmentService } from "../service/environment.service";
 import { ConfigService } from "../service/config.service";
@@ -13,14 +12,18 @@ import util from "util";
 import { LifeCycleService } from "../service/lifeCycleService";
 import { AspectService } from "../service/aspect.service";
 import { DecoratorService } from "../service/decorator.service";
-const debug = util.debuglog('electron-boot:debug');
+import { RuntimeService } from "../service/runtime.service";
+const debug = util.debuglog('air:debug');
 /**
  * 初始化全局工期
  * @param globalOptions
  */
-export const initializeGlobalApplicationContext = async function(globalOptions:BootstrapOptionsInterface):Promise<ContainerInterface> {
+export const initializeGlobalApplicationContext = async function(globalOptions:BootstrapOptions):Promise<AirContainerInterface> {
   // 创建容器
   const applicationContext = prepareGlobalApplicationContext(globalOptions)
+
+  // 初始化运行时
+  await applicationContext.getAsync(RuntimeService,[applicationContext,globalOptions])
 
   // 生命周期组件
   await applicationContext.getAsync(LifeCycleService,[applicationContext])
@@ -38,7 +41,7 @@ export const initializeGlobalApplicationContext = async function(globalOptions:B
  * 等待注销
  * @param applicationContext
  */
-export const destroyGlobalApplicationContext = async (applicationContext:ContainerInterface)=>{
+export const destroyGlobalApplicationContext = async (applicationContext:AirContainerInterface)=>{
   const lifecycleService = await applicationContext.getAsync(LifeCycleService)
   await lifecycleService.stop()
   // 停止容器
@@ -50,15 +53,24 @@ export const destroyGlobalApplicationContext = async (applicationContext:Contain
  * 前置处理
  * @param globalOptions
  */
-export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptionsInterface):ContainerInterface => {
+export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptions):AirContainerInterface => {
+
+  debug(`[core]: start "initializeGlobalApplicationContext"`)
+  debug(`[core]: bootstrap options = ${util.inspect(globalOptions)}`)
   // 要扫描的文件路径
   const baseDir = globalOptions.baseDir??""
-  // 初始化一个容器
-  const applicationContext = globalOptions.applicationContext?? new ElectronBootContainer()
+  // 应用路径
+  const appDir = globalOptions.appDir??""
+  // 初始化全局容器
+  const applicationContext = globalOptions.applicationContext?? new AirContainer()
+  debug(`[core]: delegate module map from decoratorManager`)
   // 绑定容器到装饰器管理器
   bindContainer(applicationContext)
-  // 注册值
-  applicationContext.registerObject("app",app)
+
+  // 注册目录
+  applicationContext.registerObject("baseDir",baseDir)
+  applicationContext.registerObject("appDir",appDir)
+
   // 如果没有禁用扫描器
   if (globalOptions.moduleDetector!==false){
     if (globalOptions.moduleDetector===undefined || globalOptions.moduleDetector==="file"){
@@ -78,6 +90,7 @@ export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptionsIn
   applicationContext.bindClass(AspectService);
   applicationContext.bindClass(DecoratorService);
   applicationContext.bindClass(ConfigService)
+  applicationContext.bindClass(RuntimeService)
   applicationContext.bindClass(LifeCycleService)
 
   // 加载前的模块绑定
@@ -92,23 +105,34 @@ export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptionsIn
   configService.add([{
     default:defaultConfig
   }])
-  // // 初始化主窗口
-  // applicationContext.get(globalOptions.mainWind,[applicationContext])
-  // 加载配置文件
+
+  // 初始化aspect
+  applicationContext.get(AspectService,[applicationContext])
+
+  // 初始化decorator
+  applicationContext.get(DecoratorService,[applicationContext])
+
+  // 加载全局配置，即是运行目录加上configuration文件名
   if (!globalOptions.imports){
     globalOptions.imports = [
-      safeRequire(join(globalOptions.baseDir,"configuration"))
+      safeRequire(join(globalOptions.baseDir as string,"configuration"))
     ]
   }
-  for (const configurationModule of [].concat(globalOptions.imports).concat(globalOptions.configurationModule)) {
+
+  // 加载模块
+  for (const configurationModule of []
+    .concat(globalOptions.imports)
+    .concat(globalOptions.configurationModule)
+    ) {
     if (configurationModule){
       applicationContext.load(configurationModule)
     }
   }
 
+  // app容器准备完毕
   applicationContext.ready()
 
-  // 配置服务
+  // 配置配置信息到配置服务
   if (globalOptions.globalConfig){
     if (Array.isArray(globalOptions.globalConfig)){
       configService.add(globalOptions.globalConfig)
@@ -117,6 +141,7 @@ export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptionsIn
     }
   }
 
+  // 加载配置文件
   configService.load()
   debug('[core]: Current config = %j', configService.getConfiguration());
 

@@ -1,6 +1,6 @@
 
 import { ObjectDefinitionInterface } from "./objectDefinition.interface";
-import { ManagedInstanceInterface } from "../context/decorator";
+import { ManagedInstanceInterface } from "../decorator";
 
 export interface ManagedResolverFactoryCreateOptionsInterface {
   definition: ObjectDefinitionInterface;

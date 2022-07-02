@@ -1,11 +1,11 @@
 import { debuglog } from 'util';
-import { Autowired, Component, Init, Scope, ScopeEnum } from "../context/decorator";
+import { Autowired, Component, Init, Scope, ScopeEnum } from "../decorator";
 import { ConfigService } from "./config.service";
-import { ContainerInterface, LifeCycleInterface } from "../interface";
-import { listModule } from "../context/decorator/manager/default.manager";
-import { CONFIGURATION_KEY } from "../context/decorator/constant";
+import { AirContainerInterface, LifeCycleInterface } from "../interface";
+import { listModule } from "../decorator/manager/default.manager";
+import { CONFIGURATION_KEY } from "../decorator/constant";
 import { FunctionalConfiguration } from "../functional/configuration";
-const debug = debuglog('electron-boot:debug');
+const debug = debuglog('air:debug');
 
 @Component()
 @Scope(ScopeEnum.Singleton)
@@ -14,7 +14,7 @@ export class LifeCycleService {
   @Autowired()
   protected configService: ConfigService;
 
-  constructor(readonly applicationContext: ContainerInterface) {}
+  constructor(readonly applicationContext: AirContainerInterface) {}
 
   @Init()
   protected async init() {

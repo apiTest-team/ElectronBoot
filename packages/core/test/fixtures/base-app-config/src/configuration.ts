@@ -1,6 +1,6 @@
 
 import { join } from 'path';
-import { Configuration } from "../../../../context/decorator";
+import { Configuration } from "../../../../decorator";
 
 @Configuration({
   importConfigs: [

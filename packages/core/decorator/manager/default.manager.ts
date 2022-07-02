@@ -9,15 +9,15 @@ import {
   TSDesignType, ModuleStoreInterface, ObjectDefinitionOptions
 } from "../interface";
 import {DecoratorManager} from "./decorator.manager";
-import { AUTOWIRED_TAG, OBJECT_DEF_CLS, PRELOAD_MODULE_KEY, TARGETED_CLASS } from "../constant";
-import {camelCase, isClass, isNullOrUndefined, merge, randomUUID} from "../../../utils";
+import { AUTOWIRED_TAG, INJECT_CUSTOM_PROPERTY, OBJECT_DEF_CLS, PRELOAD_MODULE_KEY, TARGETED_CLASS } from "../constant";
+import {camelCase, isClass, isNullOrUndefined, merge, randomUUID} from "../../utils";
 
 /**
  * 保存id到target
  * @param identifier
  * @param target
  */
-export const saveComponentId = <T>(identifier:ObjectIdentifier,target:any):T => {
+export const saveComponentId = <T>(identifier:ObjectIdentifier|undefined,target:any):T => {
   if (IsComponent(target)){
     const meta = getClassMetadata(TARGETED_CLASS,target)
     if (meta.id !== identifier){
@@ -44,6 +44,7 @@ export const getComponentId = (module:any):ObjectIdentifier=>{
   if (metaData && metaData.id){
     return metaData.id
   }
+  return ""
 }
 
 /**
@@ -55,17 +56,19 @@ export const getComponentName = (module:any):string =>{
   if (metaData && metaData.name) {
     return metaData.name;
   }
+  return ""
 }
 
 /**
  * 获取组件的uuid
  * @param component
  */
-export const getComponentUUID = (component):string => {
+export const getComponentUUID = (component:any):string => {
   const metadata = getClassMetadata(TARGETED_CLASS,component) as ComponentMetadata
   if (metadata&&metadata.uuid){
     return metadata.uuid
   }
+  return ""
 }
 
 /**
@@ -73,29 +76,29 @@ export const getComponentUUID = (component):string => {
  * @param opts
  */
 export const savePropertyAutowired = (opts?:AutowiredOptions) => {
-  let identifier = opts.identifier
+  let identifier = opts?.identifier || ""
   let autowiredMod = AutowiredModeEnum.Identifier
   if (!identifier){
-    const type = getPropertyType(opts?.target,opts?.targetKey)
+    const type = getPropertyType(opts?.target as Object,opts?.targetKey as ObjectIdentifier)
     if (!type.isBaseType&&IsComponent(type.originDesign)&&isClass(type.originDesign)){
       identifier = getComponentUUID(type.originDesign)
       autowiredMod = AutowiredModeEnum.Class
     }
     if (!identifier){
-      identifier = opts.identifier
+      identifier = opts?.identifier as ObjectIdentifier
       autowiredMod = AutowiredModeEnum.PropertyName
     }
   }
   saveClassAttachMetadata(
       AUTOWIRED_TAG,
       {
-        targetKey: opts.targetKey, // 注入的属性名
+        targetKey: opts?.targetKey, // 注入的属性名
         value: identifier, // 注入的 id
-        args: opts.args, // 注入的其他参数
+        args: opts?.args, // 注入的其他参数
         autowiredMod,
       },
-      opts.target,
-      opts.targetKey
+      opts?.target as Object,
+      opts?.targetKey as ObjectIdentifier
   )
 }
 
@@ -117,6 +120,32 @@ export const getPropertyType = (target:Object,methodName:string|symbol) => {
   return transformTypeFromTSDesign(
       Reflect.getMetadata("design:type",target,methodName)
   )
+}
+
+/**
+ * 自定义参数装饰器创建工厂
+ * @param decoratorKey
+ * @param metadata
+ * @param impl
+ */
+export const createCustomPropertyDecorator = (
+  decoratorKey: string,
+  metadata: any,
+  impl = true
+):PropertyDecorator=>{
+  return (target:Object, propertyName:string|symbol):void => {
+    saveClassAttachMetadata(
+      INJECT_CUSTOM_PROPERTY,
+      {
+        propertyName,
+        key: decoratorKey,
+        metadata,
+        impl,
+      },
+      target,
+      propertyName
+    );
+  }
 }
 
 /**
@@ -143,7 +172,8 @@ export function getObjectDefinition(target: any): ObjectDefinitionOptions {
  */
 export const getClassExtendedMetadata = (
   decoratorNameKey: ObjectIdentifier,
-  target, propertyName?: string,
+  target:any,
+  propertyName?: string,
   useCache?: boolean
 ) => {
   if (useCache === undefined) {
@@ -214,7 +244,7 @@ export const saveClassMetadata = <T>(decoratorNameKey:ObjectIdentifier,data:any,
  * @param decoratorNameKey
  * @param target
  */
-export const saveModule =(decoratorNameKey: ObjectIdentifier, target) => {
+export const saveModule =(decoratorNameKey: ObjectIdentifier, target:any) => {
   if (isClass(target)) {
     saveComponentId(undefined, target);
   }
@@ -225,7 +255,7 @@ export const saveModule =(decoratorNameKey: ObjectIdentifier, target) => {
  * 保存加载前的模块
  * @param target
  */
-export const savePreloadModule = (target) => {
+export const savePreloadModule = (target:any) => {
   return saveModule(PRELOAD_MODULE_KEY, target);
 }
 
@@ -247,7 +277,7 @@ export const bindContainer =(container:ModuleStoreInterface) => {
 /**
  * get parameters type by reflect-metadata
  */
-export function getMethodParamTypes(target, methodName: string | symbol) {
+export function getMethodParamTypes(target:any, methodName: string | symbol) {
   if (isClass(target)) {
     target = target.prototype;
   }
@@ -268,7 +298,7 @@ export function clearBindContainer() {
  */
 export function listModule(
   decoratorNameKey: ObjectIdentifier,
-  filter?: (module) => boolean
+  filter?: (module:any) => boolean
 ): any[] {
   const modules = DecoratorManager.defaultManager.listModule(decoratorNameKey);
   if (filter) {
@@ -299,7 +329,7 @@ export const saveClassAttachMetadata = (
  * 从autowired装饰器中获取当前装饰的属性类型
  * @param designFn
  */
-function transformTypeFromTSDesign(designFn): TSDesignType {
+function transformTypeFromTSDesign(designFn:any): TSDesignType {
   if (isNullOrUndefined(designFn)) {
     return { name: 'undefined', isBaseType: true, originDesign: designFn };
   }

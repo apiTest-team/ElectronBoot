@@ -4,7 +4,7 @@ import EventEmitter from "events";
 import {IdentifierRelationShipInterface} from "./identifierRelationShip.interface";
 import {ObjectDefinitionInterface} from "./objectDefinition.interface";
 import {FileDetectorInterface} from "./fileDetector.interface";
-import { ObjectIdentifier } from "../context/decorator";
+import { ObjectIdentifier } from "../decorator";
 
 /**
  * 对象生命周的事件名称
@@ -19,8 +19,8 @@ export enum ObjectLifeCycleEvent {
 /**
  * 定义容器接口
  */
-export interface ContainerInterface  extends ObjectFactoryInterface,ObjectLifeCycleInterface{
-  parent: ContainerInterface;
+export interface AirContainerInterface extends ObjectFactoryInterface,ObjectLifeCycleInterface{
+  parent: AirContainerInterface;
   identifierMapping: IdentifierRelationShipInterface;
   objectCreateEventTarget: EventEmitter;
   ready();
@@ -38,7 +38,7 @@ export interface ContainerInterface  extends ObjectFactoryInterface,ObjectLifeCy
   ): void;
   bindClass(exports, options?: Partial<ObjectDefinitionInterface>);
   setFileDetector(fileDetector: FileDetectorInterface);
-  createChild(): ContainerInterface;
+  createChild(): AirContainerInterface;
   listModule(identifier:ObjectIdentifier):any[]
   saveModule(identifier:ObjectIdentifier,module)
   /**

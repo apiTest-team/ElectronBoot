@@ -2,7 +2,6 @@ import { randomUUID } from "./uuid";
 import util from "util";
 import { basename, dirname, resolve, sep } from "path";
 import { readFileSync } from "fs";
-import {app} from "electron";
 import * as process from "process";
 
 export * from "./camelCase"
@@ -64,7 +63,7 @@ export const isFunction = (value:any) =>{
  * 获取当前环境变量
  */
 export const getCurrentEnvironment = () => {
-    return app?.isPackaged ? "prod": (process.env.NODE_ENV || "dev")
+    return process.env['NODE_ENV'] || 'prod';
 }
 
 /**

@@ -1,14 +1,14 @@
 import { ConfigMergeInfo, ConfigServiceInterface } from "../interface/config.interface";
 import { EnvironmentService } from "./environment.service";
-import { Autowired, Component, Scope, ScopeEnum } from "../context/decorator";
+import { Autowired, Component, Scope, ScopeEnum } from "../decorator";
 import { readdirSync, statSync } from "fs";
 import { join } from "path";
-import { getConfigEnv, safelyGet, Types } from "../utils";
+import { getConfigEnv, safelyGet} from "../utils";
 import { extend } from "../utils/extend";
 import util from "util";
-import { FrameworkInvalidConfigError } from "../error/framework";
+import { CoreInvalidConfigError } from "../error/core";
 
-const debug = util.debuglog('electron-boot:debug');
+const debug = util.debuglog('air:debug');
 /**
  * 配置服务
  */
@@ -50,7 +50,7 @@ export class ConfigService implements ConfigServiceInterface {
 
     if (exports && exports.default) {
       if (Object.keys(exports).length > 1) {
-        throw new FrameworkInvalidConfigError(
+        throw new CoreInvalidConfigError(
           `${configFilename} should not have both a default export and named export`
         );
       }

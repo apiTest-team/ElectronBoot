@@ -1,16 +1,16 @@
-import { Component, Scope, ScopeEnum } from "../context/decorator";
-import { ContainerInterface } from "../interface";
-import { getClassMetadata, listModule } from "../context/decorator/manager/default.manager";
-import { ASPECT_KEY } from "../context/decorator/constant";
-import { MethodAspectInterface } from "../context/decorator/interface/aspect.interface";
-import { AspectMetadata, JoinPoint } from "../context/decorator/decorator/common/aspect.decorator";
+import { Component, Scope, ScopeEnum } from "../decorator";
+import { AirContainerInterface } from "../interface";
+import { getClassMetadata, listModule } from "../decorator/manager/default.manager";
+import { ASPECT_KEY } from "../decorator/constant";
+import { MethodAspectInterface } from "../decorator/interface/aspect.interface";
+import { AspectMetadata, JoinPoint } from "../decorator/decorator/common/aspect.decorator";
 import pm from "picomatch";
 import { Types } from "../utils";
 
 @Component()
 @Scope(ScopeEnum.Singleton)
 export class AspectService {
-  constructor(readonly applicationContext: ContainerInterface) {}
+  constructor(readonly applicationContext: AirContainerInterface) {}
 
   /**
    * load aspect method for container

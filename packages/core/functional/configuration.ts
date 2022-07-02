@@ -1,5 +1,5 @@
-import { InjectionConfigurationOptions } from "../interface/injectionConfigurationOptions.interface";
-import { ContainerInterface } from "../interface";
+import { AirContainerInterface } from "../interface";
+import { ConfigurationOptions } from "../decorator/interface/configuration.interface";
 
 
 export class FunctionalConfiguration {
@@ -7,9 +7,9 @@ export class FunctionalConfiguration {
   private stopHandler;
   private configLoadHandler;
   private serverReadyHandler;
-  private options: InjectionConfigurationOptions;
+  private options: ConfigurationOptions;
 
-  constructor(options: InjectionConfigurationOptions) {
+  constructor(options: ConfigurationOptions) {
     this.options = options;
     this.readyHandler = () => {};
     this.stopHandler = () => {};
@@ -19,8 +19,8 @@ export class FunctionalConfiguration {
 
   onConfigLoad(
     configLoadHandler:
-      | ((container: ContainerInterface) => any)
-      | ContainerInterface
+      | ((container: AirContainerInterface) => any)
+      | AirContainerInterface
   ) {
     if (typeof configLoadHandler === 'function') {
       this.configLoadHandler = configLoadHandler;
@@ -32,8 +32,8 @@ export class FunctionalConfiguration {
 
   onReady(
     readyHandler:
-      | ((container: ContainerInterface) => void)
-      | ContainerInterface
+      | ((container: AirContainerInterface) => void)
+      | AirContainerInterface
   ) {
     if (typeof readyHandler === 'function') {
       this.readyHandler = readyHandler;
@@ -45,8 +45,8 @@ export class FunctionalConfiguration {
 
   onServerReady(
     serverReadyHandler:
-      | ((container: ContainerInterface) => void)
-      | ContainerInterface
+      | ((container: AirContainerInterface) => void)
+      | AirContainerInterface
   ) {
     if (typeof serverReadyHandler === 'function') {
       this.serverReadyHandler = serverReadyHandler;
@@ -58,8 +58,8 @@ export class FunctionalConfiguration {
 
   onStop(
     stopHandler:
-      | ((container: ContainerInterface) => void)
-      | ContainerInterface
+      | ((container: AirContainerInterface) => void)
+      | AirContainerInterface
   ) {
     if (typeof stopHandler === 'function') {
       this.stopHandler = stopHandler;
@@ -74,6 +74,6 @@ export class FunctionalConfiguration {
   }
 }
 
-export const createConfiguration = (options: InjectionConfigurationOptions) => {
+export const createConfiguration = (options: ConfigurationOptions) => {
   return new FunctionalConfiguration(options);
 };

@@ -12,7 +12,7 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
   // 方法的元数据存储key
   injectMethodKeyPrefix = INJECT_METHOD_KEY_PREFIX
   // 存储容器
-  container:ModuleStoreInterface
+  container:ModuleStoreInterface|null=null
   // 默认的管理器
   public static defaultManager:DecoratorManager = new  DecoratorManager()
 
@@ -56,7 +56,7 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
    */
   bindContainer(container:ModuleStoreInterface){
     this.container = container
-    this.container.transformModule(this)
+    this.container?.transformModule(this)
   }
 
   /**
@@ -143,7 +143,7 @@ export class DecoratorManager extends Map implements ModuleStoreInterface{
    */
   static getMetadata<T>(metaKey:string,target:T,dataKey:string){
     // 过滤掉工厂方法
-    if (typeof target==="object" && target.constructor){
+    if (typeof target==="object" && target?.constructor){
       target = target.constructor as any
     }
     let m:Map<string,any>

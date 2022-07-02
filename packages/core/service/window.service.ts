@@ -1,8 +1,8 @@
-import { Autowired, Component, Scope, ScopeEnum } from "../context/decorator";
+import { Autowired, Component, Scope, ScopeEnum } from "../decorator";
 import { ConfigService } from "./config.service";
 import { AspectService } from "./aspect.service";
 import { DecoratorService } from "./decorator.service";
-import { ContainerInterface } from "../interface";
+import { AirContainerInterface } from "../interface";
 
 @Component()
 @Scope(ScopeEnum.Singleton)
@@ -21,7 +21,7 @@ export class WindowService {
    * @param applicationContext
    * @param globalOptions
    */
-  constructor(readonly applicationContext:ContainerInterface,readonly globalOptions) {
+  constructor(readonly applicationContext:AirContainerInterface, readonly globalOptions) {
   }
 
   public getMainWindow(){

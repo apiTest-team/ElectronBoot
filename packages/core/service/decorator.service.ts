@@ -1,15 +1,15 @@
 import * as util from 'util';
-import { Autowired, Component, Init, Scope, ScopeEnum } from "../context/decorator";
+import { Autowired, Component, Init, Scope, ScopeEnum } from "../decorator";
 import { HandlerFunction } from "../interface/handler.interface";
-import { getClassMetadata, getMethodParamTypes } from "../context/decorator/manager/default.manager";
-import { ContainerInterface } from "../interface";
+import { getClassMetadata, getMethodParamTypes } from "../decorator/manager/default.manager";
+import { AirContainerInterface } from "../interface";
 import { AspectService } from "./aspect.service";
-import { FrameworkCommonError } from "../error/framework";
-import { APPLICATION_CONTEXT_KEY, INJECT_CUSTOM_METHOD, INJECT_CUSTOM_PARAM } from "../context/decorator/constant";
-import { JoinPoint } from "../context/decorator/decorator/common/aspect.decorator";
-import { MethodHandlerFunction, ParameterHandlerFunction } from "../context/decorator/interface/aspect.interface";
+import { CoreCommonError } from "../error/core";
+import { APPLICATION_CONTEXT_KEY, INJECT_CUSTOM_METHOD, INJECT_CUSTOM_PARAM } from "../decorator/constant";
+import { JoinPoint } from "../decorator/decorator/common/aspect.decorator";
+import { MethodHandlerFunction, ParameterHandlerFunction } from "../decorator/interface/aspect.interface";
 
-const debug = util.debuglog('electron-boot:debug');
+const debug = util.debuglog('air:debug');
 
 @Component()
 @Scope(ScopeEnum.Singleton)
@@ -21,7 +21,7 @@ export class DecoratorService {
   @Autowired()
   private aspectService: AspectService;
 
-  constructor(readonly applicationContext: ContainerInterface) {}
+  constructor(readonly applicationContext: AirContainerInterface) {}
 
   @Init()
   protected init() {
@@ -49,7 +49,7 @@ export class DecoratorService {
             () => {
               const methodDecoratorHandler = this.methodDecoratorMap.get(key);
               if (!methodDecoratorHandler) {
-                throw new FrameworkCommonError(
+                throw new CoreCommonError(
                   `Method Decorator "${key}" handler not found, please register first.`
                 );
               }
@@ -93,7 +93,7 @@ export class DecoratorService {
                   const parameterDecoratorHandler =
                     this.parameterDecoratorMap.get(key);
                   if (!parameterDecoratorHandler) {
-                    throw new FrameworkCommonError(
+                    throw new CoreCommonError(
                       `Parameter Decorator "${key}" handler not found, please register first.`
                     );
                   }

@@ -3,7 +3,7 @@
  */
 import { ObjectDefinitionInterface } from "./objectDefinition.interface";
 import { IdentifierRelationShipInterface } from "./identifierRelationShip.interface";
-import { ObjectIdentifier } from "../context/decorator";
+import { ObjectIdentifier } from "../decorator";
 
 export interface ObjectDefinitionRegistryInterface {
   readonly identifiers: ObjectIdentifier[];

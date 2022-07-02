@@ -1,5 +1,5 @@
 import { PropertiesInterface } from '../interface';
-import { ObjectIdentifier } from "../context/decorator";
+import { ObjectIdentifier } from "../decorator";
 
 export class ObjectProperties
   extends Map<ObjectIdentifier, any>

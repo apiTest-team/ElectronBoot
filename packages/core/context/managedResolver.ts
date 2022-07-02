@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { ContainerInterface, ObjectDefinitionInterface, ObjectLifeCycleEvent, Value } from "../interface";
+import { AirContainerInterface, ObjectDefinitionInterface, ObjectLifeCycleEvent, Value } from "../interface";
 import {
   ManagedResolverFactoryCreateOptionsInterface,
   ManagedResolverInterface
@@ -7,14 +7,13 @@ import {
 import {KEYS} from "../common/constant";
 import * as util from "util"
 import {
-  FrameworkCommonError,
-  FrameworkDefinitionNotFoundError,
-  FrameworkInconsistentVersionError,
-  FrameworkMissingImportComponentError,
-  FrameworkResolverMissingError,
-  FrameworkSingletonInjectRequestError
-} from "../error/framework";
-import { AutowiredModeEnum, ManagedInstanceInterface, ObjectIdentifier } from "./decorator";
+  CoreCommonError,
+  CoreDefinitionNotFoundError,
+  CoreMissingImportComponentError,
+  CoreResolverMissingError,
+  CoreSingletonInjectRequestError
+} from "../error/core";
+import { AutowiredModeEnum, ManagedInstanceInterface, ObjectIdentifier } from "../decorator";
 
 
 
@@ -54,11 +53,7 @@ class RefResolver{
         mr.name
       )
     ) {
-      if (originName === 'loggerService') {
-        throw new FrameworkInconsistentVersionError();
-      } else {
-        throw new FrameworkMissingImportComponentError(originName);
-      }
+      throw new CoreMissingImportComponentError(originName);
     }
     return this.factory.context.get(mr.name, mr.args as any[], {
       originName,
@@ -76,11 +71,7 @@ class RefResolver{
         mr.name
       )
     ) {
-      if (originName === 'loggerService') {
-        throw new FrameworkInconsistentVersionError();
-      } else {
-        throw new FrameworkMissingImportComponentError(originName);
-      }
+        throw new CoreMissingImportComponentError(originName);
     }
     return this.factory.context.getAsync(mr.name, mr.args as any[], {
       originName,
@@ -94,9 +85,9 @@ export class ManagedResolverFactory {
   private resolvers:Resolvers = {};
   private creating = new Map<string, boolean>();
   singletonCache = new Map<ObjectIdentifier, any>();
-  context: ContainerInterface;
+  context: AirContainerInterface;
 
-  constructor(context: ContainerInterface) {
+  constructor(context: AirContainerInterface) {
     this.context = context;
     // 初始化解析器
     this.resolvers = {
@@ -115,7 +106,7 @@ export class ManagedResolverFactory {
   resolveManaged(managed: ManagedInstanceInterface, originPropertyName: string): any {
     const resolver = this.resolvers[managed.type];
     if (!resolver || resolver.type !== managed.type) {
-      throw new FrameworkResolverMissingError(managed.type);
+      throw new CoreResolverMissingError(managed.type);
     }
     return resolver.resolve(managed, originPropertyName);
   }
@@ -131,7 +122,7 @@ export class ManagedResolverFactory {
   ): Promise<any> {
     const resolver = this.resolvers[managed.type];
     if (!resolver || resolver.type !== managed.type) {
-      throw new FrameworkResolverMissingError(managed.type);
+      throw new CoreResolverMissingError(managed.type);
     }
     return resolver.resolveAsync(managed, originPropertyName);
   }
@@ -201,7 +192,7 @@ export class ManagedResolverFactory {
           const managed = definition.properties.get(key)
           inst[key] = this.resolveManaged(managed, key);
         } catch (error) {
-          if (FrameworkDefinitionNotFoundError.isClosePrototypeOf(error)) {
+          if (CoreDefinitionNotFoundError.isClosePrototypeOf(error)) {
             const className = definition.path.name;
             error.updateErrorMsg(className);
           }
@@ -296,7 +287,7 @@ export class ManagedResolverFactory {
     );
     if (!inst) {
       this.removeCreateStatus(definition, false);
-      throw new FrameworkCommonError(
+      throw new CoreCommonError(
         `${definition.id} construct return undefined`
       );
     }
@@ -324,7 +315,7 @@ export class ManagedResolverFactory {
             key
           );
         } catch (error) {
-          if (FrameworkDefinitionNotFoundError.isClosePrototypeOf(error)) {
+          if (CoreDefinitionNotFoundError.isClosePrototypeOf(error)) {
             const className = definition.path.name;
             error.updateErrorMsg(className);
           }
@@ -541,7 +532,7 @@ export class ManagedResolverFactory {
           propertyDefinition.isRequestScope() &&
           !propertyDefinition.allowDowngrade
         ) {
-          throw new FrameworkSingletonInjectRequestError(
+          throw new CoreSingletonInjectRequestError(
             definition.path.name,
             propertyDefinition.path.name
           );

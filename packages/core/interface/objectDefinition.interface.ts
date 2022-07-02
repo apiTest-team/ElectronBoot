@@ -1,5 +1,5 @@
 import { ObjectCreatorInterface } from "./objectCreator.interface";
-import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "../context/decorator";
+import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "../decorator";
 
 
 /**

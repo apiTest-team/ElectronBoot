@@ -7,7 +7,7 @@ export interface ComponentMetadata {
   /**
    * 类的唯一标志
    */
-  id:ObjectIdentifier
+  id:ObjectIdentifier|undefined
   /**
    * 类唯一uuid
    */

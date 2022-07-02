@@ -1,5 +1,5 @@
-import { ContainerInterface } from "../../../interface";
-import { FileDetectorInterface } from "../../../interface/fileDetector.interface";
+import { AirContainerInterface } from "../../interface";
+import { FileDetectorInterface } from "../../interface/fileDetector.interface";
 
 /**
  * 类的定义
@@ -8,14 +8,14 @@ export type Constructable<T> = new (...args: any[]) => T;
 /**
  * 启动配置信息
  */
-export interface BootstrapOptionsInterface {
+export interface BootstrapOptions {
   [customPropertyKey: string]: any;
   // 启动文件路径
   baseDir?:string
   // 应用地址路径
   appDir?:string
   // 应用上下文
-  applicationContext?:ContainerInterface
+  applicationContext?:AirContainerInterface
   // 加载文件前的模块
   preloadModules?:any[]
   // 不扫描的文件

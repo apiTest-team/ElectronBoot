@@ -1,4 +1,4 @@
-export * from "./container.interface"
+export * from "./containerInterface"
 export * from "./identifierRelationShip.interface"
 export * from "./objectCreator.interface"
 export * from "./objectDefinitionRegistry.interface"

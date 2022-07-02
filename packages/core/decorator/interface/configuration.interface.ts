@@ -11,7 +11,7 @@ export interface ConfigurationOptions {
   /**
    * 要自动装载的类
    */
-  import?:Array<string | ComponentInfoInterface | { Configuration: any }>
+  imports?:Array<string | ComponentInfoInterface | { Configuration: any }>
   /**
    * 已经初始化好了的类或者值
    */

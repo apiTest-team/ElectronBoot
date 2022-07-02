@@ -1,6 +1,17 @@
+// 获取所有的value
+export const ALL = 'common:all_value_key';
+
 // common
 export const CONFIGURATION_KEY = "common:configuration"
-export const ASPECT_KEY = 'common:aspect';
+export const ASPECT_KEY = "common:aspect"
+export const RUNTIME_KEY = "common:runtime"
+export const AIR_BOOT_STARTER ="common:air_boot_starter"
+
+// pipeline
+export const PIPELINE_IDENTIFIER = '__pipeline_identifier__';
+
+// runtime
+export const CONFIG_KEY="config"
 
 // framework
 export const APPLICATION_CONTEXT_KEY = '__framework_application_context__';

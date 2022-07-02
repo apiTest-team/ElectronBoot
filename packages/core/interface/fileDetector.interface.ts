@@ -1,9 +1,9 @@
-import {ContainerInterface} from "./container.interface";
+import {AirContainerInterface} from "./containerInterface";
 
 /**
  * 文件扫描器
  */
 export interface FileDetectorInterface {
-    run(container: ContainerInterface, fileDetectorOptions?: Record<string, any>);
+    run(container: AirContainerInterface, fileDetectorOptions?: Record<string, any>);
     setExtraDetectorOptions(detectorOptions: Record<string, any>);
 }

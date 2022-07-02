@@ -3,8 +3,8 @@ import {
   ObjectDefinitionInterface,
   ObjectDefinitionRegistryInterface,
 } from "../interface";
-import { ObjectIdentifier } from "./decorator";
-import { getComponentId, getComponentName, getComponentUUID } from "./decorator/manager/default.manager";
+import { ObjectIdentifier } from "../decorator";
+import { getComponentId, getComponentName, getComponentUUID } from "../decorator/manager/default.manager";
 
 const PREFIX = '_id_default_';
 

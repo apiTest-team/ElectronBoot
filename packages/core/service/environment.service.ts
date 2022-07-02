@@ -1,6 +1,6 @@
 import { EnvironmentServiceInterface } from "../interface/environment.service";
 import { getCurrentEnvironment, isDevelopmentEnvironment } from "../utils";
-import { Component, Scope, ScopeEnum } from "../context/decorator";
+import { Component, Scope, ScopeEnum } from "../decorator";
 
 @Component()
 @Scope(ScopeEnum.Singleton)

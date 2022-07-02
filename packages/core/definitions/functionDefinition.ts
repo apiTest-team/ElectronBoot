@@ -1,15 +1,15 @@
 import { ObjectCreator } from "./objectCreator";
 import {
-  ContainerInterface,
+  AirContainerInterface,
   ObjectCreatorInterface,
   ObjectDefinitionInterface,
   PropertiesInterface
 } from "../interface";
-import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "../context/decorator";
+import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "../decorator";
 
 
 class FunctionWrapperCreator extends ObjectCreator {
-  doConstruct(Clazz: any, args?: any, context?: ContainerInterface): any {
+  doConstruct(Clazz: any, args?: any, context?: AirContainerInterface): any {
     if (!Clazz) {
       return null;
     }
@@ -19,7 +19,7 @@ class FunctionWrapperCreator extends ObjectCreator {
   async doConstructAsync(
     Clazz: any,
     args?: any,
-    context?: ContainerInterface
+    context?: AirContainerInterface
   ): Promise<any> {
     if (!Clazz) {
       return null;

@@ -1,7 +1,7 @@
 
 /* tslint:disable:variable-name */
 import { ObjectCreatorInterface, ObjectDefinitionInterface } from "../interface";
-import { ObjectIdentifier, ScopeEnum } from "../context/decorator";
+import { ObjectIdentifier, ScopeEnum } from "../decorator";
 import { ObjectProperties } from "./properties";
 import { ObjectCreator } from "./objectCreator";
 

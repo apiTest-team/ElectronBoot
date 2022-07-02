@@ -1,5 +1,5 @@
 import {
-  ContainerInterface,
+  AirContainerInterface,
   IdentifierRelationShipInterface,
   ObjectBeforeBindOptions,
   ObjectBeforeCreatedOptions,
@@ -13,31 +13,210 @@ import { ManagedReference, ManagedResolverFactory, REQUEST_CTX_KEY } from "./man
 import {FileDetectorInterface} from "../interface/fileDetector.interface";
 import { ObjectDefinitionRegistry } from "./definitionRegistry";
 import { FUNCTION_INJECT_KEY } from "../common/constant";
-import { FrameworkDefinitionNotFoundError } from "../error/framework";
-import { ModuleStoreInterface, ObjectIdentifier, ScopeEnum } from "./decorator";
+import { CoreDefinitionNotFoundError } from "../error/core";
+import { ModuleStoreInterface, ObjectIdentifier, ScopeEnum } from "../decorator";
 import { Types, Utils } from "../utils";
 import {
-  getClassExtendedMetadata,
+  getClassExtendedMetadata, getClassMetadata,
   getComponentName,
   getComponentUUID, getObjectDefinition,
-  getPropertyAutowired
-} from "./decorator/manager/default.manager";
+  getPropertyAutowired, listModule, saveComponentId, saveModule
+} from "../decorator/manager/default.manager";
 import util from "util";
 import { ObjectDefinition } from "../definitions/objectDefinition";
 import { FunctionDefinition } from "../definitions/functionDefinition";
-import { INJECT_CUSTOM_PROPERTY } from "./decorator/constant";
-const debug = util.debuglog('electron-boot:debug');
-const debugBind = util.debuglog('electron-boot:bind');
+import { CONFIGURATION_KEY, INJECT_CUSTOM_PROPERTY, MAIN_MODULE_KEY } from "../decorator/constant";
+import { FunctionalConfiguration } from "../functional/configuration";
+import { ConfigService } from "../service/config.service";
+import { ComponentInfoInterface, ConfigurationOptions } from "../decorator/interface/configuration.interface";
+import { EnvironmentService } from "../service/environment.service";
+import { extend } from "../utils/extend";
+const debug = util.debuglog('air:debug');
+const debugBind = util.debuglog('air:bind');
+
+class ContainerConfiguration {
+  private loadedMap = new WeakMap();
+  private namespaceList = [];
+  private detectorOptionsList = [];
+  constructor(readonly container: AirContainerInterface) {}
+
+  load(module) {
+    let namespace = MAIN_MODULE_KEY;
+    // 可能导出多个
+    const configurationExports = ContainerConfiguration.getConfigurationExport(module);
+    if (!configurationExports.length) return;
+    // 多个的情况，数据交给第一个保存
+    for (let i = 0; i < configurationExports.length; i++) {
+      const configurationExport = configurationExports[i];
+
+      if (this.loadedMap.get(configurationExport)) {
+        // 已经加载过就跳过循环
+        continue;
+      }
+
+      let configurationOptions: ConfigurationOptions;
+      if (configurationExport instanceof FunctionalConfiguration) {
+        // 函数式写法
+        configurationOptions = configurationExport.getConfigurationOptions();
+      } else {
+        // 普通类写法
+        configurationOptions = getClassMetadata(
+          CONFIGURATION_KEY,
+          configurationExport
+        );
+      }
+
+      // 已加载标记，防止死循环
+      this.loadedMap.set(configurationExport, true);
+
+      if (configurationOptions) {
+        if (configurationOptions.namespace !== undefined) {
+          namespace = configurationOptions.namespace;
+          this.namespaceList.push(namespace);
+        }
+        if (configurationOptions.detectorOptions) {
+          this.detectorOptionsList.push(configurationOptions.detectorOptions);
+        }
+        debug(`[core]: load configuration in namespace="${namespace}"`);
+        this.addImports(configurationOptions.imports);
+        this.addImportObjects(configurationOptions.importObjects);
+        this.addImportConfigs(configurationOptions.importConfigs);
+        this.bindConfigurationClass(configurationExport, namespace);
+      }
+    }
+
+    // bind module
+    this.container.bindClass(module, {
+      namespace,
+    });
+  }
+
+  addImportConfigs(
+    importConfigs:
+      | Array<{ [environmentName: string]: Record<string, any> }>
+      | Record<string, any>
+  ) {
+    if (importConfigs) {
+      if (Array.isArray(importConfigs)) {
+        this.container.get(ConfigService).add(importConfigs);
+      } else {
+        this.container.get(ConfigService).addObject(importConfigs);
+      }
+    }
+  }
+
+  addImports(imports: any[] = []) {
+    // 处理 imports
+    for (let importPackage of imports) {
+      if (!importPackage) continue;
+      if (typeof importPackage === 'string') {
+        importPackage = require(importPackage);
+      }
+      if ('Configuration' in importPackage) {
+        // component is object
+        this.load(importPackage);
+      } else if ('component' in importPackage) {
+        if ((importPackage as ComponentInfoInterface)?.enabledEnvironment) {
+          if (
+            (importPackage as ComponentInfoInterface)?.enabledEnvironment?.includes(
+              this.container
+                .get(EnvironmentService)
+                .getCurrentEnvironment()
+            )
+          ) {
+            this.load((importPackage as ComponentInfoInterface).component);
+          }
+        } else {
+          this.load((importPackage as ComponentInfoInterface).component);
+        }
+      } else {
+        this.load(importPackage);
+      }
+    }
+  }
+
+  /**
+   * 注册 importObjects
+   * @param objs configuration 中的 importObjects
+   */
+  addImportObjects(objs: any) {
+    if (objs) {
+      const keys = Object.keys(objs);
+      for (const key of keys) {
+        if (typeof objs[key] !== undefined) {
+          this.container.registerObject(key, objs[key]);
+        }
+      }
+    }
+  }
+
+  bindConfigurationClass(clzz, namespace) {
+    if (clzz instanceof FunctionalConfiguration) {
+      // 函数式写法不需要绑定到容器
+    } else {
+      // 普通类写法
+      saveComponentId(undefined, clzz);
+      const id = getComponentUUID(clzz);
+      this.container.bind(id, clzz, {
+        namespace: namespace,
+        scope: ScopeEnum.Singleton,
+      });
+    }
+
+    // configuration 手动绑定去重
+    const configurationMods = listModule(CONFIGURATION_KEY);
+    const exists = configurationMods.find(mod => {
+      return mod.target === clzz;
+    });
+    if (!exists) {
+      saveModule(CONFIGURATION_KEY, {
+        target: clzz,
+        namespace: namespace,
+      });
+    }
+  }
+
+  private static getConfigurationExport(exports): any[] {
+    const mods = [];
+    if (
+      Types.isClass(exports) ||
+      Types.isFunction(exports) ||
+      exports instanceof FunctionalConfiguration
+    ) {
+      mods.push(exports);
+    } else {
+      for (const m in exports) {
+        const module = exports[m];
+        if (
+          Types.isClass(module) ||
+          Types.isFunction(module) ||
+          module instanceof FunctionalConfiguration
+        ) {
+          mods.push(module);
+        }
+      }
+    }
+    return mods;
+  }
+
+  public getNamespaceList() {
+    return this.namespaceList;
+  }
+
+  public getDetectorOptionsList() {
+    return this.detectorOptionsList;
+  }
+}
 /**
  * 应用容器
  */
-export class ElectronBootContainer implements ContainerInterface,ModuleStoreInterface{
+export class AirContainer implements AirContainerInterface,ModuleStoreInterface{
   private _resolverFactory: ManagedResolverFactory = null;
   private _registry: ObjectDefinitionRegistryInterface = null;
   private _identifierMapping = null;
   private moduleMap:Map<any,Set<any>> = null;
   private _objectCreateEventTarget: EventEmitter;
-  public parent: ContainerInterface = null;
+  public parent: AirContainerInterface = null;
   // 仅仅用于兼容requestContainer的ctx
   protected ctx = {};
   private fileDetector: FileDetectorInterface;
@@ -63,7 +242,7 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
     return this._objectCreateEventTarget;
   }
 
-  constructor(parent?: ContainerInterface) {
+  constructor(parent?: AirContainerInterface) {
     this.parent = parent;
     this.init();
   }
@@ -208,8 +387,8 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
   /**
    * 创建子容器
    */
-  createChild(): ContainerInterface {
-    return new ElectronBootContainer();
+  createChild(): AirContainerInterface {
+    return new AirContainer();
   }
 
   get<T>(identifier: { new(...args): T }, args?: any[], objectContext?: ObjectContext): T;
@@ -229,7 +408,7 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
       return this.parent.get(identifier, args);
     }
     if (!definition){
-      throw new FrameworkDefinitionNotFoundError(
+      throw new CoreDefinitionNotFoundError(
         objectContext?.originName ?? identifier
       );
     }
@@ -255,7 +434,7 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
     }
 
     if (!definition) {
-      throw new FrameworkDefinitionNotFoundError(
+      throw new CoreDefinitionNotFoundError(
         (objectContext?.originName ?? identifier) as ObjectIdentifier
       );
     }
@@ -318,9 +497,20 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
    */
   load(module?: any) {
     if (module){
+      const configuration = new ContainerConfiguration(this)
+      configuration.load(module)
+      for (const ns of configuration.getNamespaceList()) {
+        this.namespaceSet.add(ns)
+        debug(`[core]:load  configuration in namespace="${ns}" complete`)
+      }
 
+      const detectorOptionsMerged = {}
+      for (const detectorOption of configuration.getDetectorOptionsList()) {
+        extend(true,detectorOptionsMerged,detectorOption)
+      }
+      this.fileDetector?.setExtraDetectorOptions(detectorOptionsMerged)
+      this.isLoad = true
     }
-    this.fileDetector?.run(this)
   }
 
   onBeforeBind(fn: (clazz: any, options: ObjectBeforeBindOptions) => void) {
@@ -433,7 +623,7 @@ export class ElectronBootContainer implements ContainerInterface,ModuleStoreInte
     } else {
       const info: {
         id: ObjectIdentifier;
-        provider: (context?: ContainerInterface) => any;
+        provider: (context?: AirContainerInterface) => any;
         scope?: ScopeEnum;
       } = module[FUNCTION_INJECT_KEY];
       if (info && info.id) {
