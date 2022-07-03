@@ -1,8 +1,10 @@
 import "reflect-metadata"
-import { Bootstrap } from "@air/core/boot/electronApplication";
+import { AirApplication } from "@air/core/boot/bootstrap";
+import { AirBootApplication } from "@air/core/decorator/decorator/common/bootstrap.decorator";
 
+@AirBootApplication()
 export class DemoApplication {
   public static main(...args:string[]) {
-    Bootstrap.run(DemoApplication,...args)
+    AirApplication.run(DemoApplication,args)
   }
 }
