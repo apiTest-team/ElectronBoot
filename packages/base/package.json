@@ -7,6 +7,9 @@
   "module": "./dist/esm5/index.js",
   "es2015": "./dist/esm2015/index.js",
   "typings": "./dist/types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "npm run build:cjs",
     "build:clean": "rimraf build",
@@ -19,5 +22,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "gitHead": "858a4642d2c39d11560387a04b2f904d488e3ee9"
+  "gitHead": "ac38614e586a1e5ad4189575bf7fc047362d0f6c"
 }

@@ -24,8 +24,11 @@
     "@types/picomatch": "^2.3.0",
     "typescript": "^4.7.4"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "gitHead": "858a4642d2c39d11560387a04b2f904d488e3ee9"
+  "gitHead": "ac38614e586a1e5ad4189575bf7fc047362d0f6c"
 }
