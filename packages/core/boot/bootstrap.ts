@@ -1,9 +1,7 @@
-import { BootstrapOptions } from "../decorator/interface/bootstrap.interface";
+import { AIR_BOOT_STARTER, BootstrapOptions, getClassMetadata } from "../decorator";
 import { AirContainerInterface } from "../interface";
 import { destroyGlobalApplicationContext, initializeGlobalApplicationContext } from "./setup";
 import { join } from "path";
-import { getClassMetadata } from "../decorator/manager/default.manager";
-import { AIR_BOOT_STARTER } from "../decorator/constant";
 
 /**
  * 当前环境是否时ts开发环境

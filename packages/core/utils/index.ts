@@ -6,6 +6,8 @@ import * as process from "process";
 
 export * from "./camelCase"
 export * from "./uuid"
+export * from "./extend"
+export * from "./resolves"
 
 const ToString = Function.prototype.toString;
 const hasOwn = Object.prototype.hasOwnProperty;

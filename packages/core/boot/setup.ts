@@ -1,18 +1,13 @@
 import { AirContainerInterface } from "../interface";
-import { BootstrapOptions, Constructable } from "../decorator/interface/bootstrap.interface";
-import { bindContainer, clearBindContainer, listPreloadModule } from "../decorator/manager/default.manager";
-import { AirContainer } from "../context/container";
-import { DirectoryFileDetector } from "../common/fileDetector";
+import { bindContainer, clearBindContainer, listPreloadModule,Constructable,BootstrapOptions } from "../decorator";
+import { AirContainer } from "../context";
+import { DirectoryFileDetector } from "../common";
 import { safeRequire } from "../utils";
-import {join} from "path"
-import { EnvironmentService } from "../service/environment.service";
-import { ConfigService } from "../service/config.service";
+import { join } from "path";
 import defaultConfig from "../config/default.config";
 import util from "util";
-import { LifeCycleService } from "../service/lifeCycleService";
-import { AspectService } from "../service/aspect.service";
-import { DecoratorService } from "../service/decorator.service";
-import { RuntimeService } from "../service/runtime.service";
+import { LifeCycleService,AspectService,DecoratorService,RuntimeService,ConfigService,EnvironmentService } from "../service";
+
 const debug = util.debuglog('air:debug');
 /**
  * 初始化全局工期

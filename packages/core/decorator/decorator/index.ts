@@ -8,3 +8,11 @@ export * from "./common/objectdef.decorator"
 export * from "./common/configuration.decorator"
 // 运行时环境装配器
 export * from "./common/runtime.decorator"
+// pipeline装饰器
+export * from "./common/pipeline.decorator"
+// aspect装饰器
+export * from "./common/aspect.decorator"
+// 启动器装饰器
+export * from "./common/bootstrap.decorator"
+// runtime装饰器
+export * from "./runtime"
