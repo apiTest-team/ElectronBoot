@@ -1,6 +1,6 @@
 {
   "name": "@autowired/bundle",
-  "version": "0.0.1-v0.0.1-beta.0.0",
+  "version": "0.0.1-beta.0",
   "description": "",
   "sideEffects": false,
   "main": "./dist/cjs/index.js",
