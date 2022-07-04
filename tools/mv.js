@@ -14,6 +14,11 @@ packagesPath.forEach((filePath)=>{
   let file = createReadStream(join("packages",filePath,"package.json"))
   let out = createWriteStream(join("dist/@air",filePath,"package.json"))
   file.pipe(out)
+  if (filePath==="bundle"){
+    let file = createReadStream(join("packages",filePath,"bin/bundle.js"))
+    let out = createWriteStream(join("dist/@air",filePath,"bin/bundle.js"))
+    file.pipe(out)
+  }
 })
 console.log("文件复制完毕")
 

@@ -25,7 +25,7 @@ export const initializeGlobalApplicationContext = async function(globalOptions:B
   // 初始化运行时
   await applicationContext.getAsync(RuntimeService,[applicationContext,globalOptions])
 
-  // 生命周期组件
+  // 初始化生命周期
   await applicationContext.getAsync(LifeCycleService,[applicationContext])
 
   // 加载前的模块初始化

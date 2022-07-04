@@ -1,5 +1,0 @@
-class Core {
-
-}
-
-new Core()
