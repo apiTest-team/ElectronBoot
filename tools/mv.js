@@ -1,4 +1,4 @@
-let { createReadStream,createWriteStream, readdirSync, statSync } = require("fs");
+let { readdirSync, statSync,copyFile } = require("fs");
 let { join } = require("path");
 
 function isDirectory(path) {
@@ -8,17 +8,32 @@ function isDirectory(path) {
 function getFolders(dir) {
   return readdirSync(dir).filter(file => isDirectory(join(dir, file)));
 }
-console.log("准备复制文件了")
+
 const packagesPath = getFolders("packages")
 packagesPath.forEach((filePath)=>{
-  let file = createReadStream(join("packages",filePath,"package.json"))
-  let out = createWriteStream(join("dist/@air",filePath,"package.json"))
-  file.pipe(out)
-  if (filePath==="bundle"){
-    let file = createReadStream(join("packages",filePath,"bin/bundle.js"))
-    let out = createWriteStream(join("dist/@air",filePath,"bin/bundle.js"))
-    file.pipe(out)
+  const root = join(__dirname,"../")
+  console.log(join(root,"packages",filePath,"package.json"))
+  if (filePath!=="base"){
+    const src = join(root,"packages",filePath,"package.json")
+    const dist = join(root,"dist/packages",filePath,"package.json")
+    copyFile(src,dist,function(err) {
+      if (err){
+        console.log(err);
+      }else{
+        console.log(`copy file ${src} success`);
+      }
+    })
+    if (filePath==="bundle"){
+      const src = join(root,"packages",filePath,"bin","bundle.js")
+      const dist = join(root,"dist/packages",filePath,"bin","bundle.js")
+      copyFile(src,dist,function(err) {
+        if (err){
+          console.log(err);
+        }else{
+          console.log(`copy file ${src} success`);
+        }
+      })
+    }
   }
 })
-console.log("文件复制完毕")
 

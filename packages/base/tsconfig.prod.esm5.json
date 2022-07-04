@@ -3,6 +3,6 @@
   "compilerOptions": {
     "module": "ES2015",
     "target": "ES5",
-    "outDir": "../../dist/@air/core/esm5",
+    "outDir": "dist/esm5",
   },
 }

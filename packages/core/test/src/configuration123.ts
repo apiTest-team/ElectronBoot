@@ -1,9 +1,9 @@
 
 import { join } from 'path';
-import { Autowired, Configuration } from "../../decorator";
-import { ConfigService } from "../../service/config.service";
-import { Config } from "../../decorator/decorator/runtime";
-import { ALL } from "../../decorator/constant";
+import { Autowired, Configuration } from "../../src/decorator";
+import { ConfigService } from "../../src/service/config.service";
+import { Config } from "../../src/decorator/decorator/runtime";
+import { ALL } from "../../src/decorator/constant";
 
 @Configuration({
   importConfigs: [

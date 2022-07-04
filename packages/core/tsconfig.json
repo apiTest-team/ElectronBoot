@@ -5,7 +5,7 @@
     "target": "es2018",
     "lib": ["es2018"],
     "outDir": "build/node",
-    "rootDirs": ["./"],
+    "rootDirs": ["./src"],
     "strict": false,
     "sourceMap": true,
     "inlineSources": true,

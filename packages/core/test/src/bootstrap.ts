@@ -1,9 +1,9 @@
-import { AirApplication} from "../../boot/bootstrap";
-import { AirBootApplication } from "../../decorator/decorator/common/bootstrap.decorator";
-import { Autowired } from "../../decorator";
-import { ConfigService } from "../../service/config.service";
-import { Config } from "../../decorator/decorator/runtime";
-import { ALL } from "../../decorator/constant";
+import { AirApplication} from "../../src/boot/bootstrap";
+import { AirBootApplication } from "../../src/decorator/decorator/common/bootstrap.decorator";
+import { Autowired } from "../../src/decorator";
+import { ConfigService } from "../../src/service/config.service";
+import { Config } from "../../src/decorator/decorator/runtime";
+import { ALL } from "../../src/decorator/constant";
 
 
 

@@ -1,4 +1,4 @@
-import { Component, Scope, ScopeEnum } from "../../../decorator";
+import { Component, Scope, ScopeEnum } from "../../../src/decorator";
 
 @Component()
 @Scope(ScopeEnum.Singleton)
