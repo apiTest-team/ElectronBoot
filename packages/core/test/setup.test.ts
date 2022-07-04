@@ -1,8 +1,8 @@
 import {join} from "path"
 import { initializeGlobalApplicationContext } from "../boot/setup";
 import { ConfigService } from "../service/config.service";
-describe("/test/setup.test.ts", function() {
-  it("should test setup and config", async function() {
+describe("/test/boot.test.ts", function() {
+  it("should test boot and config", async function() {
       const baseDir = join(__dirname,"./fixtures/base-app-config/src")
     const container = await initializeGlobalApplicationContext({
       baseDir,

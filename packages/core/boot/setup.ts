@@ -115,7 +115,7 @@ export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptions):
   // 加载全局配置，即是运行目录加上configuration文件名
   if (!globalOptions.imports){
     globalOptions.imports = [
-      safeRequire(join(globalOptions.baseDir as string,"configuration"))
+      safeRequire(join(globalOptions.baseDir ,"configuration"))
     ]
   }
 

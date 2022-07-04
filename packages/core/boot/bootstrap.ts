@@ -9,7 +9,7 @@ import { AIR_BOOT_STARTER } from "../decorator/constant";
  * 当前环境是否时ts开发环境
  */
 export function isTypeScriptEnvironment() {
-  const TS_MODE_PROCESS_FLAG: string = process.env.TS_MODE as string;
+  const TS_MODE_PROCESS_FLAG: string = process.env.TS_MODE;
   if ('false' === TS_MODE_PROCESS_FLAG) {
     return false;
   }
