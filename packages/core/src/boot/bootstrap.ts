@@ -36,36 +36,6 @@ export class AutowiredApplication {
   // public static configure(opts:BootstrapOptions){
   //
   // }
-  //
-  // /**
-  //  * 运行器
-  //  * @param target
-  //  * @param args
-  //  */
-  // public static async run(target:any,args:string[]){
-  //
-  // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   /**
    * 配置信息
    * @param configuration
