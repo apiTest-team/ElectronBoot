@@ -8,19 +8,14 @@ import { saveClassMetadata} from "../../manager/default.manager";
 import { AIR_BOOT_STARTER } from "../../constant";
 import { isFunction } from "../../../utils";
 import * as path from "path";
-
-export interface AirBootOptions{
-  bootstrapOptions?:BootstrapOptions,
-  configurationOptions?:ConfigurationOptions
-}
+import { AirBootstrapOptions } from "../../../interface/bootstrap.interface";
 /**
  * 启动类
  * @param opts 启动参数
  * @constructor
  */
-export const AirBootApplication = (opts?:AirBootOptions):ClassDecorator=>{
+export const AirBootApplication = (opts?:AirBootstrapOptions):ClassDecorator=>{
   return target => {
-    console.log(process.cwd());
     // 设置默认配置文件
     const defaultConfiguration:ConfigurationOptions = {
       importConfigs:[
@@ -30,7 +25,6 @@ export const AirBootApplication = (opts?:AirBootOptions):ClassDecorator=>{
     const configurationOptions = Object.assign({},defaultConfiguration,opts?.configurationOptions)
     // 设置默认的bootstrap配置文件
     const defaultBootstrapOptions:BootstrapOptions = {
-      baseDir:process.cwd(),
       configurationModule:[target]
     }
     const bootStrapOptions = Object.assign({},defaultBootstrapOptions,opts?.bootstrapOptions)

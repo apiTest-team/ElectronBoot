@@ -220,9 +220,9 @@ export class AirApplication {
       return this.globalOptions.baseDir;
     }
     if (isTypeScriptEnvironment()) {
-      return join(this.appDir, 'src');
+      return join(this.appDir);
     } else {
-      return join(this.appDir, 'dist');
+      return join(this.appDir);
     }
   }
 
