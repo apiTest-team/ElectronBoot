@@ -1,4 +1,4 @@
-import { AirContainerInterface } from "../../interface";
+import { AutowiredContainerInterface } from "../../interface";
 import { FileDetectorInterface } from "../../interface";
 
 /**
@@ -15,7 +15,7 @@ export interface BootstrapOptions {
   // 应用地址路径
   appDir?:string
   // 应用上下文
-  applicationContext?:AirContainerInterface
+  applicationContext?:AutowiredContainerInterface
   // 加载文件前的模块
   preloadModules?:any[]
   // 不扫描的文件

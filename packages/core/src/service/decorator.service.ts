@@ -1,5 +1,5 @@
 import * as util from 'util';
-import { AirContainerInterface,HandlerFunction } from "../interface";
+import { AutowiredContainerInterface,HandlerFunction } from "../interface";
 import { AspectService } from "./aspect.service";
 import { CoreCommonError } from "../error";
 import { MethodHandlerFunction, ParameterHandlerFunction,
@@ -8,7 +8,7 @@ import { MethodHandlerFunction, ParameterHandlerFunction,
   Autowired, Component, Init, Scope, ScopeEnum
 } from "../decorator";
 
-const debug = util.debuglog('air:debug');
+const debug = util.debuglog('autowired:debug');
 
 @Component()
 @Scope(ScopeEnum.Singleton)
@@ -20,7 +20,7 @@ export class DecoratorService {
   @Autowired()
   private aspectService: AspectService;
 
-  constructor(readonly applicationContext: AirContainerInterface) {}
+  constructor(readonly applicationContext: AutowiredContainerInterface) {}
 
   @Init()
   protected init() {

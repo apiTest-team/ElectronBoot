@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { AirContainerInterface,
+import { AutowiredContainerInterface,
   ObjectDefinitionInterface,
   ObjectLifeCycleEvent,
   ManagedResolverFactoryCreateOptionsInterface,
@@ -86,9 +86,9 @@ export class ManagedResolverFactory {
   private resolvers:Resolvers = {};
   private creating = new Map<string, boolean>();
   singletonCache = new Map<ObjectIdentifier, any>();
-  context: AirContainerInterface;
+  context: AutowiredContainerInterface;
 
-  constructor(context: AirContainerInterface) {
+  constructor(context: AutowiredContainerInterface) {
     this.context = context;
     // 初始化解析器
     this.resolvers = {

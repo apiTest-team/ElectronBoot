@@ -1,18 +1,18 @@
 import { RuntimeConfigurationOptions,
   RuntimeInterface,
   RuntimeType,
-  AirContextInterface,
-  AirContainerInterface,
+  AutowiredContextInterface,
+  AutowiredContainerInterface,
   ApplicationInterface} from "../interface";
 import { EnvironmentService,ConfigService } from "../service";
 import { Autowired, Destroy, Init,BootstrapOptions } from "../decorator";
-import { AirRequestContainer } from "../context";
+import { AutowiredRequestContainer } from "../context";
 /**
  * 基础运行时环境
  */
 export abstract class BaseRuntime<
   App extends ApplicationInterface<Ctx>,
-  Ctx extends AirContextInterface,
+  Ctx extends AutowiredContextInterface,
   Opts extends RuntimeConfigurationOptions
 > implements RuntimeInterface<App, Ctx, Opts>
 {
@@ -28,7 +28,7 @@ export abstract class BaseRuntime<
   configService: ConfigService;
 
   // 构造函数
-  protected constructor(readonly applicationContext: AirContainerInterface) {}
+  protected constructor(readonly applicationContext: AutowiredContainerInterface) {}
 
   @Init()
   async init() {
@@ -80,7 +80,7 @@ export abstract class BaseRuntime<
 
   public abstract getAppDir(): string;
 
-  public getApplicationContext(): AirContainerInterface {
+  public getApplicationContext(): AutowiredContainerInterface {
     return this.applicationContext;
   }
 
@@ -144,7 +144,7 @@ export abstract class BaseRuntime<
           return this["getRuntimeType"]();
         }
       },
-      getApplicationContext: (): AirContainerInterface => {
+      getApplicationContext: (): AutowiredContainerInterface => {
         return this.getApplicationContext();
       },
       createAnonymousContext: (extendCtx?: Ctx): Ctx => {
@@ -153,7 +153,7 @@ export abstract class BaseRuntime<
           ctx.startTime = Date.now();
         }
         if (!ctx.requestContext) {
-          ctx.requestContext = new AirRequestContainer(ctx, this.getApplicationContext());
+          ctx.requestContext = new AutowiredRequestContainer(ctx, this.getApplicationContext());
           ctx.requestContext.ready();
         }
         ctx.setAttr = (key: string, value: any) => {

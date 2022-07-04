@@ -1,4 +1,4 @@
-import { AirContainerInterface } from "../interface";
+import { AutowiredContainerInterface } from "../interface";
 import { AspectMetadata, JoinPoint,getClassMetadata, listModule,ASPECT_KEY,MethodAspectInterface,Component, Scope, ScopeEnum } from "../decorator";
 import pm from "picomatch";
 import { Types } from "../utils";
@@ -6,7 +6,7 @@ import { Types } from "../utils";
 @Component()
 @Scope(ScopeEnum.Singleton)
 export class AspectService {
-  constructor(readonly applicationContext: AirContainerInterface) {}
+  constructor(readonly applicationContext: AutowiredContainerInterface) {}
 
   /**
    * load aspect method for container

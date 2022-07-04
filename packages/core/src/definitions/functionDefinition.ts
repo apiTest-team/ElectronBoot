@@ -1,6 +1,6 @@
 import { ObjectCreator } from "./objectCreator";
 import {
-  AirContainerInterface,
+  AutowiredContainerInterface,
   ObjectCreatorInterface,
   ObjectDefinitionInterface,
   PropertiesInterface
@@ -9,7 +9,7 @@ import { ManagedInstanceInterface, ObjectIdentifier, ScopeEnum } from "../decora
 
 
 class FunctionWrapperCreator extends ObjectCreator {
-  doConstruct(Clazz: any, args?: any, context?: AirContainerInterface): any {
+  doConstruct(Clazz: any, args?: any, context?: AutowiredContainerInterface): any {
     if (!Clazz) {
       return null;
     }
@@ -19,7 +19,7 @@ class FunctionWrapperCreator extends ObjectCreator {
   async doConstructAsync(
     Clazz: any,
     args?: any,
-    context?: AirContainerInterface
+    context?: AutowiredContainerInterface
   ): Promise<any> {
     if (!Clazz) {
       return null;

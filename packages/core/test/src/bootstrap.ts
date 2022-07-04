@@ -1,9 +1,9 @@
-import { AirApplication} from "../../src/boot/bootstrap";
-import { AirBootApplication } from "../../src/decorator/decorator/common/bootstrap.decorator";
-import { Autowired } from "../../src/decorator";
-import { ConfigService } from "../../src/service/config.service";
-import { Config } from "../../src/decorator/decorator/runtime";
-import { ALL } from "../../src/decorator/constant";
+import { AutowiredApplication} from "../../src";
+import { AutowiredBootApplication } from "../../src";
+import { Autowired } from "../../src";
+import { ConfigService } from "../../src";
+import { Config } from "../../src";
+import { ALL } from "../../src";
 
 
 
@@ -12,7 +12,7 @@ import * as defaultConfig from "./config/config.default"
 import * as unittestConfig from "./config/config.unittest"
 import { RemoteConfigService } from "./extra";
 
-@AirBootApplication({
+@AutowiredBootApplication({
   bootstrapOptions:{
     imports:extra,
     moduleDetector:false
@@ -32,7 +32,7 @@ export class TestApplication {
   @Autowired()
   remoteConfig:RemoteConfigService
   public static main(...args:string[]){
-    AirApplication.run(TestApplication,args)
+    AutowiredApplication.run(TestApplication,args)
   }
   async onReady() {
     console.log(this.configService.getConfiguration());

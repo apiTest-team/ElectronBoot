@@ -7,7 +7,7 @@ import { getConfigEnv, safelyGet,extend} from "../utils";
 import util from "util";
 import { CoreInvalidConfigError } from "../error";
 
-const debug = util.debuglog('air:debug');
+const debug = util.debuglog('autowired:debug');
 /**
  * 配置服务
  */

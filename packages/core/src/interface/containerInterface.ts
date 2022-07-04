@@ -19,8 +19,8 @@ export enum ObjectLifeCycleEvent {
 /**
  * 定义容器接口
  */
-export interface AirContainerInterface extends ObjectFactoryInterface,ObjectLifeCycleInterface{
-  parent: AirContainerInterface;
+export interface AutowiredContainerInterface extends ObjectFactoryInterface,ObjectLifeCycleInterface{
+  parent: AutowiredContainerInterface;
   identifierMapping: IdentifierRelationShipInterface;
   objectCreateEventTarget: EventEmitter;
   ready();
@@ -38,7 +38,7 @@ export interface AirContainerInterface extends ObjectFactoryInterface,ObjectLife
   ): void;
   bindClass(exports, options?: Partial<ObjectDefinitionInterface>);
   setFileDetector(fileDetector: FileDetectorInterface);
-  createChild(): AirContainerInterface;
+  createChild(): AutowiredContainerInterface;
   listModule(identifier:ObjectIdentifier):any[]
   saveModule(identifier:ObjectIdentifier,module)
   /**

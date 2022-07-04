@@ -1,12 +1,12 @@
 import { ObjectDefinitionInterface } from "./objectDefinition.interface";
-import { AirContainerInterface } from "./containerInterface";
+import { AutowiredContainerInterface } from "./containerInterface";
 
 
 /**
  * 参数生命周期回调参数
  */
 interface ObjectLifeCycleOptions {
-  context: AirContainerInterface;
+  context: AutowiredContainerInterface;
   definition: ObjectDefinitionInterface;
 }
 
@@ -47,16 +47,16 @@ export type ObjectBeforeDestroyOptions = ObjectLifeCycleOptions
  */
 export interface LifeCycleInterface extends Partial<ObjectLifeCycleInterface> {
   onConfigLoad?(
-    container: AirContainerInterface
+    container: AutowiredContainerInterface
   ): Promise<any>;
   onReady?(
-    container: AirContainerInterface
+    container: AutowiredContainerInterface
   ): Promise<void>;
   onServerReady?(
-    container: AirContainerInterface
+    container: AutowiredContainerInterface
   ): Promise<void>;
   onStop?(
-    container: AirContainerInterface
+    container: AutowiredContainerInterface
   ): Promise<void>;
 }
 /**

@@ -1,5 +1,5 @@
-import { AIR_BOOT_STARTER, BootstrapOptions, getClassMetadata } from "../decorator";
-import { AirContainerInterface } from "../interface";
+import { Autowired_BOOT_STARTER, BootstrapOptions, getClassMetadata } from "../decorator";
+import { AutowiredContainerInterface } from "../interface";
 import { destroyGlobalApplicationContext, initializeGlobalApplicationContext } from "./setup";
 import { join } from "path";
 
@@ -17,18 +17,18 @@ export function isTypeScriptEnvironment() {
 /**
  * app启动器
  */
-export class AirApplication {
-  private static starter:AirApplication
+export class AutowiredApplication {
+  private static starter:AutowiredApplication
   private static configured = false
-  private static applicationContext:AirContainerInterface
-  private applicationContext: AirContainerInterface;
+  private static applicationContext:AutowiredContainerInterface
+  private applicationContext: AutowiredContainerInterface;
   protected appDir:string=""
   protected baseDir:string=""
   protected globalOptions:Partial<BootstrapOptions> = {}
   protected globalConfig:any
   public static build(){
     if (!this.starter){
-      this.starter = new AirApplication()
+      this.starter = new AutowiredApplication()
     }
     return this.starter
   }
@@ -85,7 +85,7 @@ export class AirApplication {
    */
   private static getStarter(){
     if (!this.starter){
-      this.starter = new AirApplication()
+      this.starter = new AutowiredApplication()
     }
     return this.starter
   }
@@ -94,7 +94,7 @@ export class AirApplication {
    */
   public static async run(target:any,args:string[]){
     // 获取配置信息
-    const options = getClassMetadata(AIR_BOOT_STARTER,target)
+    const options = getClassMetadata(Autowired_BOOT_STARTER,target)
     if (!this.configured){
       this.configure(options)
     }
@@ -127,7 +127,7 @@ export class AirApplication {
   /**
    * 获取应用上下文
    */
-  public static getApplicationContext(): AirContainerInterface {
+  public static getApplicationContext(): AutowiredContainerInterface {
     return this.applicationContext;
   }
 
@@ -136,13 +136,13 @@ export class AirApplication {
    * @param signal
    */
   private static async onSignal(signal:any) {
-    console.log('[air:bootstrap] receive signal %s, closing', signal);
+    console.log('[autowired:bootstrap] receive signal %s, closing', signal);
     try {
       await this.stop();
-      console.log('[air:bootstrap] close done, exiting with code:0');
+      console.log('[autowired:bootstrap] close done, exiting with code:0');
       process.exit(0);
     } catch (err) {
-      console.log('[air:bootstrap] close with error: ', err);
+      console.log('[autowired:bootstrap] close with error: ', err);
       process.exit(1);
     }
   }
@@ -194,7 +194,7 @@ export class AirApplication {
 
   static reset() {
     this.configured = false;
-    this.starter = {} as AirApplication;
+    this.starter = {} as AutowiredApplication;
   }
 
   public async init(){

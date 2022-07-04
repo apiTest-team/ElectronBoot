@@ -1,15 +1,15 @@
 /**
  * 创建工厂
  */
-import { AirContainerInterface } from "./containerInterface";
+import { AutowiredContainerInterface } from "./containerInterface";
 
 export interface ObjectCreatorInterface {
   load(): any;
-  doConstruct(clazz: any, args?: any, context?: AirContainerInterface): any;
+  doConstruct(clazz: any, args?: any, context?: AutowiredContainerInterface): any;
   doConstructAsync(
     clazz: any,
     args?: any,
-    context?: AirContainerInterface
+    context?: AutowiredContainerInterface
   ): Promise<any>;
   doInit(obj: any): void;
   doInitAsync(obj: any): Promise<void>;

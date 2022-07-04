@@ -1,4 +1,4 @@
-import { AirContainerInterface, ObjectDefinitionInterface,FileDetectorInterface } from "../interface";
+import { AutowiredContainerInterface, ObjectDefinitionInterface,FileDetectorInterface } from "../interface";
 import { Types,resolves } from "../utils";
 import { getComponentName } from "../decorator";
 import { CoreDuplicateClassNameError } from "../error";
@@ -17,7 +17,7 @@ export abstract class AbstractFileDetector<T> implements FileDetectorInterface {
     this.extraDetectorOptions = {} as T;
   }
 
-  abstract run(container: AirContainerInterface);
+  abstract run(container: AutowiredContainerInterface);
 
   setExtraDetectorOptions(detectorOptions: T) {
     this.extraDetectorOptions = detectorOptions;

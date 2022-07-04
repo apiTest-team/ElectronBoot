@@ -3,7 +3,7 @@ import { resolve } from "path";
 import pm from "picomatch";
 import { debuglog } from "util";
 
-const debug = debuglog("air:glob");
+const debug = debuglog("autowired:glob");
 
 export interface RunOptions {
   cwd: string;
@@ -43,6 +43,6 @@ export const resolves = (pattern: string[], options: RunOptions = { cwd: process
   }
 
   const result = globDirectory(entryDir, isMatch, ignoreMatch, options);
-  debug(`air glob timing ${Date.now() - startTime}ms`);
+  debug(`autowired glob timing ${Date.now() - startTime}ms`);
   return result;
 };

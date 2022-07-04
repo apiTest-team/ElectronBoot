@@ -1,10 +1,17 @@
 import "reflect-metadata"
-import { AirApplication } from "@air/core/boot/bootstrap";
-import { AirBootApplication } from "@air/core/decorator/decorator/common/bootstrap.decorator";
+import {Autowired, AutowiredApplication, AutowiredBootApplication, ConfigService} from "@aotowired/core"
 
-@AirBootApplication()
+@AutowiredBootApplication()
 export class DemoApplication {
+
+  @Autowired()
+  public configService: ConfigService | undefined
+
   public static main(...args:string[]) {
-    AirApplication.run(DemoApplication,args)
+    AutowiredApplication.run(DemoApplication,args)
+  }
+
+  async onReady(){
+    console.log(this.configService?.getConfiguration())
   }
 }

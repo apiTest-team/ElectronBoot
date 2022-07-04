@@ -1,13 +1,13 @@
-import { AirContainer } from "./container";
-import { AirContainerInterface, ObjectContext } from "../interface";
+import { AutowiredContainer } from "./container";
+import { AutowiredContainerInterface, ObjectContext } from "../interface";
 import { REQUEST_CTX_KEY } from "./managedResolver";
 import { PIPELINE_IDENTIFIER } from "../decorator";
 
-export class AirRequestContainer extends AirContainer{
+export class AutowiredRequestContainer extends AutowiredContainer{
 
-  private readonly applicationContext:AirContainerInterface
+  private readonly applicationContext:AutowiredContainerInterface
 
-  constructor(ctx,applicationContext:AirContainerInterface) {
+  constructor(ctx,applicationContext:AutowiredContainerInterface) {
     super();
     this.applicationContext = applicationContext
     this.registry.setIdentifierRelation(

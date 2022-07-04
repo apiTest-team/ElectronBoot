@@ -1,7 +1,7 @@
 import { ConfigService } from "./config.service";
 import { AspectService } from "./aspect.service";
 import { DecoratorService } from "./decorator.service";
-import { AirContainerInterface,RuntimeInterface } from "../interface";
+import { AutowiredContainerInterface,RuntimeInterface } from "../interface";
 import { ALL, CONFIG_KEY, RUNTIME_KEY,getComponentUUID, listModule,
   Autowired, Component, Init, Scope, ScopeEnum} from "../decorator";
 import util from "util";
@@ -19,7 +19,7 @@ export class RuntimeService {
   decoratorService:DecoratorService
   // 构造器
   constructor(
-    readonly applicationContext:AirContainerInterface,
+    readonly applicationContext:AutowiredContainerInterface,
     readonly globalOptions
   ) {}
 

@@ -1,19 +1,19 @@
-import { AirContextInterface } from "./context.interface";
+import { AutowiredContextInterface } from "./context.interface";
 import { RuntimeType } from "./runtime.interface";
-import { AirContainerInterface } from "./containerInterface";
+import { AutowiredContainerInterface } from "./containerInterface";
 
 /**
  * 定义运行时的应用程序接口
  */
 export type ApplicationInterface<
-  T extends AirContextInterface = AirContextInterface,
+  T extends AutowiredContextInterface = AutowiredContextInterface,
   RuntimeApplication = unknown
   > = BaseApplicationInterface<T> & RuntimeApplication
 
 /**
  * 运行时基础应用接口
  */
-export interface BaseApplicationInterface<Ctx extends AirContextInterface>{
+export interface BaseApplicationInterface<Ctx extends AutowiredContextInterface>{
   /**
    * 项目路径
    */
@@ -37,7 +37,7 @@ export interface BaseApplicationInterface<Ctx extends AirContextInterface>{
   /**
    * 获取应用的上下文
    */
-  getApplicationContext():AirContainerInterface
+  getApplicationContext():AutowiredContainerInterface
 
   /**
    * 获取配置，如果不传入key应该获取所有的

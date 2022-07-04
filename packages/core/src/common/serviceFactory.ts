@@ -12,7 +12,7 @@ export abstract class ServiceFactory<T> {
     this.options = options;
     assert(
       !(options.client && options.clients),
-      `air:${this.getName()} can not set options.client and options.clients both`
+      `autowired:${this.getName()} can not set options.client and options.clients both`
     );
 
     // alias app[name] as client, but still support createInstance method

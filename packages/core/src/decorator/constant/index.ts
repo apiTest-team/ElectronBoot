@@ -5,14 +5,14 @@ export const ALL = 'common:all_value_key';
 export const CONFIGURATION_KEY = "common:configuration"
 export const ASPECT_KEY = "common:aspect"
 export const RUNTIME_KEY = "common:runtime"
-export const AIR_BOOT_STARTER ="common:air_boot_starter"
+export const Autowired_BOOT_STARTER ="common:autowired_boot_starter"
 
 // pipeline
 export const PIPELINE_IDENTIFIER = '__pipeline_identifier__';
 
 // runtime
 export const CONFIG_KEY="config"
-export const APPLICATION_KEY = "__air_runtime_app__"
+export const APPLICATION_KEY = "__autowired_runtime_app__"
 
 // framework
 export const APPLICATION_CONTEXT_KEY = '__framework_application_context__';

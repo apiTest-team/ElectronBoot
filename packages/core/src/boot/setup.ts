@@ -1,6 +1,6 @@
-import { AirContainerInterface } from "../interface";
+import { AutowiredContainerInterface } from "../interface";
 import { bindContainer, clearBindContainer, listPreloadModule,Constructable,BootstrapOptions } from "../decorator";
-import { AirContainer } from "../context";
+import { AutowiredContainer } from "../context";
 import { DirectoryFileDetector } from "../common";
 import { safeRequire } from "../utils";
 import { join } from "path";
@@ -8,12 +8,12 @@ import defaultConfig from "../config/default.config";
 import util from "util";
 import { LifeCycleService,AspectService,DecoratorService,RuntimeService,ConfigService,EnvironmentService } from "../service";
 
-const debug = util.debuglog('air:debug');
+const debug = util.debuglog('autowired:debug');
 /**
  * 初始化全局工期
  * @param globalOptions
  */
-export const initializeGlobalApplicationContext = async function(globalOptions:BootstrapOptions):Promise<AirContainerInterface> {
+export const initializeGlobalApplicationContext = async function(globalOptions:BootstrapOptions):Promise<AutowiredContainerInterface> {
   // 创建容器
   const applicationContext = prepareGlobalApplicationContext(globalOptions)
 
@@ -36,7 +36,7 @@ export const initializeGlobalApplicationContext = async function(globalOptions:B
  * 等待注销
  * @param applicationContext
  */
-export const destroyGlobalApplicationContext = async (applicationContext:AirContainerInterface)=>{
+export const destroyGlobalApplicationContext = async (applicationContext:AutowiredContainerInterface)=>{
   const lifecycleService = await applicationContext.getAsync(LifeCycleService)
   await lifecycleService.stop()
   // 停止容器
@@ -48,7 +48,7 @@ export const destroyGlobalApplicationContext = async (applicationContext:AirCont
  * 前置处理
  * @param globalOptions
  */
-export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptions):AirContainerInterface => {
+export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptions):AutowiredContainerInterface => {
 
   debug(`[core]: start "initializeGlobalApplicationContext"`)
   debug(`[core]: bootstrap options = ${util.inspect(globalOptions)}`)
@@ -57,7 +57,7 @@ export const prepareGlobalApplicationContext = (globalOptions:BootstrapOptions):
   // 应用路径
   const appDir = globalOptions.appDir??""
   // 初始化全局容器
-  const applicationContext = globalOptions.applicationContext?? new AirContainer()
+  const applicationContext = globalOptions.applicationContext?? new AutowiredContainer()
   debug(`[core]: delegate module map from decoratorManager`)
   // 绑定容器到装饰器管理器
   bindContainer(applicationContext)

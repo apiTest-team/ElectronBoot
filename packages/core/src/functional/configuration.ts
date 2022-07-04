@@ -1,4 +1,4 @@
-import { AirContainerInterface } from "../interface";
+import { AutowiredContainerInterface } from "../interface";
 import { ConfigurationOptions } from "../decorator";
 
 
@@ -19,8 +19,8 @@ export class FunctionalConfiguration {
 
   onConfigLoad(
     configLoadHandler:
-      | ((container: AirContainerInterface) => any)
-      | AirContainerInterface
+      | ((container: AutowiredContainerInterface) => any)
+      | AutowiredContainerInterface
   ) {
     if (typeof configLoadHandler === 'function') {
       this.configLoadHandler = configLoadHandler;
@@ -32,8 +32,8 @@ export class FunctionalConfiguration {
 
   onReady(
     readyHandler:
-      | ((container: AirContainerInterface) => void)
-      | AirContainerInterface
+      | ((container: AutowiredContainerInterface) => void)
+      | AutowiredContainerInterface
   ) {
     if (typeof readyHandler === 'function') {
       this.readyHandler = readyHandler;
@@ -45,8 +45,8 @@ export class FunctionalConfiguration {
 
   onServerReady(
     serverReadyHandler:
-      | ((container: AirContainerInterface) => void)
-      | AirContainerInterface
+      | ((container: AutowiredContainerInterface) => void)
+      | AutowiredContainerInterface
   ) {
     if (typeof serverReadyHandler === 'function') {
       this.serverReadyHandler = serverReadyHandler;
@@ -58,8 +58,8 @@ export class FunctionalConfiguration {
 
   onStop(
     stopHandler:
-      | ((container: AirContainerInterface) => void)
-      | AirContainerInterface
+      | ((container: AutowiredContainerInterface) => void)
+      | AutowiredContainerInterface
   ) {
     if (typeof stopHandler === 'function') {
       this.stopHandler = stopHandler;

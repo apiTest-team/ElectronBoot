@@ -1,9 +1,9 @@
 import { debuglog } from 'util';
 import { ConfigService } from "./config.service";
-import { AirContainerInterface, LifeCycleInterface } from "../interface";
+import { AutowiredContainerInterface, LifeCycleInterface } from "../interface";
 import { CONFIGURATION_KEY,listModule,Autowired, Component, Init, Scope, ScopeEnum } from "../decorator";
 import { FunctionalConfiguration } from "../functional";
-const debug = debuglog('air:debug');
+const debug = debuglog('autowired:debug');
 
 @Component()
 @Scope(ScopeEnum.Singleton)
@@ -12,7 +12,7 @@ export class LifeCycleService {
   @Autowired()
   protected configService: ConfigService;
 
-  constructor(readonly applicationContext: AirContainerInterface) {}
+  constructor(readonly applicationContext: AutowiredContainerInterface) {}
 
   @Init()
   protected async init() {

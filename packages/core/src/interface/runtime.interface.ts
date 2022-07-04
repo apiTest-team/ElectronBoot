@@ -1,7 +1,7 @@
-import { AirContextInterface } from "./context.interface";
+import { AutowiredContextInterface } from "./context.interface";
 import { BootstrapOptions } from "../decorator";
 import { ApplicationInterface } from "./application.interface";
-import { AirContainerInterface } from "./containerInterface";
+import { AutowiredContainerInterface } from "./containerInterface";
 
 /**
  * 运行时配置参数
@@ -18,7 +18,7 @@ export abstract class BaseRuntimeType {
  * 定义运行时环境
  */
 export class RuntimeType extends BaseRuntimeType{
-  static Electron = new RuntimeType("@air/electron")
+  static Electron = new RuntimeType("@autowired/electron")
   constructor(public name:string) {
     super();
   }
@@ -29,7 +29,7 @@ export class RuntimeType extends BaseRuntimeType{
  */
 export interface RuntimeInterface<
   App extends ApplicationInterface<Ctx>,
-  Ctx extends AirContextInterface,
+  Ctx extends AutowiredContextInterface,
   Opts extends RuntimeConfigurationOptions
   >
 {
@@ -41,7 +41,7 @@ export interface RuntimeInterface<
   run():Promise<void>
   stop():Promise<void>
   getApplication():App
-  getApplicationContext():AirContainerInterface
+  getApplicationContext():AutowiredContainerInterface
   getConfiguration(key?:string):any
   getRuntimeName():string
   getAppDir():string

@@ -1,5 +1,5 @@
 import {
-  AirContainerInterface,
+  AutowiredContainerInterface,
   IdentifierRelationShipInterface,
   ObjectBeforeBindOptions,
   ObjectBeforeCreatedOptions,
@@ -31,14 +31,14 @@ import { ConfigService } from "../service/config.service";
 import { ComponentInfoInterface, ConfigurationOptions } from "../decorator/interface/configuration.interface";
 import { EnvironmentService } from "../service/environment.service";
 import { extend } from "../utils/extend";
-const debug = util.debuglog('air:debug');
-const debugBind = util.debuglog('air:bind');
+const debug = util.debuglog('autowired:debug');
+const debugBind = util.debuglog('autowired:bind');
 
 class ContainerConfiguration {
   private loadedMap = new WeakMap();
   private namespaceList = [];
   private detectorOptionsList = [];
-  constructor(readonly container: AirContainerInterface) {}
+  constructor(readonly container: AutowiredContainerInterface) {}
 
   load(module) {
     let namespace = MAIN_MODULE_KEY;
@@ -210,13 +210,13 @@ class ContainerConfiguration {
 /**
  * 应用容器
  */
-export class AirContainer implements AirContainerInterface,ModuleStoreInterface{
+export class AutowiredContainer implements AutowiredContainerInterface,ModuleStoreInterface{
   private _resolverFactory: ManagedResolverFactory = null;
   private _registry: ObjectDefinitionRegistryInterface = null;
   private _identifierMapping = null;
   private moduleMap:Map<any,Set<any>> = null;
   private _objectCreateEventTarget: EventEmitter;
-  public parent: AirContainerInterface = null;
+  public parent: AutowiredContainerInterface = null;
   // 仅仅用于兼容requestContainer的ctx
   protected ctx = {};
   private fileDetector: FileDetectorInterface;
@@ -242,7 +242,7 @@ export class AirContainer implements AirContainerInterface,ModuleStoreInterface{
     return this._objectCreateEventTarget;
   }
 
-  constructor(parent?: AirContainerInterface) {
+  constructor(parent?: AutowiredContainerInterface) {
     this.parent = parent;
     this.init();
   }
@@ -387,8 +387,8 @@ export class AirContainer implements AirContainerInterface,ModuleStoreInterface{
   /**
    * 创建子容器
    */
-  createChild(): AirContainerInterface {
-    return new AirContainer();
+  createChild(): AutowiredContainerInterface {
+    return new AutowiredContainer();
   }
 
   get<T>(identifier: { new(...args): T }, args?: any[], objectContext?: ObjectContext): T;
@@ -623,7 +623,7 @@ export class AirContainer implements AirContainerInterface,ModuleStoreInterface{
     } else {
       const info: {
         id: ObjectIdentifier;
-        provider: (context?: AirContainerInterface) => any;
+        provider: (context?: AutowiredContainerInterface) => any;
         scope?: ScopeEnum;
       } = module[FUNCTION_INJECT_KEY];
       if (info && info.id) {
