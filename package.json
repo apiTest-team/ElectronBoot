@@ -9,11 +9,11 @@
     "dev": "pnpm --filter=example run dev",
     "build": "pnpm run build:clean && pnpm run build:cjs && pnpm run build:es2015 && pnpm run build:esm5 && pnpm run build:types && pnpm run build:umd && node tools/mv.js",
     "build:clean": "rimraf dist",
-    "build:es2015": "pnpm --filter ./packages/** run build:es2015",
-    "build:esm5": "pnpm --filter ./packages/** run build:esm5",
-    "build:cjs": "pnpm --filter ./packages/** run build:cjs",
-    "build:umd": "pnpm --filter ./packages/** run build:umd",
-    "build:types": "pnpm --filter ./packages/** run build:types"
+    "build:es2015": "pnpm --filter './packages/**' run build:es2015",
+    "build:esm5": "pnpm --filter './packages/**' run build:esm5",
+    "build:cjs": "pnpm --filter './packages/**' run build:cjs",
+    "build:umd": "pnpm --filter './packages/**' run build:umd",
+    "build:types": "pnpm --filter './packages/**' run build:types"
   },
   "publishConfig": {
     "access": "public"
@@ -22,7 +22,7 @@
     "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-typescript": "^8.3.3",
-    "@swc/core": "^1.2.208",
+    "@swc/core": "^1.2.209",
     "@types/jest": "^27.5.2",
     "@types/node": "^18.0.1",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
