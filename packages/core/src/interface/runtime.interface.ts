@@ -18,7 +18,7 @@ export abstract class BaseRuntimeType {
  * 定义运行时环境
  */
 export class RuntimeType extends BaseRuntimeType{
-  static Electron = new RuntimeType("@autowired/electron")
+  static Electron = new RuntimeType("@autowired/ecboot")
   constructor(public name:string) {
     super();
   }

@@ -1,5 +1,5 @@
 {
-  "name": "@aotowired/example",
+  "name": "@autowired/example",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@aotowired/core": "workspace:*",
+    "@autowired/core": "workspace:*",
     "reflect-metadata": "^0.1.13"
   },
   "keywords": [],

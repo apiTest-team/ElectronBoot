@@ -60,10 +60,10 @@ importers:
 
   example:
     specifiers:
-      '@aotowired/core': workspace:*
+      '@autowired/core': workspace:*
       reflect-metadata: ^0.1.13
     dependencies:
-      '@aotowired/core': link:../packages/core
+      '@autowired/core': link:../packages/core
       reflect-metadata: 0.1.13
 
   packages/base:
@@ -77,16 +77,24 @@ importers:
       '@types/node': ^18.0.0
       '@types/picomatch': ^2.3.0
       picomatch: ^2.3.1
+      reflect-metadata: ^0.1.13
       typescript: ^4.7.4
     dependencies:
       picomatch: 2.3.1
     devDependencies:
       '@types/node': 18.0.0
       '@types/picomatch': registry.npmmirror.com/@types/picomatch/2.3.0
+      reflect-metadata: 0.1.13
       typescript: 4.7.4
 
   packages/core/test/fixtures/base-app-config:
     specifiers: {}
+
+  packages/ecboot:
+    specifiers:
+      '@autowired/core': workspace:*
+    dependencies:
+      '@autowired/core': link:../core
 
 packages:
 

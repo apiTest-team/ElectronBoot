@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import {Autowired, AutowiredApplication, AutowiredBootApplication, ConfigService} from "@aotowired/core"
+import {Autowired, AutowiredApplication, AutowiredBootApplication, ConfigService} from "@autowired/core"
 
 @AutowiredBootApplication()
 export class DemoApplication {
