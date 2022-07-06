@@ -1,0 +1,1 @@
+{"index":"e_search_goods","type":"_doc","body":{"script":{"source":"ctx._source.location=params.location","lang":"painless","params":{"location":["120.713181","31.322437"]}},"query":{"term":{"storeNo":"4254426576"}}}}
