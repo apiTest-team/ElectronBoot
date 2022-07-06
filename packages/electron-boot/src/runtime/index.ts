@@ -5,7 +5,6 @@ import { BaseRuntime,
     Runtime,
     BootstrapOptions
 } from "@autowired/core"
-import {WindowInterface} from "../window/interface";
 
 @Runtime()
 export class AutowiredElectronRuntime extends BaseRuntime<
@@ -13,9 +12,13 @@ export class AutowiredElectronRuntime extends BaseRuntime<
     AutowiredContextInterface,
     RuntimeConfigurationOptions
     >{
-    private Window:WindowInterface
-
     applicationInitialize(opts: Partial<BootstrapOptions>): any {
+
+
+    }
+
+    getRuntimeName(): string {
+        return
     }
 
     configure(options: RuntimeConfigurationOptions | undefined): any {
@@ -31,9 +34,6 @@ export class AutowiredElectronRuntime extends BaseRuntime<
 
     run(): Promise<void> {
         return Promise.resolve(undefined);
-    }
-
-    configure(opts?: RuntimeConfigurationOptions): any {
     }
 
 }

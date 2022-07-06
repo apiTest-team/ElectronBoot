@@ -1,3 +1,5 @@
+import {saveClassAttachMetadata} from "@autowired/core";
+import {IPC_ACTION_KEY} from "../constant";
 
 export interface ActionOptions {
   // 事件地址
@@ -17,6 +19,15 @@ export const defaultMetadata:ActionOptions = {
 export const Action = (options:ActionOptions=defaultMetadata):MethodDecorator => {
   const path = options.path || "/"
   return (target, propertyKey, descriptor) => {
-    
+    saveClassAttachMetadata(
+        IPC_ACTION_KEY,
+        {
+          path,
+          method:propertyKey,
+          summary:options.summary || "",
+          description:options.description||""
+        } as ActionOptions,
+        target
+    )
   }
 }
