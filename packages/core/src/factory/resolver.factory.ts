@@ -9,7 +9,12 @@ import { ManagedReference, RefResolver } from "../resolver/ref.resolver";
 import * as util from "util";
 import EventEmitter from "events";
 import { TEMP_CTX_KEY, TEMP_OBJECT_CTX_KEY } from "../constant/context.constant";
-import {AutowiredCommonException} from "../exception/core";
+import {
+  AutowiredCommonException,
+  DefinitionNotFoundException,
+  ResolverMissingException,
+  SingletonInjectTempException
+} from "../exception/core";
 
 const debug = util.debuglog("autowired:resolver")
 const debugLog = util.debuglog("autowired:debug")
@@ -51,7 +56,7 @@ export class ResolverFactory {
   resolveManaged(instance:IResolverInstance,originPropertyName: string){
     const resolver = this._resolvers[instance.type]
     if (!resolver || resolver.type !== instance.type){
-      throw new MidwayResolverMissingError(managed.type);
+      throw new ResolverMissingException(instance.type);
     }
     return resolver.resolve(instance,originPropertyName)
   }
@@ -64,7 +69,7 @@ export class ResolverFactory {
   async resolveManagedAsync(instance:IResolverInstance,originPropertyName: string){
     const resolver = this._resolvers[instance.type]
     if (!resolver || resolver.type !== instance.type){
-      throw new MidwayResolverMissingError(managed.type);
+      throw new ResolverMissingException(instance.type);
     }
     return resolver.resolveAsync(instance,originPropertyName)
   }
@@ -127,11 +132,11 @@ export class ResolverFactory {
     if (definition.properties) {
       const keys = definition.properties.propertyKeys() as string[];
       for (const key of keys) {
-        this.checkSingletonInvokeRequest(definition, key);
+        this.checkSingletonInvokeTemp(definition, key);
         try {
           inst[key] = this.resolveManaged(definition.properties.get(key), key);
         } catch (error) {
-          if (MidwayDefinitionNotFoundError.isClosePrototypeOf(error)) {
+          if (DefinitionNotFoundException.isClosePrototypeOf(error)) {
             const className = definition.path.name;
             error.updateErrorMsg(className);
           }
@@ -242,11 +247,11 @@ export class ResolverFactory {
     if (definition.properties) {
       const keys = definition.properties.propertyKeys() as string[];
       for (const key of keys) {
-        this.checkSingletonInvokeRequest(definition, key);
+        this.checkSingletonInvokeTemp(definition, key);
         try {
           inst[key] = await this.resolveManagedAsync(definition.properties.get(key), key);
         } catch (error) {
-          if (MidwayDefinitionNotFoundError.isClosePrototypeOf(error)) {
+          if (DefinitionNotFoundException.isClosePrototypeOf(error)) {
             const className = definition.path.name;
             error.updateErrorMsg(className);
           }
@@ -448,12 +453,12 @@ export class ResolverFactory {
   }
 
   /**
-   * 检查是否时请求单实例
+   * 检查是否是临时单实例
    * @param definition
    * @param key
    * @private
    */
-  private checkSingletonInvokeRequest(definition, key) {
+  private checkSingletonInvokeTemp(definition, key) {
     if (definition.isSingletonScope()) {
       const managedRef = definition.properties.get(key);
       if (this.context.hasDefinition(managedRef?.name)) {
@@ -464,7 +469,7 @@ export class ResolverFactory {
           propertyDefinition.isTempScope() &&
           !propertyDefinition.allowDowngrade
         ) {
-          throw new MidwaySingletonInjectRequestError(
+          throw new SingletonInjectTempException(
             definition.path.name,
             propertyDefinition.path.name
           );
