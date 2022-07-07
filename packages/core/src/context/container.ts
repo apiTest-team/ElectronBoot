@@ -17,7 +17,6 @@ import EventEmitter from "events";
 import { FUNCTION_INJECT_KEY, TEMP_CTX_KEY } from "../constant/context.constant";
 import { ObjectIdentifier } from "../types/decorator.types";
 import { ObjectDefinitionRegistry } from "./definitionRegistry";
-import { extend } from "../utils/extend.utils";
 import { DefinitionNotFoundException } from "../exception/core";
 import { ScopeEnum } from "../interface/decorator.interface";
 import {
@@ -31,7 +30,7 @@ import { randomUUID } from "../utils/decorator.utils";
 import { ObjectDefinition } from "../definitions/object.definition";
 import { FunctionDefinition } from "../definitions/function.definition";
 import { ManagedReference } from "../resolver/ref.resolver";
-import { INJECT_CUSTOM_PROPERTY } from "../constant/decorator.constant";
+import { INJECT_CUSTOM_PROPERTY} from "../constant/decorator.constant";
 
 const debug = util.debuglog("autowired:debug")
 const debugBind = util.debuglog("autowired:bind")
@@ -411,19 +410,19 @@ export class AutowiredContainer implements IAutowiredContainer,IModuleStore{
   load(module?) {
     // 如果模块存在
     if (module) {
-      // load configuration
-      const configuration = new ContainerConfiguration(this);
-      configuration.load(module);
-      for (const ns of configuration.getNamespaceList()) {
-        this.namespaceSet.add(ns);
-        debug(`[core]: load configuration in namespace="${ns}" complete`);
-      }
-
-      const detectorOptionsMerged = {};
-      for (const detectorOptions of configuration.getDetectorOptionsList()) {
-        extend(true, detectorOptionsMerged, detectorOptions);
-      }
-      this.fileDetector?.setExtraDetectorOptions(detectorOptionsMerged);
+      // // load configuration
+      // const configuration = new ContainerConfiguration(this);
+      // configuration.load(module);
+      // for (const ns of configuration.getNamespaceList()) {
+      //   this.namespaceSet.add(ns);
+      //   debug(`[core]: load configuration in namespace="${ns}" complete`);
+      // }
+      //
+      // const detectorOptionsMerged = {};
+      // for (const detectorOptions of configuration.getDetectorOptionsList()) {
+      //   extend(true, detectorOptionsMerged, detectorOptions);
+      // }
+      // this.fileDetector?.setExtraDetectorOptions(detectorOptionsMerged);
       this.isLoad = true;
     }
   }

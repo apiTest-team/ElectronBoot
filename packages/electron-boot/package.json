@@ -19,11 +19,9 @@
     "build:umd": "rollup --config rollup.config.js",
     "build:types": "tsc --project tsconfig.prod.types.json"
   },
-  "dependencies": {
-    "@autowired/core": "workspace:*"
-  },
   "devDependencies": {
-
+    "@autowired/core": "workspace:*",
+    "electron": "^19.0.8"
   },
   "keywords": [],
   "author": "",

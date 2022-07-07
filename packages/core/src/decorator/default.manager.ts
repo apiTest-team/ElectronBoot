@@ -41,18 +41,39 @@ export const saveClassMetadata = <T>(
   target: T,
   merge?: boolean
 ): any => {
-  // 如果设置合并,并且data是一个对象
-  if (merge && typeof data === "object") {
-    const oldData = manager.getMetadata(decoratorNameKey, target);
-    if (!oldData) {
+  if (merge && typeof data === 'object') {
+    const originData = manager.getMetadata(decoratorNameKey, target);
+    if (!originData) {
       return manager.saveMetadata(decoratorNameKey, data, target);
     }
-    if (Array.isArray(oldData)) {
-      return manager.saveMetadata(decoratorNameKey, oldData.concat(data), target);
+    if (Array.isArray(originData)) {
+      return manager.saveMetadata(
+          decoratorNameKey,
+          originData.concat(data),
+          target
+      );
+    } else {
+      return manager.saveMetadata(
+          decoratorNameKey,
+          Object.assign(originData, data),
+          target
+      );
     }
-    return manager.saveMetadata(decoratorNameKey, Object.assign(oldData, data), target);
+  } else {
+    return manager.saveMetadata(decoratorNameKey, data, target);
   }
-  return manager.saveMetadata(decoratorNameKey, data, target);
+  // // 如果设置合并,并且data是一个对象
+  // if (merge && typeof data === "object") {
+  //   const oldData = manager.getMetadata(decoratorNameKey, target);
+  //   if (!oldData) {
+  //     return manager.saveMetadata(decoratorNameKey, data, target);
+  //   }
+  //   if (Array.isArray(oldData)) {
+  //     return manager.saveMetadata(decoratorNameKey, oldData.concat(data), target);
+  //   }
+  //   return manager.saveMetadata(decoratorNameKey, Object.assign(oldData, data), target);
+  // }
+  // return manager.saveMetadata(decoratorNameKey, data, target);
 };
 
 /**
@@ -70,7 +91,14 @@ export const attachClassMetadata = (
   groupBy?: string,
   groupMode?: GroupModeType
 ) => {
-  return manager.attachMetadata(decoratorNameKey, data, target, undefined, groupBy, groupMode);
+  return manager.attachMetadata(
+      decoratorNameKey,
+      data,
+      target,
+      undefined,
+      groupBy,
+      groupMode
+  );
 }
 
 /**
@@ -516,6 +544,14 @@ export const createCustomPropertyDecorator= (
       propertyName
     );
   }
+}
+
+/**
+ * 绑定容器
+ * @param container
+ */
+export const bindContainer =(container) => {
+  return manager.bindContainer(container);
 }
 
 /**

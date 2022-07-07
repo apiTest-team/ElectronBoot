@@ -88,12 +88,12 @@ export class DecoratorManager extends Map implements IModuleStore{
   ){
     if (propertyName){
       const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
-      return DecoratorManager.getMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey)
+      return DecoratorManager.getMetadata(INJECT_CLASS_KEY_PREFIX,target,dataKey)
     }else{
       const dataKey = `${DecoratorManager.getDecoratorClassKey(
         decoratorNameKey
       )}`
-      return DecoratorManager.getMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey)
+      return DecoratorManager.getMetadata(INJECT_CLASS_KEY_PREFIX,target,dataKey)
     }
   }
 
@@ -258,15 +258,15 @@ export class DecoratorManager extends Map implements IModuleStore{
     }
     let m:Map<string,any>
     // 如果在target上存在了metaKey的元数据
-    if (Reflect.hasOwnMetadata(metaKey,target as Object)){
-      m = Reflect.getMetadata(metaKey,target as Object)
+    if (Reflect.hasOwnMetadata(metaKey,target)){
+      m = Reflect.getMetadata(metaKey,target)
     }else{
       m = new Map<string,any>
     }
     // 元数据
     m.set(dataKey,data)
     // 在target上定义元数据
-    Reflect.defineMetadata(metaKey,m,target as Object)
+    Reflect.defineMetadata(metaKey,m,target)
   }
 
   /**
@@ -281,10 +281,11 @@ export class DecoratorManager extends Map implements IModuleStore{
       target = target.constructor as any
     }
     let m:Map<string,any>
-    if (Reflect.hasOwnMetadata(metaKey,target)){
-      m = Reflect.getMetadata(metaKey,target)
-    }else{
-      m = new Map<string,any>()
+    if (!Reflect.hasOwnMetadata(metaKey, target)) {
+      m = new Map<string, any>();
+      Reflect.defineMetadata(metaKey, m, target);
+    } else {
+      m = Reflect.getMetadata(metaKey, target);
     }
     if (!dataKey){
       return m

@@ -8,10 +8,6 @@ import { savePropertyAutowired } from "./default.manager";
  */
 export const Autowired = (identifier?: ObjectIdentifier):PropertyDecorator => {
   return (target:any, targetKey:string) => {
-    savePropertyAutowired({
-      target,
-      targetKey,
-      identifier
-    })
+    savePropertyAutowired({target,targetKey,identifier})
   }
 }
