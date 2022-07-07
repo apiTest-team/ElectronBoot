@@ -131,7 +131,7 @@ export class ObjectDefinitionRegistry
 
   hasObject(identifier: ObjectIdentifier): boolean {
     identifier = this.identifierRelation.getRelation(identifier) ?? identifier;
-    return this.has(PREFIX + identifier);
+    return this.has(PREFIX + identifier.toString());
   }
 
   registerObject(identifier: ObjectIdentifier, target: any) {
@@ -140,7 +140,7 @@ export class ObjectDefinitionRegistry
 
   getObject(identifier: ObjectIdentifier): any {
     identifier = this.identifierRelation.getRelation(identifier) ?? identifier;
-    return this.get(PREFIX + identifier);
+    return this.get(PREFIX + identifier.toString());
   }
 
   getIdentifierRelation(): IIdentifierRelationShip {
