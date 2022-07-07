@@ -11,15 +11,6 @@ export enum AutowiredModeEnum {
 }
 
 /**
- * 对象初始化时的时机
- */
-export enum ScopeEnum {
-    Singleton = 'Singleton',
-    Request = 'Request',
-    Prototype = 'Prototype',
-}
-
-/**
  * 内部管理的属性、json、ref等解析实例存储
  */
 export interface ManagedInstanceInterface {

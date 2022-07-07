@@ -9,6 +9,7 @@ import { ManagedReference, RefResolver } from "../resolver/ref.resolver";
 import * as util from "util";
 import EventEmitter from "events";
 import { TEMP_CTX_KEY, TEMP_OBJECT_CTX_KEY } from "../constant/context.constant";
+import {AutowiredCommonException} from "../exception/core";
 
 const debug = util.debuglog("autowired:resolver")
 const debugLog = util.debuglog("autowired:debug")
@@ -75,12 +76,14 @@ export class ResolverFactory {
   create(opt:ResolverFactoryCreateOptions):any {
     const {definition,args} = opt
     if (definition.isSingletonScope() && this.singletonCache.has(definition.id)){
-      return this.singletonCache.has(definition.id)
+      return this.singletonCache.get(definition.id)
     }
+    // 如果非 null 表示已经创建 proxy
     let inst = this.createProxyReference(definition)
     if (inst){
       return inst
     }
+
     this.compareAndSetCreateStatus(definition)
     // 预先初始化依赖
     if (definition.hasDependsOn()){
@@ -111,7 +114,7 @@ export class ResolverFactory {
 
     // binding ctx object
     if (
-      definition.isRequestScope() &&
+      definition.isTempScope() &&
       definition.constructor.name === 'ObjectDefinition'
     ) {
       Object.defineProperty(inst, TEMP_OBJECT_CTX_KEY, {
@@ -159,7 +162,124 @@ export class ResolverFactory {
     }
 
     // for request scope
-    if (definition.isRequestScope() && definition.id) {
+    if (definition.isTempScope() && definition.id) {
+      this.context.bindObject(definition.id, inst);
+    }
+    this.removeCreateStatus(definition, true);
+
+    return inst;
+  }
+
+  /**
+   * 异步创建对象
+   * @param opt
+   */
+  async createAsync(opt:ResolverFactoryCreateOptions):Promise<any> {
+    const {definition,args} = opt
+    if (definition.isSingletonScope() && this.singletonCache.has(definition.id)){
+      debug(
+          `id = ${definition.id}(${definition.name}) get from singleton cache.`
+      );
+      return this.singletonCache.get(definition.id)
+    }
+    // 如果非null标识已经创建proxy
+    let inst = this.createProxyReference(definition)
+    if (inst){
+      debug(`id = ${definition.id}(${definition.name}) from proxy reference.`);
+      return inst
+    }
+    this.compareAndSetCreateStatus(definition)
+    // 预先初始化依赖
+    if (definition.hasDependsOn()){
+      for (const dep of definition.dependsOn) {
+        debug('id = %s init depend %s.', definition.id, dep);
+        await this.context.getAsync(dep,args)
+      }
+    }
+    debugLog(`[core]: Create id = "${definition.name}" ${definition.id}.`);
+
+    const Clazz = definition.creator.load()
+    let constructorArgs = [];
+    if (args && Array.isArray(args) && args.length > 0) {
+      constructorArgs = args;
+    }
+
+    this.getObjectEventTarget().emit(
+        ObjectLifeCycleEvent.BEFORE_CREATED,
+        Clazz,
+        {
+          constructorArgs,
+          context: this.context,
+        }
+    );
+
+    inst = await definition.creator.doConstructAsync(
+        Clazz,
+        constructorArgs,
+        this.context
+    );
+
+    if (!inst){
+      this.removeCreateStatus(definition,false)
+      throw new AutowiredCommonException(
+          `${definition.id} construct return undefined`
+      );
+    }
+
+    // binding ctx object
+    if(
+        definition.isTempScope() &&
+        definition.constructor.name === 'ObjectDefinition'
+    ) {
+      debug('id = %s inject ctx', definition.id);
+      Object.defineProperty(inst, TEMP_OBJECT_CTX_KEY, {
+        value: this.context.get(TEMP_CTX_KEY),
+        writable: false,
+        enumerable: false,
+      });
+    }
+
+    if (definition.properties) {
+      const keys = definition.properties.propertyKeys() as string[];
+      for (const key of keys) {
+        this.checkSingletonInvokeRequest(definition, key);
+        try {
+          inst[key] = await this.resolveManagedAsync(definition.properties.get(key), key);
+        } catch (error) {
+          if (MidwayDefinitionNotFoundError.isClosePrototypeOf(error)) {
+            const className = definition.path.name;
+            error.updateErrorMsg(className);
+          }
+          this.removeCreateStatus(definition, true);
+          throw error;
+        }
+      }
+    }
+
+    this.getObjectEventTarget().emit(ObjectLifeCycleEvent.AFTER_CREATED, inst, {
+      context: this.context,
+      definition,
+      replaceCallback: ins => {
+        inst = ins;
+      },
+    });
+
+    // after properties set then do init
+    await definition.creator.doInitAsync(inst);
+
+    this.getObjectEventTarget().emit(ObjectLifeCycleEvent.AFTER_INIT, inst, {
+      context: this.context,
+      definition,
+    });
+
+    if (definition.isSingletonScope() && definition.id) {
+      debug(`id = ${definition.id}(${definition.name}) set to singleton cache`);
+      this.singletonCache.set(definition.id, inst);
+    }
+
+    // for request scope
+    if (definition.isTempScope() && definition.id) {
+      debug(`id = ${definition.id}(${definition.name}) set to register object`);
       this.context.bindObject(definition.id, inst);
     }
     this.removeCreateStatus(definition, true);
@@ -223,7 +343,7 @@ export class ResolverFactory {
         {
           get: (obj, prop) => {
             let target;
-            if (definition.isRequestScope()) {
+            if (definition.isTempScope()) {
               target = this.context.registry.getObject(definition.id);
             } else if (definition.isSingletonScope()) {
               target = this.singletonCache.get(definition.id);
@@ -341,7 +461,7 @@ export class ResolverFactory {
           managedRef.name
         );
         if (
-          propertyDefinition.isRequestScope() &&
+          propertyDefinition.isTempScope() &&
           !propertyDefinition.allowDowngrade
         ) {
           throw new MidwaySingletonInjectRequestError(

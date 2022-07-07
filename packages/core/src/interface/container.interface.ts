@@ -1,6 +1,6 @@
 import { ObjectIdentifier } from "../types/decorator.types";
-import { ScopeEnum } from "./decorator.interface";
 import EventEmitter from "events";
+import {ScopeEnum} from "../../dist/types";
 
 /**
  * 对象创建工厂定义
@@ -86,7 +86,7 @@ export interface IObjectDefinition {
   scope: ScopeEnum;
   isAsync(): boolean;
   isSingletonScope(): boolean;
-  isRequestScope(): boolean;
+  isTempScope(): boolean;
   hasDependsOn(): boolean;
   hasConstructorArgs(): boolean;
   getAttr(key: ObjectIdentifier): any;

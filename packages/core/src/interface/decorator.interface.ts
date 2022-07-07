@@ -30,6 +30,7 @@ export interface TargetClassMetadata {
  */
 export enum ScopeEnum {
   Singleton = 'Singleton',
+  Temp = "temp",
   Prototype = 'Prototype',
 }
 
