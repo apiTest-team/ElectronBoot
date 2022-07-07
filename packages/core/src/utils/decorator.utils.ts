@@ -1,41 +1,5 @@
 import { TSDesignType } from "../types/decorator.types";
 
-
-const ToString = Function.prototype.toString;
-const hasOwn = Object.prototype.hasOwnProperty;
-const toStr = Object.prototype.toString;
-
-/**
- * 获取指定对象的内容
- * @param fn
- */
-function fnBody(fn) {
-  return ToString.call(fn)
-    .replace(/^[^{]*{\s*/, '')
-    .replace(/\s*}[^}]*$/, '');
-}
-/**
- * 判断指定对象是否时类
- * @param fn 指定对象
- * @constructor
- */
-export const isClass = (fn: any) => {
-  if (typeof fn !== 'function') {
-    return false;
-  }
-
-  if (/^class[\s{]/.test(ToString.call(fn))) {
-    return true;
-  }
-
-  // babel.js classCallCheck() & inlined
-  const body = fnBody(fn);
-  return (
-    /classCallCheck\(/.test(body) ||
-    /TypeError\("Cannot call a class as a function"\)/.test(body)
-  );
-}
-
 /**
  * 判断变量是否是undefined
  * @param value

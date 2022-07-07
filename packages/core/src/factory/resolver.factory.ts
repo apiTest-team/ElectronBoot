@@ -478,4 +478,27 @@ export class ResolverFactory {
     }
     return true;
   }
+
+  /**
+   * 销毁缓存
+   */
+  async destroyCache(): Promise<void> {
+    for (const key of this.singletonCache.keys()) {
+      const definition = this.context.registry.getDefinition(key);
+      if (definition.creator) {
+        const inst = this.singletonCache.get(key);
+        this.getObjectEventTarget().emit(
+          ObjectLifeCycleEvent.BEFORE_DESTROY,
+          inst,
+          {
+            context: this.context,
+            definition,
+          }
+        );
+        await definition.creator.doDestroyAsync(inst);
+      }
+    }
+    this.singletonCache.clear();
+    this.creating.clear();
+  }
 }

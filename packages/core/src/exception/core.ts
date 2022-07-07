@@ -7,6 +7,7 @@ export const CoreExceptionEnum = registerExceptionCode("autowired",{
     MISSING_RESOLVER:10001,
     DEFINITION_NOT_FOUND:10002,
     SINGLETON_INJECT_TEMP:10003,
+    USE_WRONG_METHOD:10004
 } as const)
 
 /**
@@ -64,5 +65,21 @@ export class SingletonInjectTempException extends BaseException {
     constructor(singletonScopeName: string, requestScopeName: string) {
         const text = `${singletonScopeName} with singleton scope can't implicitly inject ${requestScopeName} with temp scope directly, please add "@Scope(ScopeEnum.Temp, { allowDowngrade: true })" in ${requestScopeName} or use "ctx.tempContext.getAsync(${requestScopeName})".`;
         super(text, CoreExceptionEnum.SINGLETON_INJECT_TEMP);
+    }
+}
+
+/**
+ * 使用方法错误异常
+ */
+export class UseWrongMethodException extends BaseException{
+    constructor(
+      wrongMethod: string,
+      replacedMethod: string,
+      describeKey?: string
+    ) {
+        const text = describeKey
+          ? `${describeKey} not valid by ${wrongMethod}, Use ${replacedMethod} instead!`
+          : `You should not invoked by ${wrongMethod}, Use ${replacedMethod} instead!`;
+        super(text, CoreExceptionEnum.USE_WRONG_METHOD);
     }
 }

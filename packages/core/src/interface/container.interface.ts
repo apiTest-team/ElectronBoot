@@ -1,6 +1,6 @@
 import { ObjectIdentifier } from "../types/decorator.types";
 import EventEmitter from "events";
-import {ScopeEnum} from "../../dist/types";
+import { ScopeEnum } from "./decorator.interface";
 
 /**
  * 对象创建工厂定义

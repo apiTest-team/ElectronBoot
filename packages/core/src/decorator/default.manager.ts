@@ -1,6 +1,6 @@
 import { GroupModeType, ObjectIdentifier } from "../types/decorator.types";
 import { DecoratorManager } from "./decorator.manager";
-import { isClass, merge, randomUUID, transformTypeFromTSDesign } from "../utils/decorator.utils";
+import { merge, randomUUID, transformTypeFromTSDesign } from "../utils/decorator.utils";
 import {
   INJECT_CUSTOM_METHOD, INJECT_CUSTOM_PARAM,
   INJECT_CUSTOM_PROPERTY,
@@ -16,6 +16,7 @@ import {
   TargetClassMetadata
 } from "../interface/decorator.interface";
 import { camelCase } from "../utils/camelcase.utils";
+import { isClass } from "../utils/types.utils";
 
 // 定义全局的管理器
 let manager = new DecoratorManager()
@@ -329,7 +330,7 @@ export const savePropertyAutowired = (opts: {
       isClass(type.originDesign) &&
       isComponent(type.originDesign)
     ) {
-      identifier = getComponentUUId(type.originDesign);
+      identifier = getComponentUUID(type.originDesign);
       injectMode = InjectModeEnum.Class;
     }
     if (!identifier) {
@@ -442,7 +443,7 @@ export const getComponentName = (module): string => {
  * 获取模块的uuid
  * @param module
  */
-export const getComponentUUId = (module): string => {
+export const getComponentUUID = (module): string => {
   const metaData = getClassMetadata(TARGETED_CLASS, module) as TargetClassMetadata;
   if (metaData && metaData.uuid) {
     return metaData.uuid;
