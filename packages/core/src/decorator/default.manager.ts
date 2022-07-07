@@ -33,21 +33,57 @@ export const saveClassMetadata = <T>(
 }
 
 /**
- * 保存类的属性信息
+ * attach data to class
  * @param decoratorNameKey
  * @param data
  * @param target
  * @param groupBy
  * @param groupMode
  */
-export const saveClassAttachMetadata = (
-  decoratorNameKey:ObjectIdentifier,
-  data:any,
-  target:Object,
-  groupBy?:string|symbol,
-  groupMode?:GroupModeType) => {
-  return DecoratorManager.default.saveClassAttachMetadata(decoratorNameKey, data, target,undefined,groupBy,groupMode)
+export function attachClassMetadata(
+    decoratorNameKey: ObjectIdentifier,
+    data: any,
+    target,
+    groupBy?: string,
+    groupMode?: GroupModeType
+) {
+  return DecoratorManager.default.attachMetadata(
+      decoratorNameKey,
+      data,
+      target,
+      undefined,
+      groupBy,
+      groupMode
+  );
 }
+
+
+
+/**
+ * 将特性属性数据附加到类
+ * @param decoratorNameKey 存储key
+ * @param data 属性数据
+ * @param target 目标类
+ * @param propertyName
+ * @param groupBy
+ */
+export const attachPropertyDataToClass = (
+    decoratorNameKey: ObjectIdentifier,
+    data,
+    target,
+    propertyName,
+    groupBy?: string
+)=>{
+  return DecoratorManager.default.attachPropertyDataToClass(
+      decoratorNameKey,
+      data,
+      target,
+      propertyName,
+      groupBy
+  );
+}
+
+
 /**
  * 保存加载前的模块
  * @param target
@@ -66,6 +102,9 @@ export const saveModule =(decoratorNameKey: ObjectIdentifier, target:any) => {
   }
   return DecoratorManager.default.saveModule(decoratorNameKey, target);
 }
+
+
+
 /**
  * 获取类的元数据
  * @param decoratorNameKey
