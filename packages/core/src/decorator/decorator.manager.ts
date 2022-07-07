@@ -1,5 +1,6 @@
+import "reflect-metadata"
 import { IStore } from "../interface/store.interface";
-import { ObjectIdentifier } from "../types/decorator.types";
+import { GroupModeType, ObjectIdentifier } from "../types/decorator.types";
 import { INJECT_METHOD_KEY_PREFIX } from "./decorator.constant";
 
 
@@ -60,6 +61,23 @@ export class DecoratorManager extends Map implements IStore{
   }
 
   /**
+   * 保存元数据
+   * @param decoratorNameKey 修饰key
+   * @param data 数据信息
+   * @param target 目标类
+   * @param propertyName 属性名称
+   */
+  saveMetadata<T>(decoratorNameKey:ObjectIdentifier,data:any,target:T,propertyName?:ObjectIdentifier){
+    if (propertyName){
+      const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
+      DecoratorManager.saveMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey,data)
+    }else{
+      const dataKey = DecoratorManager.getDecoratorClassKey(decoratorNameKey)
+      DecoratorManager.saveMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey,data)
+    }
+  }
+
+  /**
    * 获取元数据
    * @param decoratorNameKey
    * @param target
@@ -73,17 +91,130 @@ export class DecoratorManager extends Map implements IStore{
       const dataKey = `${DecoratorManager.getDecoratorClassKey(
         decoratorNameKey
       )}`
-      return DecoratorManager.getMetadata(this.injectClassKeyPrefix,target,dataKey)
+      return DecoratorManager.getMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey)
+    }
+  }
+
+  /**
+   * 保存元数据
+   * @param decoratorNameKey
+   * @param data
+   * @param target
+   * @param propertyName
+   * @param groupBy
+   * @param groupMode
+   */
+  saveClassAttachMetadata(decoratorNameKey:ObjectIdentifier,data:any,target:Object,propertyName?: string,groupBy?:string|symbol,groupMode?:GroupModeType){
+    if (propertyName){
+      const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
+      DecoratorManager.saveClassAttachMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey,data,groupBy,groupMode)
+    }else{
+      const dataKey = DecoratorManager.getDecoratorClassKey(decoratorNameKey);
+      DecoratorManager.saveClassAttachMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey,data,groupBy,groupMode);
     }
   }
 
   // =======================静态方法======================
 
+
+  /**
+   * 保存元数据到target
+   * @param metaKey 元数据存储键
+   * @param target 存储目标
+   * @param dataKey 数据键
+   * @param data 存储数据
+   */
+  public static saveMetadata(metaKey:string,target:any,dataKey:string,data:any){
+    // 过滤掉object.create(null)
+    if (typeof target==="object" && target.constructor){
+      target = target.constructor
+    }
+    let m:Map<string,any>
+    // 如果在target上存在了metaKey的元数据
+    if (Reflect.hasOwnMetadata(metaKey,target as Object)){
+      m = Reflect.getMetadata(metaKey,target as Object)
+    }else{
+      m = new Map<string,any>
+    }
+    // 元数据
+    m.set(dataKey,data)
+    // 在target上定义元数据
+    Reflect.defineMetadata(metaKey,m,target as Object)
+  }
+
+  /**
+   * 从指定target取出指定元数据key和数据key的元数据信息
+   * @param metaKey 元数据key
+   * @param target 元数据存储类
+   * @param dataKey 数据key
+   */
+  public static getMetadata<T>(metaKey:string,target:T,dataKey:string){
+    // 过滤掉工厂方法
+    if (typeof target==="object" && target?.constructor){
+      target = target.constructor as any
+    }
+    let m:Map<string,any>
+    if (Reflect.hasOwnMetadata(metaKey,target)){
+      m = Reflect.getMetadata(metaKey,target)
+    }else{
+      m = new Map<string,any>()
+    }
+    if (!dataKey){
+      return m
+    }
+    return m.get(dataKey)
+  }
+
+  /**
+   * 保存class元数据信息
+   * @param metaKey 元数据key
+   * @param target 目标类
+   * @param dataKey 数据key
+   * @param data 数据
+   * @param groupBy 分组
+   * @param groupMode 分组模式
+   */
+  static saveClassAttachMetadata(metaKey: string,target: Object,dataKey: string,data: any,groupBy?: string|symbol,groupMode: GroupModeType = 'one') {
+    // filter Object.create(null)
+    if (typeof target === 'object' && target.constructor) {
+      target = target.constructor;
+    }
+
+    let m: Map<string, any>;
+    if (Reflect.hasOwnMetadata(metaKey, target)) {
+      m = Reflect.getMetadata(metaKey, target);
+    } else {
+      m = new Map<string, any>();
+    }
+
+    if (!m.has(dataKey)) {
+      if (groupBy) {
+        m.set(dataKey, {});
+      } else {
+        m.set(dataKey, []);
+      }
+    }
+    if (groupBy) {
+      if (groupMode === 'one') {
+        m.get(dataKey)[groupBy] = data;
+      } else {
+        if (m.get(dataKey)[groupBy]) {
+          m.get(dataKey)[groupBy].push(data);
+        } else {
+          m.get(dataKey)[groupBy] = [data];
+        }
+      }
+    } else {
+      m.get(dataKey).push(data);
+    }
+    Reflect.defineMetadata(metaKey, m, target);
+  }
+
   /**
    * 获取类修饰存储key
    * @param decoratorNameKey 修饰名
    */
-  static getDecoratorClassKey(decoratorNameKey:ObjectIdentifier):string{
+  public static getDecoratorClassKey(decoratorNameKey:ObjectIdentifier):string{
     return decoratorNameKey.toString() + "_CLASS"
   }
 
