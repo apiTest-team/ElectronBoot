@@ -3,7 +3,7 @@ import { ObjectIdentifier } from "../types/decorator.types";
 /**
  * 存储接口
  */
-export interface IStore {
+export interface IModuleStore {
   /**
    * 获取指定key的所有数据
    * @param key

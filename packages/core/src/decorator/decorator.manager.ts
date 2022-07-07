@@ -1,27 +1,25 @@
 import "reflect-metadata"
-import { IStore } from "../interface/store.interface";
+import { IModuleStore } from "../interface/store.interface";
 import { GroupModeType, ObjectIdentifier } from "../types/decorator.types";
-import {INJECT_CLASS_KEY_PREFIX, INJECT_CLASS_METHOD_KEY_PREFIX, INJECT_METHOD_KEY_PREFIX} from "./decorator.constant";
-
-
+import {
+  INJECT_CLASS_KEY_PREFIX,
+  INJECT_CLASS_METHOD_KEY_PREFIX,
+  INJECT_METHOD_KEY_PREFIX
+} from "../constant/decorator.constant";
 /**
  * 装饰管理器
  */
-export class DecoratorManager extends Map implements IStore{
+export class DecoratorManager extends Map implements IModuleStore{
   /**
    * 存储容器
    */
-  container:IStore|null=null
-  /**
-   * 全局的装饰管理器实例
-   */
-  public static default = new DecoratorManager()
+  public container:IModuleStore|null=null
 
   /**
    * 获取存储模块
    * @param key
    */
-  listModule(key: ObjectIdentifier): any {
+  public listModule(key: ObjectIdentifier): any {
     if (this.container) {
       return this.container.listModule(key);
     }
@@ -33,7 +31,7 @@ export class DecoratorManager extends Map implements IStore{
    * @param key 存储key
    * @param module 存储模块
    */
-  saveModule(key: ObjectIdentifier, module: any) {
+  public saveModule(key: ObjectIdentifier, module: any) {
     if (this.container){
       return this.container.saveModule(key,module)
     }
@@ -47,7 +45,7 @@ export class DecoratorManager extends Map implements IStore{
    * 重置模块
    * @param key
    */
-  resetModule(key: string | symbol) {
+  public resetModule(key: string | symbol) {
     this.set(key,new Set())
   }
 
@@ -55,7 +53,7 @@ export class DecoratorManager extends Map implements IStore{
    * 绑定容器
    * @param container
    */
-  bindContainer(container?:IStore){
+  public bindContainer(container?:IModuleStore){
     this.container = container
     this.container?.transformModule(this)
   }
@@ -83,7 +81,11 @@ export class DecoratorManager extends Map implements IStore{
    * @param target
    * @param propertyName
    */
-  getMetadata<T>(decoratorNameKey:ObjectIdentifier,target:T,propertyName?:any){
+  getMetadata<T>(
+    decoratorNameKey:ObjectIdentifier,
+    target:T,
+    propertyName?:any
+  ){
     if (propertyName){
       const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
       return DecoratorManager.getMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey)
@@ -105,60 +107,67 @@ export class DecoratorManager extends Map implements IStore{
    * @param groupMode
    */
   attachMetadata(
-      decoratorNameKey: ObjectIdentifier,
-      data,
-      target,
-      propertyName?: string,
-      groupBy?: string,
-      groupMode?: GroupModeType
+    decoratorNameKey: ObjectIdentifier,
+    data,
+    target,
+    propertyName?: string,
+    groupBy?: string,
+    groupMode?: GroupModeType
   ) {
     if (propertyName) {
       const dataKey = DecoratorManager.getDecoratorMethod(
-          decoratorNameKey,
-          propertyName
+        decoratorNameKey,
+        propertyName
       );
       DecoratorManager.attachMetadata(
-          INJECT_METHOD_KEY_PREFIX,
-          target,
-          dataKey,
-          data,
-          groupBy,
-          groupMode
+        INJECT_METHOD_KEY_PREFIX,
+        target,
+        dataKey,
+        data,
+        groupBy,
+        groupMode
       );
     } else {
       const dataKey = DecoratorManager.getDecoratorClassKey(decoratorNameKey);
       DecoratorManager.attachMetadata(
-          INJECT_CLASS_KEY_PREFIX,
-          target,
-          dataKey,
-          data,
-          groupBy,
-          groupMode
+        INJECT_CLASS_KEY_PREFIX,
+        target,
+        dataKey,
+        data,
+        groupBy,
+        groupMode
       );
     }
   }
 
+
   /**
-   * 保存元数据
+   * save property data to class
    * @param decoratorNameKey
    * @param data
    * @param target
    * @param propertyName
-   * @param groupBy
-   * @param groupMode
    */
-  attachMetadataToClass(decoratorNameKey:ObjectIdentifier,data:any,target:Object,propertyName?: string,groupBy?:string|symbol,groupMode?:GroupModeType){
-    if (propertyName){
-      const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
-      DecoratorManager.attachMetadataToClass(INJECT_METHOD_KEY_PREFIX,target,dataKey,data,groupBy,groupMode)
-    }else{
-      const dataKey = DecoratorManager.getDecoratorClassKey(decoratorNameKey);
-      DecoratorManager.attachMetadataToClass(INJECT_METHOD_KEY_PREFIX,target,dataKey,data,groupBy,groupMode);
-    }
+  savePropertyDataToClass(
+    decoratorNameKey: ObjectIdentifier,
+    data,
+    target,
+    propertyName
+  ) {
+    const dataKey = DecoratorManager.getDecoratorClassMethodKey(
+      decoratorNameKey,
+      propertyName
+    );
+    DecoratorManager.saveMetadata(
+      INJECT_CLASS_METHOD_KEY_PREFIX,
+      target,
+      dataKey,
+      data
+    );
   }
 
   /**
-   * attach property data to class
+   * 将特性数据附加到类
    * @param decoratorNameKey
    * @param data
    * @param target
@@ -166,26 +175,71 @@ export class DecoratorManager extends Map implements IStore{
    * @param groupBy
    */
   attachPropertyDataToClass(
-      decoratorNameKey: ObjectIdentifier,
-      data,
-      target,
-      propertyName,
-      groupBy?: string
+    decoratorNameKey: ObjectIdentifier,
+    data,
+    target,
+    propertyName,
+    groupBy?: string
   ) {
     const dataKey = DecoratorManager.getDecoratorClassMethodKey(
-        decoratorNameKey,
-        propertyName
+      decoratorNameKey,
+      propertyName
     );
     DecoratorManager.attachMetadata(
-        INJECT_CLASS_METHOD_KEY_PREFIX,
-        target,
-        dataKey,
-        data,
-        groupBy
+      INJECT_CLASS_METHOD_KEY_PREFIX,
+      target,
+      dataKey,
+      data,
+      groupBy
+    );
+  }
+
+  /**
+   * 从类中获取属性数据
+   * @param decoratorNameKey
+   * @param target
+   * @param propertyName
+   */
+  getPropertyDataFromClass(
+    decoratorNameKey: ObjectIdentifier,
+    target,
+    propertyName
+  ) {
+    const dataKey = DecoratorManager.getDecoratorClassMethodKey(
+      decoratorNameKey,
+      propertyName
+    );
+    return DecoratorManager.getMetadata(
+      INJECT_CLASS_METHOD_KEY_PREFIX,
+      target,
+      dataKey
     );
   }
 
 
+  /**
+   * list property data from class
+   * @param decoratorNameKey
+   * @param target
+   */
+  listPropertyDataFromClass(decoratorNameKey: ObjectIdentifier, target) {
+    const originMap = DecoratorManager.getMetadata(
+      INJECT_CLASS_METHOD_KEY_PREFIX,
+      target,
+      undefined
+    );
+    const res = [];
+    for (const [key, value] of originMap) {
+      if (
+        key.indexOf(
+          DecoratorManager.getDecoratorClassMethodPrefix(decoratorNameKey)
+        ) !== -1
+      ) {
+        res.push(value);
+      }
+    }
+    return res;
+  }
 
   // =======================静态方法======================
 
@@ -350,15 +404,20 @@ export class DecoratorManager extends Map implements IStore{
    * @param decoratorNameKey
    * @param methodKey
    */
-  public static getDecoratorClassMethodKey(
-      decoratorNameKey: ObjectIdentifier,
-      methodKey: ObjectIdentifier
-  ) {
+  public static getDecoratorClassMethodKey(decoratorNameKey: ObjectIdentifier,methodKey: ObjectIdentifier) {
     return (
         DecoratorManager.getDecoratorClassMethodPrefix(decoratorNameKey) +
         ':' +
         methodKey.toString()
     );
+  }
+
+  /**
+   * 获取额外属性存储键
+   * @param decoratorNameKey
+   */
+  public static getDecoratorClassExtendedKey(decoratorNameKey: ObjectIdentifier) {
+    return decoratorNameKey.toString() + '_EXT';
   }
 
   /**

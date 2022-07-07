@@ -1,9 +1,31 @@
 import { GroupModeType, ObjectIdentifier } from "../types/decorator.types";
-import { PRELOAD_MODULE_KEY, TARGETED_CLASS } from "./decorator.constant";
-import { ComponentMetadata } from "../interface/decorator.interface";
 import { DecoratorManager } from "./decorator.manager";
-import { isClass, randomUUID } from "../utils/decorator.utils";
+import { isClass, merge, randomUUID, transformTypeFromTSDesign } from "../utils/decorator.utils";
+import {
+  INJECT_CUSTOM_METHOD, INJECT_CUSTOM_PARAM,
+  INJECT_CUSTOM_PROPERTY,
+  INJECT_TAG,
+  OBJECT_DEFINITION_CLASS,
+  PRELOAD_MODULE_KEY,
+  TARGETED_CLASS
+} from "../constant/decorator.constant";
+import {
+  InjectModeEnum,
+  ObjectDefinitionOptions,
+  TagPropsMetadata,
+  TargetClassMetadata
+} from "../interface/decorator.interface";
 import { camelCase } from "../utils/camelcase.utils";
+
+// 定义全局的管理器
+let manager = new DecoratorManager()
+if (typeof global==="object"){
+  if (global["AUTOWIRED_GLOBAL_DECORATOR_MANAGER"]){
+    manager = global["AUTOWIRED_GLOBAL_DECORATOR_MANAGER"]
+  }else{
+    global["AUTOWIRED_GLOBAL_DECORATOR_MANAGER"] = manager
+  }
+}
 
 /**
  * 保存元数据
@@ -13,148 +35,539 @@ import { camelCase } from "../utils/camelcase.utils";
  * @param merge
  */
 export const saveClassMetadata = <T>(
-  decoratorNameKey:ObjectIdentifier,
-  data:any,
-  target:T,
-  merge?:boolean
-):any=>{
+  decoratorNameKey: ObjectIdentifier,
+  data: any,
+  target: T,
+  merge?: boolean
+): any => {
   // 如果设置合并,并且data是一个对象
-  if (merge && typeof data==="object"){
-    const oldData = DecoratorManager.default.getMetadata(decoratorNameKey,target)
+  if (merge && typeof data === "object") {
+    const oldData = manager.getMetadata(decoratorNameKey, target);
     if (!oldData) {
-      return DecoratorManager.default.saveMetadata(decoratorNameKey, data, target);
+      return manager.saveMetadata(decoratorNameKey, data, target);
     }
-    if (Array.isArray(oldData)){
-      return  DecoratorManager.default.saveMetadata(decoratorNameKey,oldData.concat(data),target)
+    if (Array.isArray(oldData)) {
+      return manager.saveMetadata(decoratorNameKey, oldData.concat(data), target);
     }
-    return DecoratorManager.default.saveMetadata(decoratorNameKey,Object.assign(oldData,data),target)
+    return manager.saveMetadata(decoratorNameKey, Object.assign(oldData, data), target);
   }
-  return DecoratorManager.default.saveMetadata(decoratorNameKey,data,target)
-}
+  return manager.saveMetadata(decoratorNameKey, data, target);
+};
 
 /**
- * attach data to class
+ * 附加数据到类
  * @param decoratorNameKey
  * @param data
  * @param target
  * @param groupBy
  * @param groupMode
  */
-export function attachClassMetadata(
-    decoratorNameKey: ObjectIdentifier,
-    data: any,
-    target,
-    groupBy?: string,
-    groupMode?: GroupModeType
-) {
-  return DecoratorManager.default.attachMetadata(
-      decoratorNameKey,
-      data,
-      target,
-      undefined,
-      groupBy,
-      groupMode
-  );
+export const attachClassMetadata = (
+  decoratorNameKey: ObjectIdentifier,
+  data: any,
+  target,
+  groupBy?: string,
+  groupMode?: GroupModeType
+) => {
+  return manager.attachMetadata(decoratorNameKey, data, target, undefined, groupBy, groupMode);
 }
 
-
-
 /**
- * 将特性属性数据附加到类
- * @param decoratorNameKey 存储key
- * @param data 属性数据
- * @param target 目标类
+ * 保存特性属性数据到类
+ * @param decoratorNameKey
+ * @param data
+ * @param target
  * @param propertyName
- * @param groupBy
  */
-export const attachPropertyDataToClass = (
-    decoratorNameKey: ObjectIdentifier,
+export const savePropertyDataToClass = (
+  decoratorNameKey: ObjectIdentifier,
+  data,
+  target,
+  propertyName
+) => {
+  return manager.savePropertyDataToClass(
+    decoratorNameKey,
     data,
     target,
-    propertyName,
-    groupBy?: string
-)=>{
-  return DecoratorManager.default.attachPropertyDataToClass(
-      decoratorNameKey,
-      data,
-      target,
-      propertyName,
-      groupBy
+    propertyName
   );
 }
-
-
-/**
- * 保存加载前的模块
- * @param target
- */
-export const savePreloadModule = (target:any) => {
-  return saveModule(PRELOAD_MODULE_KEY, target);
-}
-/**
- * 保存模块到内部map
- * @param decoratorNameKey
- * @param target
- */
-export const saveModule =(decoratorNameKey: ObjectIdentifier, target:any) => {
-  if (isClass(target)) {
-    saveComponentId(undefined, target);
-  }
-  return DecoratorManager.default.saveModule(decoratorNameKey, target);
-}
-
-
 
 /**
  * 获取类的元数据
  * @param decoratorNameKey
  * @param target
  */
-export const getClassMetadata = <T>(
-  decoratorNameKey:ObjectIdentifier,
-  target:T
-):any => {
-  return DecoratorManager.default.getMetadata(decoratorNameKey,target)
+export const getClassMetadata = (
+  decoratorNameKey: ObjectIdentifier,
+  target
+)=>{
+  return manager.getMetadata(decoratorNameKey,target)
 }
 
-
-
-
-
-
-
-
-
-
 /**
- * 保存id到target
- * @param identifier
+ * 从类中获取保存数据
+ * @param decoratorNameKey
  * @param target
+ * @param propertyName
+ * @param useCache
  */
-export const saveComponentId = <T>(identifier:ObjectIdentifier|undefined,target:any):T => {
-  if (IsComponent(target)){
-    const meta = getClassMetadata(TARGETED_CLASS,target)
-    if (meta.id !== identifier){
-      meta.id = identifier
-      saveClassMetadata(TARGETED_CLASS,meta,target)
-    }
-  }else{
-    const data:ComponentMetadata = {
-      id:identifier,
-      uuid:randomUUID(),
-      originName:target.name,
-      name:camelCase(target.name as string)
-    }
-    saveClassMetadata(TARGETED_CLASS,data,target)
+export const getClassExtendedMetadata = (
+  decoratorNameKey: ObjectIdentifier,
+  target,
+  propertyName?: string,
+  useCache?: boolean
+)=>{
+  if (useCache === undefined) {
+    useCache = true;
   }
-  return target
+  const extKey = DecoratorManager.getDecoratorClassExtendedKey(decoratorNameKey);
+  let metadata = manager.getMetadata(extKey, target, propertyName);
+  if (useCache && metadata !== undefined) {
+    return metadata;
+  }
+  const father = Reflect.getPrototypeOf(target);
+  if (father && father.constructor !== Object) {
+    metadata = merge(
+      getClassExtendedMetadata(
+        decoratorNameKey,
+        father,
+        propertyName,
+        useCache
+      ),
+      manager.getMetadata(decoratorNameKey, target, propertyName)
+    );
+  }
+  manager.saveMetadata(extKey, metadata || null, target, propertyName);
+  return metadata;
 }
 
 /**
- * 判断是否已经是注解注入类
+ * 将特性数据附加到类
+ * @param decoratorNameKey
+ * @param data
  * @param target
- * @constructor
+ * @param propertyName
+ * @param groupBy
  */
-export const IsComponent = <T>(target:T) => {
-  return !!getClassMetadata(TARGETED_CLASS,target)
+export const attachPropertyDataToClass = (
+  decoratorNameKey: ObjectIdentifier,
+  data,
+  target,
+  propertyName,
+  groupBy?: string
+) => {
+  return manager.attachPropertyDataToClass(
+    decoratorNameKey,
+    data,
+    target,
+    propertyName,
+    groupBy
+  );
 }
+
+
+/**
+ * 从类中获取属性数据
+ * @param decoratorNameKey
+ * @param target
+ * @param propertyName
+ */
+export const getPropertyDataFromClass = (
+  decoratorNameKey: ObjectIdentifier,
+  target,
+  propertyName
+) => {
+  return manager.getPropertyDataFromClass(
+    decoratorNameKey,
+    target,
+    propertyName
+  );
+}
+
+/**
+ * list property data from class
+ * @param decoratorNameKey
+ * @param target
+ */
+export const listPropertyDataFromClass = (
+  decoratorNameKey: ObjectIdentifier,
+  target
+) => {
+  return manager.listPropertyDataFromClass(decoratorNameKey, target);
+}
+
+/**
+ * 保存特性数据
+ * @param decoratorNameKey
+ * @param data
+ * @param target
+ * @param propertyName
+ */
+export const savePropertyMetadata = (
+  decoratorNameKey: ObjectIdentifier,
+  data,
+  target,
+  propertyName
+) => {
+  return manager.saveMetadata(decoratorNameKey, data, target, propertyName);
+}
+
+
+/**
+ * 附着特性数据
+ * @param decoratorNameKey
+ * @param data
+ * @param target
+ * @param propertyName
+ */
+export const attachPropertyMetadata = (
+  decoratorNameKey: ObjectIdentifier,
+  data,
+  target,
+  propertyName
+) => {
+  return manager.attachMetadata(decoratorNameKey, data, target, propertyName);
+}
+
+/**
+ * get property data
+ * @param decoratorNameKey
+ * @param target
+ * @param propertyName
+ */
+export const getPropertyMetadata = (
+  decoratorNameKey: ObjectIdentifier,
+  target,
+  propertyName
+) => {
+  return manager.getMetadata(decoratorNameKey, target, propertyName);
+}
+
+
+/**
+ * 保存预加载模块
+ * @param target
+ */
+export const savePreloadModule = (target) => {
+  return saveModule(PRELOAD_MODULE_KEY, target);
+}
+
+/**
+ * 获取预加载列表
+ */
+export const listPreloadModule = (): any[] => {
+  return listModule(PRELOAD_MODULE_KEY);
+}
+
+/**
+ * 保存模块到内部Map
+ * @param decoratorNameKey
+ * @param target
+ */
+export const saveModule =(decoratorNameKey: ObjectIdentifier, target) => {
+  if (isClass(target)) {
+    saveComponentId(undefined, target);
+  }
+  return manager.saveModule(decoratorNameKey, target);
+}
+
+/**
+ * 获取指定装饰键的模块列表
+ * @param decoratorNameKey
+ * @param filter
+ */
+export const listModule = (
+  decoratorNameKey: ObjectIdentifier,
+  filter?: (module) => boolean
+): any[] => {
+  const modules = manager.listModule(decoratorNameKey);
+  if (filter) {
+    return modules.filter(filter);
+  } else {
+    return modules;
+  }
+}
+
+/**
+ * 重置模块数据
+ * @param decoratorNameKey
+ */
+export const resetModule= (decoratorNameKey: ObjectIdentifier): void => {
+  return manager.resetModule(decoratorNameKey);
+}
+
+/**
+ * 清楚所有的模块
+ */
+export const clearAllModule = () => {
+  return manager.clear();
+}
+
+/**
+ * 保存属性注入参数
+ * @param opts 参数
+ */
+export const savePropertyAutowired = (opts: {
+  // id
+  identifier: ObjectIdentifier;
+  // class
+  target: any;
+  // propertyName
+  targetKey: string;
+  // 额外参数
+  args?: any;
+}) => {
+  // 1、use identifier by user
+  let identifier = opts.identifier;
+  let injectMode = InjectModeEnum.Identifier;
+  // 2、use identifier by class uuid
+  if (!identifier) {
+    const type = getPropertyType(opts.target, opts.targetKey);
+    if (
+      !type.isBaseType &&
+      isClass(type.originDesign) &&
+      isComponent(type.originDesign)
+    ) {
+      identifier = getComponentUUId(type.originDesign);
+      injectMode = InjectModeEnum.Class;
+    }
+    if (!identifier) {
+      // 3、use identifier by property name
+      identifier = opts.targetKey;
+      injectMode = InjectModeEnum.PropertyName;
+    }
+  }
+  attachClassMetadata(
+    INJECT_TAG,
+    {
+      targetKey: opts.targetKey, // 注入的属性名
+      value: identifier, // 注入的 id
+      args: opts.args, // 注入的其他参数
+      injectMode,
+    },
+    opts.target,
+    opts.targetKey
+  );
+}
+
+
+/**
+ * 获取属性注入参数
+ * @param target
+ * @param useCache
+ */
+export const getPropertyAutowired = (
+  target: any,
+  useCache?: boolean
+): {
+  [methodName: string]: TagPropsMetadata;
+} => {
+  return getClassExtendedMetadata(INJECT_TAG, target, undefined, useCache);
+}
+
+
+/**
+ * save class object definition
+ * @param target class
+ * @param props property data
+ */
+export const saveObjectDefinition = (target: any, props = {}) => {
+  saveClassMetadata(OBJECT_DEFINITION_CLASS, props, target, true);
+  return target;
+}
+
+/**
+ * get class object definition from metadata
+ * @param target
+ */
+export const getObjectDefinition = (target: any): ObjectDefinitionOptions => {
+  return getClassExtendedMetadata(OBJECT_DEFINITION_CLASS, target);
+}
+
+/**
+ * 类的组件id
+ * @param identifier id
+ * @param target class
+ */
+export const saveComponentId = (identifier: ObjectIdentifier, target: any) => {
+  if (isComponent(target)) {
+    if (identifier) {
+      const meta = getClassMetadata(TARGETED_CLASS, target);
+      if (meta.id !== identifier) {
+        meta.id = identifier;
+        // save class id and uuid
+        saveClassMetadata(TARGETED_CLASS, meta, target);
+      }
+    }
+  } else {
+    // save class id and uuid
+    saveClassMetadata(
+      TARGETED_CLASS,
+      {
+        id: identifier,
+        originName: target.name,
+        uuid:randomUUID(),
+        name: camelCase(target.name),
+      },
+      target
+    );
+  }
+  return target;
+}
+
+/**
+ * 从模块中获取组件id
+ * @param module
+ */
+export const getComponentId = (module): ObjectIdentifier => {
+  const metaData = getClassMetadata(TARGETED_CLASS, module) as TargetClassMetadata;
+  if (metaData && metaData.id) {
+    return metaData.id;
+  }
+}
+
+/**
+ * 获取组件名称
+ * @param module
+ */
+export const getComponentName = (module): string => {
+  const metaData = getClassMetadata(TARGETED_CLASS, module) as TargetClassMetadata;
+  if (metaData && metaData.name) {
+    return metaData.name;
+  }
+}
+
+/**
+ * 获取模块的uuid
+ * @param module
+ */
+export const getComponentUUId = (module): string => {
+  const metaData = getClassMetadata(TARGETED_CLASS, module) as TargetClassMetadata;
+  if (metaData && metaData.uuid) {
+    return metaData.uuid;
+  }
+}
+
+/**
+ * 判断是否时组件
+ * @param target class
+ */
+export const isComponent = (target: any): boolean => {
+  return !!getClassMetadata(TARGETED_CLASS, target);
+}
+
+
+/**
+ * 通过反射获取参数类型
+ */
+export const getMethodParamTypes = (target, methodName: string | symbol) => {
+  if (isClass(target)) {
+    target = target.prototype;
+  }
+  return Reflect.getMetadata('design:paramtypes', target, methodName);
+}
+
+/**
+ * 从元数据获取属性（方法）的类型
+ * @param target
+ * @param methodName
+ */
+export const getPropertyType = (target, methodName: string | symbol) => {
+  return transformTypeFromTSDesign(
+    Reflect.getMetadata('design:type', target, methodName)
+  );
+}
+
+/**
+ * 从元数据获取方法的返回类型
+ * @param target
+ * @param methodName
+ */
+export const getMethodReturnTypes = (target, methodName: string | symbol) => {
+  if (isClass(target)) {
+    target = target.prototype;
+  }
+  return Reflect.getMetadata('design:returntype', target, methodName);
+}
+
+/**
+ * 创建自定义属性注入装饰器
+ * @param decoratorKey
+ * @param metadata
+ * @param impl default true, configuration need decoratorService.registerMethodHandler
+ */
+export const createCustomPropertyDecorator= (
+  decoratorKey: string,
+  metadata: any,
+  impl = true
+): PropertyDecorator => {
+  return (target:any, propertyName:string) => {
+    attachClassMetadata(
+      INJECT_CUSTOM_PROPERTY,
+      {
+        propertyName,
+        key: decoratorKey,
+        metadata,
+        impl,
+      },
+      target,
+      propertyName
+    );
+  }
+}
+
+/**
+ * 创建自定义方法注入装饰器
+ * @param decoratorKey
+ * @param metadata
+ * @param impl default true, configuration need decoratorService.registerMethodHandler
+ */
+export const createCustomMethodDecorator =  (
+  decoratorKey: string,
+  metadata: any,
+  impl = true
+): MethodDecorator => {
+  return (target:any, propertyName:string, descriptor) => {
+    attachClassMetadata(
+      INJECT_CUSTOM_METHOD,
+      {
+        propertyName,
+        key: decoratorKey,
+        metadata,
+        impl,
+      },
+      target
+    );
+  }
+}
+
+/**
+ * 创建自定义参数装饰器
+ * @param decoratorKey
+ * @param metadata
+ * @param impl default true
+ */
+export const createCustomParamDecorator = (
+  decoratorKey: string,
+  metadata: any,
+  impl = true
+): ParameterDecorator => {
+  return (target:any, propertyName:string, parameterIndex) => {
+    attachClassMetadata(
+      INJECT_CUSTOM_PARAM,
+      {
+        key: decoratorKey,
+        parameterIndex,
+        propertyName,
+        metadata,
+        impl,
+      },
+      target,
+      propertyName,
+      'multi'
+    );
+  }
+}
+
+
