@@ -36,5 +36,6 @@ export class ElectronApplication {
         if (!this.configured){
             this.configure(options)
         }
+
     }
 }

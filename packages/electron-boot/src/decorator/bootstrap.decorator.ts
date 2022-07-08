@@ -1,5 +1,6 @@
-import {BootstrapOptions} from "../interface/bootstrap.interface";
-import {Component, isFunction, saveClassMetadata, Scope, ScopeEnum} from "@autowired/core/src";
+
+import {Component, isFunction, saveClassMetadata, Scope, ScopeEnum} from "@autowired/core";
+import { BootstrapOptions } from "../boot/options";
 import {ELECTRON_BOOT_STARTER} from "../constant/bootstrap.constant";
 
 /**

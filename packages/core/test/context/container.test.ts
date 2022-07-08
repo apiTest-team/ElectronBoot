@@ -1,8 +1,8 @@
-import {Component} from "../../src/decorator/component.decorator";
-import {AutowiredContainer} from "../../src/context/container";
-import {Autowired} from "../../src/decorator/autowired.decorator";
-import {Scope} from "../../src/decorator/definition.decorator";
-import {ScopeEnum} from "../../src/interface/decorator.interface";
+import {Component} from "../../src";
+import {AutowiredContainer} from "../../src";
+import {Autowired} from "../../src";
+import {Scope} from "../../src";
+import {ScopeEnum} from "../../src";
 
 export interface Animal {
     Say()

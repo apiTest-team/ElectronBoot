@@ -1,15 +1,34 @@
 import util from "util";
-import {AutowiredContainer,bindContainer} from "@autowired/core";
+import {AspectService, AutowiredContainer,bindContainer, DecoratorService, listPreloadModule} from "@autowired/core";
 import {BootstrapOptions} from "./options";
 import { DirectoryFileDetector } from "../detector/file.detector";
 import { EnvironmentService } from "../service/environment.service";
 import { InformationService } from "../service/infomation.service";
-import { AspectService } from "@autowired/core/src/service/aspect.service";
-import { DecoratorService } from "@autowired/core/src/service/decorator.service";
 import { ConfigService } from "../service/config.service";
+import configDefault from "../config/config.default";
 
 //debug工具
 const debug = util.debuglog('electron:debug');
+
+/**
+ * 初始化上下文
+ * @param globalOptions 初始化参数
+ */
+export const initializeGlobalApplicationContext =async (globalOptions:BootstrapOptions)=>{
+    // 创建应用上下文
+    const applicationContext = prepareGlobalApplicationContext(globalOptions)
+
+
+
+    // 初始化前置模块
+    const modules = listPreloadModule()
+    for (const module of modules) {
+        applicationContext.getAsync(module)
+    }
+
+    return applicationContext
+}
+
 /**
  * 初始化应用上下文
  * @param globalOptions
@@ -55,6 +74,22 @@ export const prepareGlobalApplicationContext =  (globalOptions:BootstrapOptions)
     applicationContext.bindClass(DecoratorService)
     applicationContext.bindClass(ConfigService)
 
+    // 初始化配置服务
+    const configService = applicationContext.get(ConfigService)
+    configService.add([
+      {
+          default:configDefault
+      }
+    ])
 
+    // 初始化aop
+    applicationContext.get(AspectService,[applicationContext])
+    // 初始化decorator
+    applicationContext.get(DecoratorService,[applicationContext])
 
+    // 合并配置
+    configService.load()
+    debug("[electron-boot]: Current config = %j",configService.getConfiguration())
+
+    return applicationContext
 }

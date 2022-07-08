@@ -74,7 +74,7 @@ importers:
 
   packages/core:
     specifiers:
-      '@types/node': ^18.0.0
+      '@types/node': ^18.0.3
       picomatch: ^2.3.1
       reflect-metadata: ^0.1.13
       typescript: ^4.7.4
@@ -82,26 +82,8 @@ importers:
       picomatch: registry.npmmirror.com/picomatch/2.3.1
       reflect-metadata: 0.1.13
     devDependencies:
-      '@types/node': 18.0.0
+      '@types/node': registry.npmmirror.com/@types/node/18.0.3
       typescript: 4.7.4
-
-  packages/core-back:
-    specifiers:
-      '@types/node': ^18.0.0
-      '@types/picomatch': ^2.3.0
-      picomatch: ^2.3.1
-      reflect-metadata: ^0.1.13
-      typescript: ^4.7.4
-    dependencies:
-      picomatch: 2.3.1
-      reflect-metadata: 0.1.13
-    devDependencies:
-      '@types/node': 18.0.1
-      '@types/picomatch': 2.3.0
-      typescript: 4.7.4
-
-  packages/core-back/test/fixtures/base-app-config:
-    specifiers: {}
 
   packages/electron-boot:
     specifiers:
@@ -165,16 +147,8 @@ packages:
     resolution: {integrity: sha512-GqWykok+3uocgfAJM8imbozrqLnPyTrpFlrryURQlw1EesPUCx5XxTiucWDSFF9/NUEXDuD4bnvHm8xfVGWTpQ==}
     dev: true
 
-  /@types/node/18.0.0:
-    resolution: {integrity: sha512-cHlGmko4gWLVI27cGJntjs/Sj8th9aYwplmZFwmmgYQQvL5NUsgVJG7OddLvNfLqYS31KFN0s3qlaD9qCaxACA==}
-    dev: true
-
   /@types/node/18.0.1:
     resolution: {integrity: sha512-CmR8+Tsy95hhwtZBKJBs0/FFq4XX7sDZHlGGf+0q+BRZfMbOTkzkj0AFAuTyXbObDIoanaBBW0+KEW+m3N16Wg==}
-    dev: true
-
-  /@types/picomatch/2.3.0:
-    resolution: {integrity: sha512-O397rnSS9iQI4OirieAtsDqvCj4+3eY1J+EPdNTKuHuRWIfUoGyzX294o8C4KJYaLqgSrd2o60c5EqCU8Zv02g==}
     dev: true
 
   /@types/responselike/1.0.0:
@@ -572,11 +546,6 @@ packages:
   /pend/1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
     dev: true
-
-  /picomatch/2.3.1:
-    resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
-    engines: {node: '>=8.6'}
-    dev: false
 
   /pify/3.0.0:
     resolution: {integrity: sha512-C3FsVNH1udSEX48gGX1xfvwTWfsYWj5U+8/uK15BGzIGrKoUpghX8hWZwa/OFnakBiiVNmBvemTJR5mcy7iPcg==}
@@ -3166,6 +3135,12 @@ packages:
     resolution: {integrity: sha512-CmR8+Tsy95hhwtZBKJBs0/FFq4XX7sDZHlGGf+0q+BRZfMbOTkzkj0AFAuTyXbObDIoanaBBW0+KEW+m3N16Wg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-18.0.1.tgz}
     name: '@types/node'
     version: 18.0.1
+    dev: true
+
+  registry.npmmirror.com/@types/node/18.0.3:
+    resolution: {integrity: sha512-HzNRZtp4eepNitP+BD6k2L6DROIDG4Q0fm4x+dwfsr6LGmROENnok75VGw40628xf+iR24WeMFcHuuBDUAzzsQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-18.0.3.tgz}
+    name: '@types/node'
+    version: 18.0.3
     dev: true
 
   registry.npmmirror.com/@types/normalize-package-data/2.4.1:

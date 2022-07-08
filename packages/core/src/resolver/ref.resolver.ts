@@ -21,7 +21,7 @@ export class RefResolver implements IResolver{
   }
 
   get type():string{
-    return
+    return KEYS.REF_ELEMENT
   }
 
   resolve(instance: IResolverInstance,originName: string): any {

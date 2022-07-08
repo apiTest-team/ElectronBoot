@@ -45,7 +45,7 @@ export class DefinitionNotFoundException extends BaseException {
     }
     constructor(identifier: ObjectIdentifier) {
         super(
-            `${identifier.toString()} is not valid in current context`,
+            `${String(identifier)} is not valid in current context`,
             CoreExceptionEnum.DEFINITION_NOT_FOUND
         );
         this[DefinitionNotFoundException.type] =

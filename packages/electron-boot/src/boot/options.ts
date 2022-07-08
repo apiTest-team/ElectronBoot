@@ -4,4 +4,5 @@ export interface BootstrapOptions {
     single?:boolean
     // js执行路径
     baseDir?:string
+    importConfigs?:any[]
 }

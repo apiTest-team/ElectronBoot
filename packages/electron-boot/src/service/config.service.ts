@@ -8,7 +8,7 @@ import { InformationService } from "./infomation.service";
 import { AppInfo } from "../interface/bootstrap.interface";
 import { safelyGet } from "../utils";
 
-const debug = util.debuglog('midway:debug');
+const debug = util.debuglog('electron:debug');
 
 interface ConfigMergeInfo {
   value: any;

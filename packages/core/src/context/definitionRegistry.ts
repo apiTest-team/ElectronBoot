@@ -130,7 +130,7 @@ export class ObjectDefinitionRegistry
   }
 
   hasObject(identifier: ObjectIdentifier): boolean {
-    identifier = this.identifierRelation.getRelation(identifier) ?? identifier;
+    identifier = this.identifierRelation.getRelation(identifier) ? identifier : "";
     return this.has(PREFIX + identifier.toString());
   }
 

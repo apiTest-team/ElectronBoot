@@ -35,7 +35,7 @@ export class DecoratorManager extends Map implements IModuleStore{
     if (this.container){
       return this.container.saveModule(key,module)
     }
-    if (this.has(key)){
+    if (!this.has(key)){
       this.set(key,new Set())
     }
     this.get(key).add(module)
@@ -68,10 +68,10 @@ export class DecoratorManager extends Map implements IModuleStore{
   saveMetadata<T>(decoratorNameKey:ObjectIdentifier,data:any,target:T,propertyName?:ObjectIdentifier){
     if (propertyName){
       const dataKey = DecoratorManager.getDecoratorMethod(decoratorNameKey,propertyName)
-      DecoratorManager.saveMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey,data)
+      DecoratorManager.saveMetadata(INJECT_CLASS_KEY_PREFIX,target,dataKey,data)
     }else{
       const dataKey = DecoratorManager.getDecoratorClassKey(decoratorNameKey)
-      DecoratorManager.saveMetadata(INJECT_METHOD_KEY_PREFIX,target,dataKey,data)
+      DecoratorManager.saveMetadata(INJECT_CLASS_KEY_PREFIX,target,dataKey,data)
     }
   }
 

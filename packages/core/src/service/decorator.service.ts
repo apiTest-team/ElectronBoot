@@ -1,5 +1,4 @@
 import { Autowired, Component, Init, Scope } from "../decorator";
-import { HandlerFunction } from "../../../electron-boot/src/interface/service.interface";
 import { AspectService } from "./aspect.service";
 import { IAutowiredContainer, MethodHandlerFunction, ParameterHandlerFunction, ScopeEnum } from "../interface";
 import { APPLICATION_CONTEXT_KEY, INJECT_CUSTOM_METHOD, INJECT_CUSTOM_PARAM } from "../constant";
@@ -7,6 +6,7 @@ import { getClassMetadata, getMethodParamTypes } from "../decorator";
 import { AutowiredCommonException } from "../exception";
 import { JoinPoint } from "../decorator/aspect.decorator";
 import util from "util";
+import { HandlerFunction } from "../interface/service.interface";
 
 const debug = util.debuglog('autowired:debug');
 
