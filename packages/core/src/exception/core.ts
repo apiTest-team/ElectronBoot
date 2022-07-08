@@ -7,7 +7,8 @@ export const CoreExceptionEnum = registerExceptionCode("autowired",{
     MISSING_RESOLVER:10001,
     DEFINITION_NOT_FOUND:10002,
     SINGLETON_INJECT_TEMP:10003,
-    USE_WRONG_METHOD:10004
+    USE_WRONG_METHOD:10004,
+    DUPLICATE_CLASS_NAME:100005
 } as const)
 
 /**

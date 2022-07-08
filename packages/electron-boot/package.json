@@ -19,6 +19,9 @@
     "build:umd": "rollup --config rollup.config.js",
     "build:types": "tsc --project tsconfig.prod.types.json"
   },
+  "dependencies": {
+    "picomatch": "^2.3.1"
+  },
   "devDependencies": {
     "@autowired/core": "workspace:*",
     "electron": "^19.0.8"

@@ -17,12 +17,11 @@
     "build:types": "tsc --project tsconfig.prod.types.json"
   },
   "dependencies": {
-    "picomatch": "^2.3.1",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "picomatch": "^2.3.1"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
-    "@types/picomatch": "^2.3.0",
     "typescript": "^4.7.4"
   },
   "publishConfig": {

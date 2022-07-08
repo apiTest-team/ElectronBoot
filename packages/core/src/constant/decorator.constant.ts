@@ -15,6 +15,14 @@ export const INJECT_METHOD_KEY_PREFIX = "INJECTION_METHOD_META_DATA"
  */
 export const PRELOAD_MODULE_KEY = "INJECTION_PRELOAD_MODULE_KEY"
 /**
+ * Aop注入key
+ */
+export const ASPECT_KEY="core:aspect"
+/**
+ * 应用上下文注入key
+ */
+export const APPLICATION_CONTEXT_KEY = '__autowired_application_context__';
+/**
  * 注入名
  */
 export const INJECT_TAG = 'autowired';

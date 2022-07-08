@@ -34,6 +34,14 @@ export const isPlainObject =  (obj) =>{
 }
 
 /**
+ * 是否是正则
+ * @param value
+ */
+export function isRegExp(value) {
+  return util.types.isRegExp(value);
+}
+
+/**
  * 判断指定对象是否时类
  * @param fn 指定对象
  * @constructor
@@ -87,6 +95,8 @@ export function isPromise(value) {
   return util.types.isPromise(value);
 }
 
+
+
 /**
  * 获取指定对象的内容
  * @param fn
@@ -102,6 +112,7 @@ function fnBody(fn) {
  */
 export const Types = {
   isClass,
+  isRegExp,
   isPromise,
   isFunction,
   isPlainObject,

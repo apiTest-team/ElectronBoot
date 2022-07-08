@@ -2,6 +2,7 @@
  * 定义组件的元数据结构
  */
 import { ObjectIdentifier } from "../types/decorator.types";
+import { IMethodAspect } from "../decorator/aspect.decorator";
 
 /**
  * 组件的元数据定义
@@ -65,3 +66,18 @@ export interface ObjectDefinitionOptions {
   srcPath?: string;
   allowDowngrade?: boolean;
 }
+
+export type MethodHandlerFunction = (options: {
+  target: new (...args) => any;
+  propertyName: string;
+  metadata: any;
+}) => IMethodAspect;
+
+export type ParameterHandlerFunction = (options: {
+  target: new (...args) => any;
+  propertyName: string;
+  metadata: any;
+  originArgs: Array<any>;
+  originParamType: any;
+  parameterIndex: number;
+}) => any;
