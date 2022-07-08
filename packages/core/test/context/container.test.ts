@@ -5,7 +5,7 @@ import {Scope} from "../../src";
 import {ScopeEnum} from "../../src";
 
 export interface Animal {
-    Say()
+    Say():any
 }
 
 @Component()
@@ -28,9 +28,9 @@ export class Dog implements Animal{
 @Scope(ScopeEnum.Singleton)
 export class LogService {
     @Autowired()
-    public cat:Cat
+    public cat: Cat | undefined
     @Autowired()
-    public dog:Dog
+    public dog: Dog | undefined
 }
 
 

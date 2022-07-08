@@ -4,7 +4,7 @@ import { basename, join } from "path";
 import { Autowired, Component, Scope, ScopeEnum, Types, extend } from "@autowired/core";
 import { EnvironmentService } from "./environment.service";
 import { InvalidConfigException } from "../exception/bootstrap";
-import { InformationService } from "./infomation.service";
+import { InformationService } from "./information.service";
 import { AppInfo } from "../interface/bootstrap.interface";
 import { safelyGet } from "../utils";
 

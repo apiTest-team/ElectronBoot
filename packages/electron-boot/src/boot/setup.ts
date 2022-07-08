@@ -1,11 +1,19 @@
 import util from "util";
-import {AspectService, AutowiredContainer,bindContainer, DecoratorService, listPreloadModule} from "@autowired/core";
+import {
+    AspectService,
+    AutowiredContainer,
+    bindContainer, clearBindContainer,
+    DecoratorService,
+    IAutowiredContainer,
+    listPreloadModule
+} from "@autowired/core";
 import {BootstrapOptions} from "./options";
 import { DirectoryFileDetector } from "../detector/file.detector";
 import { EnvironmentService } from "../service/environment.service";
-import { InformationService } from "../service/infomation.service";
+import { InformationService } from "../service/information.service";
 import { ConfigService } from "../service/config.service";
 import configDefault from "../config/config.default";
+import { WindowService } from "../service/window.service";
 
 //debug工具
 const debug = util.debuglog('electron:debug');
@@ -23,10 +31,23 @@ export const initializeGlobalApplicationContext =async (globalOptions:BootstrapO
     // 初始化前置模块
     const modules = listPreloadModule()
     for (const module of modules) {
-        applicationContext.getAsync(module)
+        await applicationContext.getAsync(module)
     }
 
     return applicationContext
+}
+
+/**
+ * 销毁
+ * @param applicationContext
+ */
+export async function destroyGlobalApplicationContext(
+  applicationContext: IAutowiredContainer
+) {
+    // stop container
+    await applicationContext.stop();
+    clearBindContainer();
+    global['ELECTRON_APPLICATION_CONTEXT'] = undefined;
 }
 
 /**
@@ -73,6 +94,14 @@ export const prepareGlobalApplicationContext =  (globalOptions:BootstrapOptions)
     applicationContext.bindClass(AspectService)
     applicationContext.bindClass(DecoratorService)
     applicationContext.bindClass(ConfigService)
+    applicationContext.bindClass(WindowService)
+
+    // 绑定前置模块
+    if (globalOptions.preloadModules && globalOptions.preloadModules.length){
+        for (const preloadModule of globalOptions.preloadModules) {
+            applicationContext.bindClass(preloadModule)
+        }
+    }
 
     // 初始化配置服务
     const configService = applicationContext.get(ConfigService)
@@ -84,8 +113,21 @@ export const prepareGlobalApplicationContext =  (globalOptions:BootstrapOptions)
 
     // 初始化aop
     applicationContext.get(AspectService,[applicationContext])
+
     // 初始化decorator
     applicationContext.get(DecoratorService,[applicationContext])
+
+    // 上下文准备完毕
+    applicationContext.ready()
+
+    // 加载全局配置
+    if (globalOptions.globalConfig){
+        if (Array.isArray(globalOptions.globalConfig)) {
+            configService.add(globalOptions.globalConfig);
+        } else {
+            configService.addObject(globalOptions.globalConfig);
+        }
+    }
 
     // 合并配置
     configService.load()

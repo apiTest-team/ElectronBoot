@@ -12,7 +12,7 @@ export class MainWindow extends BaseWindow{
   protected name: string = "mainWindow";
 
   @Init()
-  protected async init(){
+  protected init(){
     console.log("进来了");
   }
 }
@@ -23,6 +23,7 @@ context.bindClass(MainWindow)
 context.bindClass(WindowService)
 
 const service = context.get(WindowService,[context])
-
 const window = service.getMainWindow()
 console.log(window);
+
+

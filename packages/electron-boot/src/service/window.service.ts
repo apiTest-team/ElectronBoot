@@ -23,7 +23,6 @@ export class WindowService {
      */
     @Init()
     protected init(){
-        console.log("进来了");
         // 获取所有的窗口
         const windows = listModule(ELECTRON_BOOT_WINDOW)
 
@@ -39,7 +38,6 @@ export class WindowService {
                 break
             }
         }
-
     }
 
     /**

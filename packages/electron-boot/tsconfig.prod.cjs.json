@@ -1,6 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "module": "CommonJS",
     "outDir": "dist/cjs"
   },

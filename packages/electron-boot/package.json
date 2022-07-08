@@ -23,6 +23,7 @@
     "picomatch": "^2.3.1"
   },
   "devDependencies": {
+    "typescript": "^4.7.4",
     "@autowired/core": "workspace:*",
     "electron": "^19.0.8"
   },

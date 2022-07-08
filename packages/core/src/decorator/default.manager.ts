@@ -27,7 +27,12 @@ if (typeof global==="object"){
     global["AUTOWIRED_GLOBAL_DECORATOR_MANAGER"] = manager
   }
 }
-
+/**
+ * 清空绑定容器
+ */
+export const clearBindContainer =  () => {
+  return (manager.container = null);
+}
 /**
  * 保存元数据
  * @param decoratorNameKey 元数据保存key

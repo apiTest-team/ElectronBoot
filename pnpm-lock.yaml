@@ -90,11 +90,13 @@ importers:
       '@autowired/core': workspace:*
       electron: ^19.0.8
       picomatch: ^2.3.1
+      typescript: ^4.7.4
     dependencies:
       picomatch: registry.npmmirror.com/picomatch/2.3.1
     devDependencies:
       '@autowired/core': link:../core
       electron: 19.0.8
+      typescript: registry.npmmirror.com/typescript/4.7.4
 
 packages:
 
