@@ -8,12 +8,16 @@ import { WindowService } from "../src/service/window.service";
   main:true
 })
 export class MainWindow extends BaseWindow{
+  public name: string = "mainWindow";
   protected conf:BrowserWindowConstructorOptions = {}
-  protected name: string = "mainWindow";
 
   @Init()
   protected init(){
     console.log("进来了");
+  }
+
+  run(): void {
+    console.log("我进来了")
   }
 }
 

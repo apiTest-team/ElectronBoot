@@ -1,15 +1,31 @@
 import "reflect-metadata"
-import { IModuleStore } from "../interface/store.interface";
-import { GroupModeType, ObjectIdentifier } from "../types/decorator.types";
+import { IModuleStore } from "../interface";
+import { GroupModeType, ObjectIdentifier } from "../types";
 import {
   INJECT_CLASS_KEY_PREFIX,
   INJECT_CLASS_METHOD_KEY_PREFIX,
   INJECT_METHOD_KEY_PREFIX
-} from "../constant/decorator.constant";
+} from "../constant";
 /**
  * 装饰管理器
  */
-export class DecoratorManager extends Map implements IModuleStore{
+export class DecoratorManager implements IModuleStore{
+  // 数据存储
+  private storeMap = new Map()
+  // 补充map的get
+  get(key:any):any{
+    return this.storeMap.get(key)
+  }
+  // 补充map的set
+  set(key:any,value:any){
+    this.storeMap.set(key, value)
+  }
+  /**
+   * 清除storeMap
+   */
+  clear(){
+    this.storeMap.clear()
+  }
   /**
    * 存储容器
    */
@@ -23,8 +39,10 @@ export class DecoratorManager extends Map implements IModuleStore{
     if (this.container) {
       return this.container.listModule(key);
     }
-    return Array.from(this.get(key) as ArrayLike<any> || []);
+    return Array.from(this.storeMap.get(key) as ArrayLike<any> || []);
   }
+
+
 
   /**
    * 保存模块
@@ -35,10 +53,10 @@ export class DecoratorManager extends Map implements IModuleStore{
     if (this.container){
       return this.container.saveModule(key,module)
     }
-    if (!this.has(key)){
-      this.set(key,new Set())
+    if (!this.storeMap.has(key)){
+      this.storeMap.set(key,new Set())
     }
-    this.get(key).add(module)
+    this.storeMap.get(key).add(module)
   }
 
   /**
@@ -46,7 +64,7 @@ export class DecoratorManager extends Map implements IModuleStore{
    * @param key
    */
   public resetModule(key: string | symbol) {
-    this.set(key,new Set())
+    this.storeMap.set(key,new Set())
   }
 
   /**
@@ -55,7 +73,7 @@ export class DecoratorManager extends Map implements IModuleStore{
    */
   public bindContainer(container?:IModuleStore){
     this.container = container
-    this.container?.transformModule(this)
+    this.container?.transformModule(this.storeMap)
   }
 
   /**

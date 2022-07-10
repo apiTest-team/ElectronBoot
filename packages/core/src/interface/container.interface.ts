@@ -60,7 +60,9 @@ export interface ResolverFactoryCreateOptions {
 /**
  * 属性配置定义
  */
-export interface IProperties extends Map<ObjectIdentifier, any> {
+export interface IProperties {
+  set(key:any,value:any)
+  get(key:any):any
   getProperty(key: ObjectIdentifier, defaultValue?: any): any;
   setProperty(key: ObjectIdentifier, value: any): any;
   propertyKeys(): ObjectIdentifier[];

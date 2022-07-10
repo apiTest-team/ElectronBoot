@@ -1,6 +1,6 @@
-import {Component} from "../../src/decorator/component.decorator";
-import {Autowired} from "../../src/decorator/autowired.decorator";
-import {getPropertyAutowired} from "../../src/decorator/default.manager";
+import {Component} from "../../src";
+import {Autowired} from "../../src";
+import {getPropertyAutowired} from "../../src";
 
 @Component()
 class InjectChild {

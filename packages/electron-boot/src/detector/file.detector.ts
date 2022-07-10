@@ -7,8 +7,8 @@ import {
   IObjectDefinition,
   Types
 } from "@autowired/core";
-import { DuplicateClassNameException } from "../exception/bootstrap";
-import { resolves } from "../utils/resolves";
+import { DuplicateClassNameException } from "../exception";
+import { resolves } from "../utils";
 
 export abstract class AbstractFileDetector<T> implements IFileDetector {
   options: T;

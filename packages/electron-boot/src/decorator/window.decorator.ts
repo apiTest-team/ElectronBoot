@@ -1,5 +1,5 @@
 import { Component, saveModule, Scope, ScopeEnum } from "@autowired/core";
-import { ELECTRON_BOOT_WINDOW } from "../constant/bootstrap.constant";
+import { ELECTRON_BOOT_WINDOW } from "../constant";
 
 /**
  * window的参数

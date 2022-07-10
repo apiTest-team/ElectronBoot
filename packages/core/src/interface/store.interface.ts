@@ -1,4 +1,4 @@
-import { ObjectIdentifier } from "../types/decorator.types";
+import { ObjectIdentifier } from "../types";
 
 /**
  * 存储接口

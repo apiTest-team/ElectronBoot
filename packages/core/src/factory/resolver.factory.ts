@@ -3,12 +3,12 @@ import {
   IResolver,
   IResolverInstance, ObjectLifeCycleEvent,
   ResolverFactoryCreateOptions
-} from "../interface/container.interface";
-import { ObjectIdentifier } from "../types/decorator.types";
-import { ManagedReference, RefResolver } from "../resolver/ref.resolver";
+} from "../interface";
+import { ObjectIdentifier } from "../types";
+import { ManagedReference, RefResolver } from "../resolver";
 import * as util from "util";
 import EventEmitter from "events";
-import { TEMP_CTX_KEY, TEMP_OBJECT_CTX_KEY } from "../constant/context.constant";
+import { TEMP_CTX_KEY, TEMP_OBJECT_CTX_KEY } from "../constant";
 import {
   AutowiredCommonException,
   DefinitionNotFoundException,

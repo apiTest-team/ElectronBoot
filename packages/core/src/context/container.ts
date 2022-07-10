@@ -183,6 +183,7 @@ export class AutowiredContainer implements IAutowiredContainer,IModuleStore{
     options?: Partial<IObjectDefinition>
   ): void;
   bind(identifier: any, target: any, options?: any): void {
+
     if (Types.isClass(identifier) || Types.isFunction(identifier)) {
       return this.bindModule(identifier, target);
     }

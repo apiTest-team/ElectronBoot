@@ -1,9 +1,9 @@
-import {ElectronBootApplication} from "../src/decorator/bootstrap.decorator";
-import {ElectronApplication} from "../src/boot/bootstrap";
+import {ElectronBootApplication} from "../src";
+import {ElectronApplication} from "../src";
 
 @ElectronBootApplication()
-export class TestElectronApplication {
-    public static main(...args:string[]){
-        ElectronApplication.run(TestElectronApplication,...args)
+export class ApiTestApplication {
+    public static async main(...args:string[]){
+        await ElectronApplication.run(ApiTestApplication,...args)
     }
 }

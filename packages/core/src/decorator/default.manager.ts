@@ -1,6 +1,6 @@
-import { GroupModeType, ObjectIdentifier } from "../types/decorator.types";
+import { GroupModeType, ObjectIdentifier } from "../types";
 import { DecoratorManager } from "./decorator.manager";
-import { merge, randomUUID, transformTypeFromTSDesign } from "../utils/decorator.utils";
+import { merge, randomUUID, transformTypeFromTSDesign } from "../utils";
 import {
   INJECT_CUSTOM_METHOD, INJECT_CUSTOM_PARAM,
   INJECT_CUSTOM_PROPERTY,
@@ -8,15 +8,15 @@ import {
   OBJECT_DEFINITION_CLASS,
   PRELOAD_MODULE_KEY,
   TARGETED_CLASS
-} from "../constant/decorator.constant";
+} from "../constant";
 import {
   InjectModeEnum,
   ObjectDefinitionOptions,
   TagPropsMetadata,
   TargetClassMetadata
-} from "../interface/decorator.interface";
-import { camelCase } from "../utils/camelcase.utils";
-import { isClass } from "../utils/types.utils";
+} from "../interface";
+import { camelCase } from "../utils";
+import { isClass } from "../utils";
 
 // 定义全局的管理器
 let manager = new DecoratorManager()

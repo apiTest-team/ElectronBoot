@@ -7,6 +7,10 @@ export const ELECTRON_BOOT_STARTER = "electron_boot_starter"
  */
 export const ELECTRON_BOOT_WINDOW = "electron_boot_window"
 /**
- * ipc通信类
+ * ipc通信命名空间
  */
-export const ELECTRON_BOOT_IPC = "electron_boot_ipc"
+export const IPC_CONTROLLER = "ipc:controller"
+/**
+ * ipc通信方法
+ */
+export const IPC_ACTION = "ipc:action"

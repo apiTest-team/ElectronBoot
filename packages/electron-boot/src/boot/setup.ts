@@ -8,12 +8,9 @@ import {
     listPreloadModule
 } from "@autowired/core";
 import {BootstrapOptions} from "./options";
-import { DirectoryFileDetector } from "../detector/file.detector";
-import { EnvironmentService } from "../service/environment.service";
-import { InformationService } from "../service/information.service";
-import { ConfigService } from "../service/config.service";
+import { DirectoryFileDetector } from "../detector";
+import { EnvironmentService,WindowService,InformationService,ConfigService } from "../service";
 import configDefault from "../config/config.default";
-import { WindowService } from "../service/window.service";
 
 //debug工具
 const debug = util.debuglog('electron:debug');
@@ -116,6 +113,13 @@ export const prepareGlobalApplicationContext =  (globalOptions:BootstrapOptions)
 
     // 初始化decorator
     applicationContext.get(DecoratorService,[applicationContext])
+
+    // 加载第三方模块
+    for (const importModule of [].concat(globalOptions.imports)) {
+        if (importModule){
+            applicationContext.load(importModule)
+        }
+    }
 
     // 上下文准备完毕
     applicationContext.ready()

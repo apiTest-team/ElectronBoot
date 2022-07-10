@@ -1,7 +1,7 @@
 
 import {Component, isFunction, saveClassMetadata, Scope, ScopeEnum} from "@autowired/core";
-import { BootstrapOptions } from "../boot/options";
-import {ELECTRON_BOOT_STARTER} from "../constant/bootstrap.constant";
+import { BootstrapOptions } from "../boot";
+import {ELECTRON_BOOT_STARTER} from "../constant";
 
 /**
  * 自动启动装饰器

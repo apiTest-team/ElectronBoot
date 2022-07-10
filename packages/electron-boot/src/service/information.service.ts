@@ -1,6 +1,6 @@
 import { join } from "path";
-import { Component, Scope, ScopeEnum,Autowired } from "@autowired/core";
-import { safeRequire } from "../utils/resolves";
+import {Component, Scope, ScopeEnum, Autowired, Init} from "@autowired/core";
+import { safeRequire } from "../utils";
 import { app } from "electron";
 import { getCurrentEnvironment, isDevelopmentEnvironment } from "../utils";
 
@@ -12,7 +12,7 @@ export class InformationService {
   @Autowired()
   protected baseDir: string;
 
-  @Autowired()
+  @Init()
   protected init() {
     if (this.baseDir) {
       this.pkg = safeRequire(join(this.baseDir, 'package.json')) || {};

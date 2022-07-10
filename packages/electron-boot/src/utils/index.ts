@@ -1,4 +1,6 @@
 import { app } from "electron";
+import {posix} from "path";
+export * from "./resolves"
 
 /**
  * 获取当前环境
@@ -12,6 +14,23 @@ export const getCurrentEnvironment = ():string=>{
  */
 export const isDevelopmentEnvironment = (env:string)=>{
   return !app.isPackaged
+}
+
+/**
+ * 合并路径
+ * @param strArray
+ */
+export function joinURLPath(...strArray) {
+  strArray = strArray.filter(item => !!item);
+  if (strArray.length === 0) {
+    return '';
+  }
+  let p = posix.join(...strArray);
+  p = p.replace(/\/+$/, '');
+  if (!/^\//.test(p)) {
+    p = '/' + p;
+  }
+  return p;
 }
 
 /**

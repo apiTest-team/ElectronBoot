@@ -1,16 +1,9 @@
 import { IAutowiredContainer,getClassMetadata } from "@autowired/core";
-import {ELECTRON_BOOT_STARTER} from "../constant/bootstrap.constant";
+import {ELECTRON_BOOT_STARTER} from "../constant";
 import {BootstrapOptions} from "./options";
 import { app } from "electron";
 import { destroyGlobalApplicationContext, initializeGlobalApplicationContext } from "./setup";
-import { WindowService } from "../service/window.service";
-
-/**
- * 默认的参数信息
- */
-export const defaultOptions:BootstrapOptions =  {
-    single:true
-}
+import { WindowService } from "../service";
 
 class BootstrapStarter {
     protected globalOptions:Partial<BootstrapOptions> = {}
@@ -48,7 +41,6 @@ class BootstrapStarter {
         await destroyGlobalApplicationContext(this.applicationContext)
     }
 }
-
 /**
  * electron应用
  */
@@ -57,7 +49,6 @@ export class ElectronApplication {
     private static configured=false
     private globalConfig:BootstrapOptions
     private static applicationContext:IAutowiredContainer
-
     /**
      * 获取启动器
      * @private
@@ -68,7 +59,6 @@ export class ElectronApplication {
         }
         return this.starter;
     }
-
     /**
      * 配置信息
      * @param configuration
@@ -79,16 +69,17 @@ export class ElectronApplication {
         this.getStarter().configure(configuration)
         return this
     }
-
     /**
      * 应用初始化完毕
      */
     private static onAppReady = ()=>{
-        const service = this.applicationContext.get(WindowService)
+        // 获取窗口服务
+        const service = this.applicationContext.get(WindowService,[this.applicationContext])
+        // 获取主窗口
         const wind = service.getMainWindow()
-
+        // 显示窗口
+        wind.run()
     }
-
     /**
      * 启动方法
      * @param target
@@ -120,7 +111,6 @@ export class ElectronApplication {
               console.log(err);
           })
     }
-
     /**
      * 停止
      */
@@ -128,7 +118,6 @@ export class ElectronApplication {
         await this.starter.stop
         this.reset()
     }
-
     /**
      * 重置
      */

@@ -1,11 +1,11 @@
 import util from "util";
 import { readdirSync, statSync } from "fs";
 import { basename, join } from "path";
-import { Autowired, Component, Scope, ScopeEnum, Types, extend } from "@autowired/core";
+import {Autowired, Component, Scope, ScopeEnum, Types, extend, Init} from "@autowired/core";
 import { EnvironmentService } from "./environment.service";
-import { InvalidConfigException } from "../exception/bootstrap";
+import { InvalidConfigException } from "../exception";
 import { InformationService } from "./information.service";
-import { AppInfo } from "../interface/bootstrap.interface";
+import { AppInfo } from "../interface";
 import { safelyGet } from "../utils";
 
 const debug = util.debuglog('electron:debug');
@@ -36,7 +36,7 @@ export class ConfigService {
   @Autowired()
   protected informationService: InformationService;
 
-  @Autowired()
+  @Init()
   protected init() {
     this.appInfo = {
       pkg: this.informationService.getPkg(),

@@ -1,10 +1,10 @@
-import { ObjectIdentifier } from "../types/decorator.types";
+import { ObjectIdentifier } from "../types";
 import {
   IIdentifierRelationShip,
   IObjectDefinition,
   IObjectDefinitionRegistry
-} from "../interface/container.interface";
-import { getComponentId, getComponentName, getComponentUUID } from "../decorator/default.manager";
+} from "../interface";
+import { getComponentId, getComponentName, getComponentUUID } from "../decorator";
 
 const PREFIX = '_id_default_';
 
@@ -12,40 +12,44 @@ const PREFIX = '_id_default_';
  * 标识关系实现
  */
 class LegacyIdentifierRelation
-  extends Map<ObjectIdentifier, string>
   implements IIdentifierRelationShip
 {
+  private storeMap = new Map<ObjectIdentifier,string>()
   saveClassRelation(module: any, namespace?: string) {
     const componentId = getComponentUUID(module);
     // save uuid
-    this.set(componentId, componentId);
+    this.storeMap.set(componentId, componentId);
     if (componentId) {
       // save alias id
       const aliasId = getComponentId(module);
       if (aliasId) {
         // save alias Id
-        this.set(aliasId, componentId);
+        this.storeMap.set(aliasId, componentId);
       }
       // save className alias
-      this.set(getComponentName(module), componentId);
+      this.storeMap.set(getComponentName(module), componentId);
       // save namespace alias
       if (namespace) {
-        this.set(namespace + ':' + getComponentName(module), componentId);
+        this.storeMap.set(namespace + ':' + getComponentName(module), componentId);
       }
     }
   }
 
   saveFunctionRelation(id: ObjectIdentifier, uuid: string) {
-    this.set(uuid, uuid);
-    this.set(id, uuid);
+    this.storeMap.set(uuid, uuid);
+    this.storeMap.set(id, uuid);
   }
 
   hasRelation(id: ObjectIdentifier): boolean {
-    return this.has(id);
+    return this.storeMap.has(id);
   }
 
   getRelation(id: ObjectIdentifier): string {
-    return this.get(id) as string;
+    if (this.storeMap.has(id)){
+      return this.storeMap.get(id)
+    }else{
+      return undefined
+    }
   }
 }
 
@@ -53,12 +57,11 @@ class LegacyIdentifierRelation
  * 对象定义注册表
  */
 export class ObjectDefinitionRegistry
-  extends Map
   implements IObjectDefinitionRegistry
 {
+  private storeMap = new Map()
   private singletonIds:ObjectIdentifier[] = [];
-  private _identifierRelation: IIdentifierRelationShip =
-    new LegacyIdentifierRelation();
+  private _identifierRelation: IIdentifierRelationShip = new LegacyIdentifierRelation();
 
   get identifierRelation() {
     if (!this._identifierRelation) {
@@ -73,7 +76,7 @@ export class ObjectDefinitionRegistry
 
   get identifiers() {
     const ids = [];
-    for (const key of this.keys()) {
+    for (const key of this.storeMap.keys()) {
       if (key.indexOf(PREFIX) === -1) {
         ids.push(key);
       }
@@ -82,7 +85,7 @@ export class ObjectDefinitionRegistry
   }
 
   get count() {
-    return this.size;
+    return this.storeMap.size;
   }
 
   getSingletonDefinitionIds(): ObjectIdentifier[] {
@@ -91,7 +94,7 @@ export class ObjectDefinitionRegistry
 
   getDefinitionByName(name: string): IObjectDefinition[] {
     const definitions = [];
-    for (const v of this.values()) {
+    for (const v of this.storeMap.values()) {
       const definition = v as IObjectDefinition;
       if (definition.name === name) {
         definitions.push(definition);
@@ -107,40 +110,41 @@ export class ObjectDefinitionRegistry
     if (definition.isSingletonScope()) {
       this.singletonIds.push(identifier);
     }
-    this.set(identifier, definition);
+    this.storeMap.set(identifier, definition);
   }
 
   getDefinition(identifier: ObjectIdentifier): IObjectDefinition {
     identifier = this.identifierRelation.getRelation(identifier) ?? identifier;
-    return this.get(identifier);
+    return this.storeMap.get(identifier);
   }
 
   removeDefinition(identifier: ObjectIdentifier): void {
-    this.delete(identifier);
+    this.storeMap.delete(identifier);
   }
 
   hasDefinition(identifier: ObjectIdentifier): boolean {
     identifier = this.identifierRelation.getRelation(identifier) ?? identifier;
-    return this.has(identifier);
+    return this.storeMap.has(identifier);
+  }
+
+  hasObject(identifier: ObjectIdentifier): boolean {
+    const temp = this.identifierRelation.getRelation(identifier)
+    identifier = temp ?? identifier;
+    return this.storeMap.has(PREFIX + identifier.toString());
   }
 
   clearAll(): void {
     this.singletonIds = [];
-    this.clear();
-  }
-
-  hasObject(identifier: ObjectIdentifier): boolean {
-    identifier = this.identifierRelation.getRelation(identifier) ? identifier : "";
-    return this.has(PREFIX + identifier.toString());
+    this.storeMap.clear();
   }
 
   registerObject(identifier: ObjectIdentifier, target: any) {
-    this.set(PREFIX + identifier.toString(), target);
+    this.storeMap.set(PREFIX + identifier.toString(), target);
   }
 
   getObject(identifier: ObjectIdentifier): any {
     identifier = this.identifierRelation.getRelation(identifier) ?? identifier;
-    return this.get(PREFIX + identifier.toString());
+    return this.storeMap.get(PREFIX + identifier.toString());
   }
 
   getIdentifierRelation(): IIdentifierRelationShip {

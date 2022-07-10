@@ -2,22 +2,30 @@ import { ObjectIdentifier } from "../types/decorator.types";
 import { IProperties } from "../interface/container.interface";
 
 export class ObjectProperties
-  extends Map<ObjectIdentifier, any>
   implements IProperties
 {
+  private storeMap = new Map()
   propertyKeys(): ObjectIdentifier[] {
-    return Array.from(this.keys());
+    return Array.from(this.storeMap.keys());
+  }
+
+  set(key:any,value:any){
+    return this.storeMap.set(key,value)
+  }
+
+  get(key:any):any{
+    return this.storeMap.get(key)
   }
 
   getProperty(key: ObjectIdentifier, defaultValue?: any): any {
-    if (this.has(key)) {
-      return this.get(key);
+    if (this.storeMap.has(key)) {
+      return this.storeMap.get(key);
     }
 
     return defaultValue;
   }
 
   setProperty(key: ObjectIdentifier, value: any): any {
-    return this.set(key, value);
+    return this.storeMap.set(key, value);
   }
 }
