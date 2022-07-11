@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "module": "ES2015",
+    "target": "ES6",
+    "outDir": "dist/esm6",
+  },
+}

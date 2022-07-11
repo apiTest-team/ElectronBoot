@@ -1,5 +1,5 @@
 {
-  "name": "@autowired/bundle",
+  "name": "@autowired/boot",
   "version": "0.0.1-beta.2",
   "description": "",
   "sideEffects": false,
@@ -7,23 +7,28 @@
   "module": "./dist/esm6/index.js",
   "es2015": "./dist/esm2015/index.js",
   "typings": "./dist/types/index.d.ts",
-  "bin": {
-    "bundle": "bin/bundle.js"
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "npm run build:cjs",
-    "build:clean": "rimraf build",
+    "build:clean": "rimraf dist",
     "build:es2015": "tsc --project tsconfig.prod.esm2015.json",
     "build:esm5": "tsc --project tsconfig.prod.esm6.json",
     "build:cjs": "tsc --project tsconfig.prod.cjs.json",
     "build:umd": "rollup --config rollup.config.js",
     "build:types": "tsc --project tsconfig.prod.types.json"
   },
+  "dependencies": {
+    "picomatch": "^2.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4",
+    "@autowired/core": "workspace:*",
+    "electron": "^19.0.8"
+  },
   "keywords": [],
   "author": "",
-  "publishConfig": {
-    "access": "public"
-  },
   "license": "ISC",
   "gitHead": "ac38614e586a1e5ad4189575bf7fc047362d0f6c"
 }

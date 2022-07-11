@@ -5,8 +5,7 @@
       "esnext",
       "dom"
     ],
-    "module": "ES2015",
-    "target": "ES5",
-    "outDir": "dist/esm5",
+    "module": "CommonJS",
+    "outDir": "dist/cjs"
   },
 }
