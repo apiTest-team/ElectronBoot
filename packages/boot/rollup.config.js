@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
-  input: 'dist/esm5/index.js',
+  input: 'dist/esm2015/index.js',
   output: [
     {
       name: 'ClassTransformer',

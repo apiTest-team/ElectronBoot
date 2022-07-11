@@ -7,10 +7,10 @@
   "license": "ISC",
   "scripts": {
     "dev": "pnpm --filter=example run dev",
-    "build": "pnpm run build:clean && pnpm run build:cjs && pnpm run build:es2015 && pnpm run build:esm6 && pnpm run build:types && pnpm run build:umd && node tools/mv.js",
-    "build:clean": "rimraf dist",
+    "build": "pnpm run build:clean && pnpm run build:cjs && pnpm run build:es2015 && pnpm run build:esm5 && pnpm run build:types && pnpm run build:umd && node tools/mv.js",
+    "build:clean": "pnpm --filter './packages/**' run build:clean",
     "build:es2015": "pnpm --filter './packages/**' run build:es2015",
-    "build:esm6": "pnpm --filter './packages/**' run build:esm6",
+    "build:esm5": "pnpm --filter './packages/**' run build:esm5",
     "build:cjs": "pnpm --filter './packages/**' run build:cjs",
     "build:umd": "pnpm --filter './packages/**' run build:umd",
     "build:types": "pnpm --filter './packages/**' run build:types"
